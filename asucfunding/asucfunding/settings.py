@@ -4,7 +4,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Noah Gilmore', 'noah.w.gilmore@gmail.com'),
+    ('Noah Gilmore', 'noah.w.gilmore@gmail.comx'),
 )
 
 MANAGERS = ADMINS
@@ -109,6 +109,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    "home/Documents/programming/django/asuc-funding-app/asucfunding/templates",
 )
 
 INSTALLED_APPS = (
