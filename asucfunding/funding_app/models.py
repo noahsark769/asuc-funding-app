@@ -65,5 +65,40 @@ class ItemDescription(models.Model):
     otherFunding = models.DecimalField(max_digits=10,decimal_places=2)
     total = models.DecimalField(max_digits=10,decimal_places=2)
     
+class Config(models.Model):
+    
+class ConfigAdmin (models.Model):
+    config = models.ForeignKey(Config)
+    email = models.Charfield(max_length=30)
+    
+class ConfigEvents (models.Model):
+    config = models.ForeignKey(Config)
+    eventLocation = models.Charfield(max_length=30)
+
+class ConfigUGReqCat (models.Model):
+    config = models.ForeignKey(Config)
+    category = models.Charfield(max_length=30)
+    
+class ConfigGRReqCat (models.Model):
+    config = models.ForeignKey(Config)
+    category = models.Charfield(max_length=30) 
+
+class ConfigUGGrant (models.Model):
+    config = models.ForeignKey(Config)
+    category = models.Charfield(max_length=30) 
+    
+class configGradGrant (models.Model):
+    config = models.ForeignKey(Config)
+    category = models.Charfield(max_length=30) 
+
+class FundinRounds (models.Model):
+    config = models.ForeignKey(Config)
+    name = models.Charfield(max_length=30)
+    deadline = models.DateField('%m/%d/%Y')
+
+class GradDelegates (models.Model):
+    config = models.ForeignKey(Config)
+    name = models.Charfield(max_length=30)
+    email = models.Charfield(max_length=30)
 
     
