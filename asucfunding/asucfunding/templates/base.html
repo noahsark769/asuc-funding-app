@@ -1,0 +1,60 @@
+{% comment %}
+	This is a django document that expets to be rendered with the following options.
+
+	name: a string representing the user's full name.
+	is_admin: true if the user is an admin, false otherwise
+{% endcomment %}
+
+<html>
+<head>
+	<title>ASUC/GA Funding Request</title>
+
+	<link rel='stylesheet' type='text/css' href="{{ STATIC_URL }}css/styles.css">
+
+	<script type='text/javascript' src="{{ STATIC_URL }}js/jquery-1.8.3.min.js"></script>
+	<script type='text/javascript' src="{{ STATIC_URL }}js/asuc-funding.js"></script>
+</head>
+<body>
+	<div id='header'>
+		<div id='title'>asuc funding</div>
+		<div id='user_info'>
+			Welcome, {{ name }}. &nbsp;<span id='date'></span> &nbsp;<a href=''>Calnet Logout</a>
+		</div>
+		<!-- clearfix, because the userinfo will be floating -->
+		<div class='clearfix'></div>
+	</div>
+	<div id='nav'>
+		{% if is_admin %}
+			<ul id="tabs">
+				<li><a href='#submitter_menu'>work as submitter</a></li>
+				<li><a href='#admin_menu'>work as admin</a></li>
+			</ul>
+		{% endif %}
+		<div class='tab-content'>
+			<div class='tab-pane {% if not is_admin %}active{% endif %}'>
+				<ul id='submitter_menu'>
+					<li>new request</li><li>
+					resume saved request</li><li>
+					view submitted requests</li>
+				</ul>
+			</div>
+			{% if is_admin %}
+				<div class='tab-pane active'>
+					<ul id='admin_menu'>
+						<li>export
+							<ul>
+								<li>Excel</li>
+								<li>PDF</li>
+							</ul>
+						</li><li>
+						configuration</li>	
+					</ul>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+	{% block content %}{% endblock %}
+
+</body>
+</html>
