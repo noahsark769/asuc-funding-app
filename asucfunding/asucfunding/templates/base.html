@@ -26,26 +26,13 @@
 	</div>
 	<div id='nav'>
 		{% block tabs %}{% endblock %}
-			<div class='tab-pane' id='submitter_menu_pane'>
-				<ul id='submitter_menu'>
-					<li>new request</li><li>
-					resume saved request</li><li>
-					view submitted requests</li>
-				</ul>
-			</div>
-			{% if is_admin %}
-				<div class='tab-pane active' id='submitter_menu_pane'>
-					<ul id='admin_menu'>
-						<li>export
-							<ul>
-								<li>Excel</li>
-								<li>PDF</li>
-							</ul>
-						</li><li>
-						configuration</li>	
-					</ul>
-				</div>
-			{% endif %}	</div>
+			<ul id='submitter_menu'>
+				<li>new request</li><li>
+				resume saved request</li><li>
+				view submitted requests</li>
+			</ul>
+		{% block admin_menu %}{% endblock %}
+		</div>
 
 	{% block content %}{% endblock %}
 
