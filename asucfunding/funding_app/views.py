@@ -1,6 +1,8 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
+
 from funding_app.models import *
 
 def get_credentials():
@@ -9,14 +11,14 @@ def get_credentials():
 def is_admin():
 	c = Config.objects.all()[0]
 	try:
-		admin = c.configadmin_set.get(email=get_credentials['email'])
+		admin = c.configadmin_set.get(email=get_credentials()['email'])
 		return True
 	except ObjectDoesNotExist as e:
 		return False
 
 def home(request):
-	return render_to_response("base.html",
-		{'name':"Shitface Mcgee", 'is_admin': True},
+	return render_to_response("admin_request_summary.html",
+		{'name':"Shitface Mcgee", 'is_admin': True, "funding_requests": FundingRequest.objects.all()},
 		context_instance=RequestContext(request))
 
 # Admin Views
@@ -43,16 +45,6 @@ def admin_request_summary(request):
 	except ObjectDoesNotExist as e:
 		fundingRequests = []
 
-	for fundingRequest in fundingRequests:
-		reqestedTotal = 0
-		awardedTotal = 0
-		for event in fundingRequest.event_set.all():
-			requestedTotal += event.budget.requestedTotal
-			awardedTotal += event.budget.awardedTotal
-
-		fundingRequest['requestedTotal'] = requestedTotal
-		fundingRequest['awardedTotal'] = awardedTotal
-
 	return render_to_response("admin_request_summary.html", {'funding_requests': fundingRequests, 'is_admin': is_admin()})
 
 def submitter_request_summary(request):
@@ -76,16 +68,6 @@ def submitter_request_summary(request):
 		fundingRequests = FundingRequest.objects.get(uid=user['uid'])
 	except ObjectDoesNotExist as e:
 		fundingRequests = []
-
-	for fundingRequest in fundingRequests:
-		reqestedTotal = 0
-		awardedTotal = 0
-		for event in fundingRequest.event_set.all():
-			requestedTotal += event.budget.requestedTotal
-			awardedTotal += event.budget.awardedTotal
-
-		fundingRequest['requestedTotal'] = requestedTotal
-		fundingRequest['awardedTotal'] = awardedTotal
 
 	return render_to_response("submitter_request_summary.html", {'funding_requests': fundingRequests, 'is_admin': is_admin()})
 
@@ -126,7 +108,7 @@ def admin_render_funding_request(request, request_id):
 	else:
 		url = "admin_award.html"
 
-	return render_to_response("", fundingRequest)
+	return render_to_response(url, fundingRequest)
 
 def submitter_render_funding_request(request, request_id):
 	try:
@@ -137,9 +119,37 @@ def submitter_render_funding_request(request, request_id):
 		except ObjectDoesNotExist as e:
 			fundingRequest = TravelRequest.objects.get(id=request_id)
 
-	if fundingRequest.requestStatus == "Saved":
-		url = ""
+	if fundingRequest.requestStatus == "Submitted":
+		url = "submitter_review.html"
+	else:
+		url = "submitter_create.html"
 
-	return render_to_response("", fundingRequest)
+	return render_to_response(url, fundingRequest)
 
 # Submitter Views
+
+def email_delegate(request_id):
+	try:
+		graduateRequest = GraduateRequest.objects.get(id=request_id)
+	except:
+		return
+
+	subject = 'New GA Funding Request for ' + graduateRequest.studentGroup
+	message = """A new graduate request has been submitted for the graduate assembly:
+
+	Request ID:\t\t\t""" + str(graduateRequest.id) + """
+	Date Submitted:\t\t\t""" + str(graduateRequest.dateSubmitted) + """
+	Requested By:\t\t\t""" + graduateRequest.name + """
+	Sponsoring Student Group:\t\t\t""" + graduateRequest.studentGroup + """
+	Request Category\t\t\t""" + graduateRequest.requestCategory + """
+	Funding Round\t\t\t""" + graduateRequest.fundingRound + """
+	Total Requested\t\t\t""" + str(graduateRequest.compute_requested_total()) + """
+
+	Click or copy/paste this link to review the request: {insert link}
+	Click or copy/paste this link to review ALL requests: {insert link}
+	"""
+
+	#send_mail(subject, message, 'no-reply@berkeley.edu', [graduateRequest.gaDelegate], fail_silently=False)
+	send_mail(subject, message, 'no-reply@berkeley.edu', ['aiyengar@berkeley.edu'], fail_silently=False)
+
+# EOF
