@@ -19,10 +19,7 @@ urlpatterns = patterns('',
     url(r'^submitter/$', 'funding_app.views.submitter_request_summary'),
     url(r'^admin/$', 'funding_app.views.admin_request_summary'),
     url(r'^config/$', 'funding_app.views.config'),
-<<<<<<< HEAD
     url(r'^update_config/$', 'funding_app.views.change_config'),
-=======
     url(r'^process_calnet/', 'funding_app.views.process_calnet'),
     url(r'^logout/', 'funding_app.views.logout'),
->>>>>>> 916bc43b095ee27b7c089b39864df0efcf4a8b4b
 )
