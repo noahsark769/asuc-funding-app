@@ -18,4 +18,5 @@ urlpatterns = patterns('',
     url(r'^$', 'funding_app.views.home'),
     url(r'^submitter/$', 'funding_app.views.submitter_request_summary'),
     url(r'^admin/$', 'funding_app.views.admin_request_summary'),
+    url(r'^config/$', 'funding_app.views.config'),
 )

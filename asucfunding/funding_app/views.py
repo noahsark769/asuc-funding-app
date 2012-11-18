@@ -68,14 +68,15 @@ def admin_render_funding_request(request, request_id):
 	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': user['is_admin']}, context_instance=RequestContext(request))
 
 def config(request):
+	user = get_credentials()
 	c = Config.objects.all()[0]
 
 	admins = c.configadmin_set.all()
 	locations = c.configlocation_set.all()
 	ug_req_cats = c.configugreqcat_set.all()
 	grad_req_cats = c.configgradreqcat_set.all()
-	ug_grant_cats = c.configuggrantcat_set.all()
-	grad_grant_cats = c.configgradgrantcat_set.all()
+	ug_grant_cats = c.configuggrant_set.all()
+	grad_grant_cats = c.configgradgrant_set.all()
 	funding_rounds = c.configfundinground_set.all()
 	grad_delegates = c.configgraddelegate_set.all()
 
@@ -88,7 +89,7 @@ def config(request):
 		'grad_grant_cats': grad_grant_cats,
 		'funding_rounds': funding_rounds,
 		'grad_delegates': grad_delegates,
-		'name': user['name'], 'is_admin': user['is_admin']
+		'name': user['name'], 'is_admin': is_admin()
 		}, context_instance=RequestContext(request))
 
 # Submitter Views

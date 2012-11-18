@@ -3,8 +3,8 @@
 {% block tabs %}
 		{% if is_admin %}
 			<ul class='nav nav-tabs' id="tabs">
-				<li class='tab {% if not is_admin %}active{% endif %}'><a class='nostyle' href='#submitter_menu_pane'>work as submitter</a></li>
-				<li class='tab {% if is_admin %}active{% endif %}'><a class='nostyle' href='#admin_menu_pane'>work as admin</a></li>
+				<li class='tab active'><a class='nostyle' href='/submitter/'>work as submitter</a></li>
+				<li class='tab'><a class='nostyle' href='/admin/'>work as admin</a></li>
 			</ul>
 		{% endif %}
 {% endblock %}
@@ -17,6 +17,6 @@
 			</ul>
 {% endblock %}
 
-{% block admin_menu}{% endblock %}
+{% block admin_menu %}{% endblock %}
 
 {% block content %}{% endblock %}
