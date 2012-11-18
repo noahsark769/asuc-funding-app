@@ -111,7 +111,7 @@ def submitter_request_summary(request):
 	user = get_credentials()
 
 	try:
-		fundingRequests = FundingRequest.objects.get(uid=user['uid'])
+		fundingRequests = FundingRequest.objects.filter(uid=user['uid'])
 	except ObjectDoesNotExist as e:
 		fundingRequests = []
 
