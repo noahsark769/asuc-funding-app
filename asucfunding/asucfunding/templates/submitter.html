@@ -19,25 +19,4 @@
 
 {% block admin_menu}{% endblock %}
 
-{% block content %}
-	<table>
-	{% for request in funding_requests %}
-	<tr>
-		<td>{{request.id}}</td>
-		<td>{{request.email}}</td>
-		<td>{{request.dateSubmitted}}</td>
-		<td>{{request.requestStatus}}</td>
-		<td>{{request.studentGroup}}</td>
-		<td>{{request.requestType}}</td>
-		<td>{{request.requestCategory}}</td>
-		<td>{{request.eventType}}</td>
-		<td>{{request.fundingRound}}</td>
-		<td>{{request.compute_requested_total}}</td>
-		<td>{{request.compute_awarded_total}}</td>
-	</tr>
-	{% endfor %}
-	</table>
-	{% if funding_requests|length == 0}
-	<p>You have not submitted any requests at this time. Click on the new request button to add one.</p>
-	{% endif %}
-{% endblock %}
+{% block content %}{% endblock %}

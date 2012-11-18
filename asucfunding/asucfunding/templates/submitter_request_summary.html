@@ -10,9 +10,37 @@
 {% block content %}
 
 	<table>
+	<tr>
+		<td>&nbsp;Request ID</td>
+		<td>&nbsp;Submitter Email</td>
+		<td>&nbsp;Date Submitted</td>
+		<td>&nbsp;Request Status</td>
+		<td>&nbsp;Student Group</td>
+		<td>&nbsp;Request Type</td>
+		<td>&nbsp;Request Category</td>
+		<td>&nbsp;Request For</td>
+		<td>&nbsp;Funding Round</td>
+		<td>&nbsp;Requested Total</td>
+		<td>&nbsp;Awarded Total</td>
+	</tr>
 	{% for request in funding_requests %}
-	<tr><td>{{request.id}}</td><td>{{request.email}}</td></tr>
+	<tr>
+		<td>&nbsp;{{request.id}}</td>
+		<td>&nbsp;{{request.email}}</td>
+		<td>&nbsp;{{request.dateSubmitted}}</td>
+		<td>&nbsp;{{request.requestStatus}}</td>
+		<td>&nbsp;{{request.studentGroup}}</td>
+		<td>&nbsp;{{request.requestType}}</td>
+		<td>&nbsp;{{request.requestCategory}}</td>
+		<td>&nbsp;{{request.eventType}}</td>
+		<td>&nbsp;{{request.fundingRound}}</td>
+		<td>&nbsp;${{request.compute_requested_total}}</td>
+		<td>&nbsp;${{request.compute_awarded_total}}</td>
+	</tr>
 	{% endfor %}
 	</table>
+	{% if funding_requests|length == 0 %}
+	<p>You have not submitted any requests at this time. Click on the new request button to add one.</p>
+	{% endif %}
 
 {% endblock %}

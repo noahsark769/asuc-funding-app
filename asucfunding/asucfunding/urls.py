@@ -16,4 +16,6 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 
     url(r'^$', 'funding_app.views.home'),
+    url(r'^submitter/$', 'funding_app.views.submitter_request_summary'),
+    url(r'^admin/$', 'funding_app.views.admin_request_summary'),
 )
