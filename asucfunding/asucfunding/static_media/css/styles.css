@@ -129,9 +129,20 @@ table {
 .clearfix {
   clear: both;
 }
+a.nostyle {
+  color: inherit;
+  text-decoration: none;
+}
+.tab-pane {
+  display: none;
+}
+body {
+  background-color: #e9eff0;
+}
 div#header {
-  background-color: #8fcbf2;
+  background-color: #c0d3e6;
   padding: 5px 0px 20px 5px;
+  border-bottom: 1px solid #000;
 }
 div#title {
   display: inline-block;
@@ -154,9 +165,52 @@ ul#tabs {
 }
 ul#tabs li {
   display: inline-block;
-  height: 27px;
-  width: 120px;
-  padding-top: 3px;
+  height: 23px;
+  width: 150px;
+  padding-top: 5px;
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
   text-align: center;
-  background-color: #dedede;
+  background-color: #e9eff0;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  -webkit-border-radius: 5px 5px 0px 0px;
+  -moz-border-radius: 5px 5px 0px 0px;
+  border-radius: 5px 5px 0px 0px;
+}
+ul#tabs li.active {
+  height: 24px;
+}
+ul#submitter_menu,
+ul#admin_menu {
+  display: block;
+}
+ul#submitter_menu li,
+ul#admin_menu li {
+  display: inline-block;
+  width: 200px;
+  height: 30px;
+  padding-top: 10px;
+  margin-right: 5px;
+  margin-top: 5px;
+  text-align: center;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  background: -moz-linear-gradient(#2f5378 0%, #335b83 100%);
+  /* FF 3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #2f5378), color-stop(100%, #335b83));
+  /* Safari 4+, Chrome 2+ */
+  background: -webkit-linear-gradient(#2f5378 0%, #335b83 100%);
+  /* Safari 5.1+, Chrome 10+ */
+  background: -o-linear-gradient(#2f5378 0%, #335b83 100%);
+  /* Opera 11.10 */
+  background: linear-gradient(#2f5378 0%, #335b83 100%);
+  /* the standard */
+  -webkit-border-radius: 2px 2px 2px 2px;
+  -moz-border-radius: 2px 2px 2px 2px;
+  border-radius: 2px 2px 2px 2px;
+  color: #e9eff0;
+}
+ul#submitter_menu li ul,
+ul#admin_menu li ul {
+  display: none;
 }
