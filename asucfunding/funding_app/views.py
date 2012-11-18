@@ -1,8 +1,10 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
+from django.http import HttpResponse
 import ldap
+from datetime import date
 
 from funding_app.models import *
 
@@ -78,6 +80,8 @@ def admin_render_funding_request(request, request_id):
 	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': user['is_admin']}, context_instance=RequestContext(request))
 
 def config(request):
+	if not is_admin():
+		return redirect('/')
 	user = get_credentials()
 	c = Config.objects.all()[0]
 
@@ -101,6 +105,84 @@ def config(request):
 		'grad_delegates': grad_delegates,
 		'name': user['name'], 'is_admin': is_admin()
 		}, context_instance=RequestContext(request))
+
+def change_config(request):
+	if request.method == 'POST' and is_admin() and request.POST.get('config_key') is not None:
+		config_key = request.POST.get('config_key')
+		c = Config.objects.all()[0]
+		if config_key == 'admin_roster':
+			email = request.POST.get('admin_email')
+			if email:
+				o = ConfigAdmin.objects.create(config=c, email=email)
+				return HttpResponse('<li id="admin_email_'+ str(o.id) +'">' + o.email + '</li>')
+			else:
+				return HttpResponse('FAILURE')
+		elif config_key == 'event_locations':
+			location = request.POST.get('location')
+			if location:
+				o = ConfigLocation.objects.create(config=c, location=location)
+				return HttpResponse('SUCCESS')
+			else:
+				return HttpResponse('FAILURE')
+		elif config_key == 'ug_request_categories':
+			cat = request.POST.get('ug_req_cat')
+			if cat:
+				o = ConfigUGReqCat.objects.create(config=c, category=cat)
+				return HttpResponse('SUCCESS')
+			else:
+				return HttpResponse('FAILURE')
+		elif config_key == 'grad_request_categories':
+			cat = request.POST.get('grad_req_cat')
+			if cat:
+				o = ConfigGradReqCat.objects.create(config=c, category=cat)
+				return HttpResponse('SUCCESS')
+			else:
+				return HttpResponse('FAILURE')
+		elif config_key == 'ug_grant_categories':
+			cat = request.POST.get('ug_grant_cat')
+			if cat:
+				o = ConfigUGGrant.objects.create(config=c, category=cat)
+				return HttpResponse('SUCCESS')
+			else:
+				return HttpResponse('FAILURE')
+		elif config_key == 'grad_grant_categories':
+			cat = request.POST.get('grad_grant_cat')
+			if cat:
+				o = ConfigGradGrant.objects.create(config=c, category=cat)
+				return HttpResponse('SUCCESS')
+			else:
+				return HttpResponse('FAILURE')
+		elif config_key == 'funding_rounds':
+			try:
+				name = request.POST.get('round_name')
+				date_repr = request.POST.get('round_date')
+				if date_repr:
+					partitions = date_repr.split('/')
+					months, days, years = partitions[0], partitions[1], partitions[2]
+					this_date = date(int(years), int(months), int(days))
+					print "butt"
+				else:
+					this_date = None
+
+				if this_date and name:
+					o = ConfigFundingRound.objects.create(config=c, name=name, deadline=this_date)
+					return HttpResponse('SUCCESS')
+				else:
+					return HttpResponse('FAILURE')
+			except Exception as e:
+				print e
+		elif config_key == 'delegates':
+			name = request.POST.get('delegate_name')
+			email = request.POST.get('delegate_email')
+
+			if email and name:
+				o = ConfigGradDelegate.objects.create(config=c, name=name, email=email)
+				return HttpResponse('SUCCESS')
+			else:
+				return HttpResponse('FAILURE')
+	else:
+		return HttpResponse('FAILURE')
+
 
 # Submitter Views
 
@@ -170,7 +252,7 @@ def email_delegate(request_id):
 
 # Other Views
 
-def calnet_auth():
+# def calnet_auth():
 	
 
 # EOF
