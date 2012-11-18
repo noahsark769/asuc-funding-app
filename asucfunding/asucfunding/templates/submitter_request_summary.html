@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "submitter.html" %}
 
 {% comment %}
 	This is a django document that expets to be rendered with the following options.
@@ -6,31 +6,6 @@
 	is_admin: true if the user is an admin, false otherwise
 	funding_requests: a list of FundingRequest objects to display.
 {% endcomment %}
-
-{% block tabs %}
-		{% if is_admin %}
-			<ul class='nav nav-tabs' id="tabs">
-				<li class='tab {% if not is_admin %}active{% endif %}'><a class='nostyle' href='#submitter_menu_pane'>work as submitter</a></li>
-				<li class='tab {% if is_admin %}active{% endif %}'><a class='nostyle' href='#admin_menu_pane'>work as admin</a></li>
-			</ul>
-		{% endif %}
-{% endblock %}
-
-{% block admin_menu}
-			{% if is_admin %}
-				<div class='tab-pane active' id='submitter_menu_pane'>
-					<ul id='admin_menu'>
-						<li>export
-							<ul>
-								<li>Excel</li>
-								<li>PDF</li>
-							</ul>
-						</li><li>
-						configuration</li>	
-					</ul>
-				</div>
-			{% endif %}
-{% endblock %}
 
 {% block content %}
 

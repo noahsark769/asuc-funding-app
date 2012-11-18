@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin.html" %}
 
 {% comment %}
 	This is a django document that expets to be rendered with the following options.
@@ -7,36 +7,27 @@
 	funding_requests: a list of FundingRequest objects to display.
 {% endcomment %}
 
-{% block tabs %}
-		{% if is_admin %}
-			<ul class='nav nav-tabs' id="tabs">
-				<li class='tab {% if not is_admin %}active{% endif %}'><a class='nostyle' href='#submitter_menu_pane'>work as submitter</a></li>
-				<li class='tab {% if is_admin %}active{% endif %}'><a class='nostyle' href='#admin_menu_pane'>work as admin</a></li>
-			</ul>
-		{% endif %}
-{% endblock %}
-
-{% block admin_menu}
-			{% if is_admin %}
-				<div class='tab-pane active' id='submitter_menu_pane'>
-					<ul id='admin_menu'>
-						<li>export
-							<ul>
-								<li>Excel</li>
-								<li>PDF</li>
-							</ul>
-						</li><li>
-						configuration</li>	
-					</ul>
-				</div>
-			{% endif %}
-{% endblock %}
 
 {% block content %}
 	<table>
 	{% for request in funding_requests %}
-	<tr><td>{{request.id}}</td><td>{{request.email}}</td></tr>
+	<tr>
+		<td>{{request.id}}</td>
+		<td>{{request.email}}</td>
+		<td>{{request.dateSubmitted}}</td>
+		<td>{{request.requestStatus}}</td>
+		<td>{{request.studentGroup}}</td>
+		<td>{{request.requestType}}</td>
+		<td>{{request.requestCategory}}</td>
+		<td>{{request.eventType}}</td>
+		<td>{{request.fundingRound}}</td>
+		<td>{{request.compute_requested_total}}</td>
+		<td>{{request.compute_awarded_total}}</td>
+	</tr>
 	{% endfor %}
 	</table>
+	{% if funding_requests|length == 0}
+	<p>No requests exist at this time.</p>
+	{% endif %}
 
 {% endblock %}
