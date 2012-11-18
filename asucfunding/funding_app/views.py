@@ -173,7 +173,7 @@ def config(request):
 		}, context_instance=RequestContext(request))
 
 def change_config(request):
-	if request.method == 'POST' and is_admin() and request.POST.get('config_key') is not None:
+	if request.method == 'POST' and is_admin(request) and request.POST.get('config_key') is not None:
 		config_key = request.POST.get('config_key')
 		c = Config.objects.all()[0]
 		if config_key == 'admin_roster':
