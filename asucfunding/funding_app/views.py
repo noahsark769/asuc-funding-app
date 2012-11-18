@@ -2,13 +2,23 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
+import ldap
 
 from funding_app.models import *
 
 # Miscellaneous
 
 def get_credentials():
-	return {'uid': 23621811, 'name':'Shitface Mcgee', 'phone': '5109999999', 'email': 'shitface@mcgee.biz'}
+	uid = 6081
+
+	l = ldap.open("ldap.berkeley.edu")
+	l.simple_bind_s('', '') # no credentials needed for anonymous bind
+	result_id = l.search("ou=people,dc=berkeley,dc=edu", ldap.SCOPE_SUBTREE, "uid=" + str(uid), None)
+	data = l.result(result_id, 0)[1][0][1]
+	return {'uid': uid, 'name':data['displayName'][0].title(), 'phone': convert_phone(data['telephoneNumber'][0]), 'email': data['mail'][0]}
+
+def convert_phone(phone):
+	return phone[3:6] + "-" + phone[7:15]
 
 def is_admin():
 	c = Config.objects.all()[0]
@@ -156,5 +166,10 @@ def email_delegate(request_id):
 
 	#send_mail(subject, message, 'no-reply@berkeley.edu', [graduateRequest.gaDelegate], fail_silently=False)
 	send_mail(subject, message, 'no-reply@berkeley.edu', ['aiyengar@berkeley.edu'], fail_silently=False)
+
+# Other Views
+
+def calnet_auth():
+	
 
 # EOF
