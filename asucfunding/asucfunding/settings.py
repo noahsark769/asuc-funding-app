@@ -162,3 +162,6 @@ LOGGING = {
         },
     }
 }
+
+# E-mail settings
+

@@ -5,6 +5,8 @@ from django.core.mail import send_mail
 
 from funding_app.models import *
 
+# Miscellaneous
+
 def get_credentials():
 	return {'uid': 23621811, 'name':'Shitface Mcgee', 'phone': '5109999999', 'email': 'shitface@mcgee.biz'}
 
@@ -45,7 +47,51 @@ def admin_request_summary(request):
 	except ObjectDoesNotExist as e:
 		fundingRequests = []
 
-	return render_to_response("admin_request_summary.html", {'funding_requests': fundingRequests, 'is_admin': is_admin()})
+	return render_to_response("admin_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': is_admin()}, context_instance=RequestContext(request))
+
+def admin_render_funding_request(request, request_id):
+	user = get_credentials()
+
+	try:
+		fundingRequest = GraduateRequest.objects.get(id=request_id)
+	except ObjectDoesNotExist as e:
+		try:
+			fundingRequest = UndergraduateRequest.objects.get(id=request_id)
+		except ObjectDoesNotExist as e:
+			fundingRequest = TravelRequest.objects.get(id=request_id)
+
+	if fundingRequest.requestStatus == "Awarded":
+		url = "admin_review.html"
+	else:
+		url = "admin_award.html"
+
+	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': user['is_admin']}, context_instance=RequestContext(request))
+
+def config(request):
+	c = Config.objects.all()[0]
+
+	admins = c.configadmin_set.all()
+	locations = c.configlocation_set.all()
+	ug_req_cats = c.configugreqcat_set.all()
+	grad_req_cats = c.configgradreqcat_set.all()
+	ug_grant_cats = c.configuggrantcat_set.all()
+	grad_grant_cats = c.configgradgrantcat_set.all()
+	funding_rounds = c.configfundinground_set.all()
+	grad_delegates = c.configgraddelegate_set.all()
+
+	return render_to_response("config.html",{
+		'admins': admins,
+		'locations': locations,
+		'ug_req_cats': ug_req_cats,
+		'grad_req_cats': grad_req_cats,
+		'ug_grant_cats': ug_grant_cats,
+		'grad_grant_cats': grad_grant_cats,
+		'funding_rounds': funding_rounds,
+		'grad_delegates': grad_delegates,
+		'name': user['name'], 'is_admin': user['is_admin']
+		}, context_instance=RequestContext(request))
+
+# Submitter Views
 
 def submitter_request_summary(request):
 	""" Returns a list of the submitter's funding requests, item by item.
@@ -69,46 +115,7 @@ def submitter_request_summary(request):
 	except ObjectDoesNotExist as e:
 		fundingRequests = []
 
-	return render_to_response("submitter_request_summary.html", {'funding_requests': fundingRequests, 'is_admin': is_admin()})
-
-def config(request):
-	c = Config.objects.all()[0]
-
-	admins = c.configadmin_set.all()
-	locations = c.configlocation_set.all()
-	ug_req_cats = c.configugreqcat_set.all()
-	grad_req_cats = c.configgradreqcat_set.all()
-	ug_grant_cats = c.configuggrantcat_set.all()
-	grad_grant_cats = c.configgradgrantcat_set.all()
-	funding_rounds = c.configfundinground_set.all()
-	grad_delegates = c.configgraddelegate_set.all()
-
-	return render_to_response("config.html",{
-		'admins': admins,
-		'locations': locations,
-		'ug_req_cats': ug_req_cats,
-		'grad_req_cats': grad_req_cats,
-		'ug_grant_cats': ug_grant_cats,
-		'grad_grant_cats': grad_grant_cats,
-		'funding_rounds': funding_rounds,
-		'grad_delegates': grad_delegates,
-		})
-
-def admin_render_funding_request(request, request_id):
-	try:
-		fundingRequest = GraduateRequest.objects.get(id=request_id)
-	except ObjectDoesNotExist as e:
-		try:
-			fundingRequest = UndergraduateRequest.objects.get(id=request_id)
-		except ObjectDoesNotExist as e:
-			fundingRequest = TravelRequest.objects.get(id=request_id)
-
-	if fundingRequest.requestStatus == "Awarded":
-		url = "admin_review.html"
-	else:
-		url = "admin_award.html"
-
-	return render_to_response(url, fundingRequest)
+	return render_to_response("submitter_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': is_admin()}, context_instance=RequestContext(request))
 
 def submitter_render_funding_request(request, request_id):
 	try:
@@ -124,9 +131,7 @@ def submitter_render_funding_request(request, request_id):
 	else:
 		url = "submitter_create.html"
 
-	return render_to_response(url, fundingRequest)
-
-# Submitter Views
+	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': user['is_admin']}, context_instance=RequestContext(request))
 
 def email_delegate(request_id):
 	try:
