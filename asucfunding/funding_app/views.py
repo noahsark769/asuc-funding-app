@@ -9,7 +9,7 @@ def get_credentials():
 def is_admin():
 	c = Config.objects.all()[0]
 	try:
-		admin = c.configadmin_set.get(get_credentials['email']=email)
+		admin = c.configadmin_set.get(email=get_credentials['email'])
 		return True
 	except ObjectDoesNotExist as e:
 		return False
@@ -22,12 +22,10 @@ def home(request):
 # Admin Views
 
 def admin_request_summary(request):
-	""" Returns a list of funding requests, item by item.
-	If you are an admin, returns all requests.
-	If you are a submitter, returns only your requests.
+	""" Returns a list of all funding requests, item by item.
 
 	The following fields are included:
-		- Request ID
+		- Request ID (pk)
 		- Date Submitted
 		- Request Status
 		- Student Group
@@ -58,9 +56,7 @@ def admin_request_summary(request):
 	return render_to_response("admin_request_summary.html", {'funding_requests': fundingRequests, 'is_admin': is_admin()})
 
 def submitter_request_summary(request):
-	""" Returns a list of funding requests, item by item.
-	If you are an admin, returns all requests.
-	If you are a submitter, returns only your requests.
+	""" Returns a list of the submitter's funding requests, item by item.
 
 	The following fields are included:
 		- Request ID
@@ -116,23 +112,33 @@ def config(request):
 		'grad_delegates': grad_delegates,
 		})
 
-def render_funding_request(request, request_id):
+def admin_render_funding_request(request, request_id):
 	try:
-		fundingRequest = GraduateRequest.objects.get(pk=request_id)
+		fundingRequest = GraduateRequest.objects.get(id=request_id)
 	except ObjectDoesNotExist as e:
 		try:
-			fundingRequest = UndergraduateRequest.objects.get(pk=request_id)
+			fundingRequest = UndergraduateRequest.objects.get(id=request_id)
 		except ObjectDoesNotExist as e:
-			fundingRequest = TravelRequest.objects.get(pk=request_id
+			fundingRequest = TravelRequest.objects.get(id=request_id)
 
-	if is_admin():
-		if fundingRequest.requestStatus == "Awarded":
-			url = "admin_review.html"
-		else:
-			url = "admin_award.html"
+	if fundingRequest.requestStatus == "Awarded":
+		url = "admin_review.html"
 	else:
-		if fundingRequest.requestStatus == "Saved":
-			url = ""
+		url = "admin_award.html"
+
+	return render_to_response("", fundingRequest)
+
+def submitter_render_funding_request(request, request_id):
+	try:
+		fundingRequest = GraduateRequest.objects.get(id=request_id)
+	except ObjectDoesNotExist as e:
+		try:
+			fundingRequest = UndergraduateRequest.objects.get(id=request_id)
+		except ObjectDoesNotExist as e:
+			fundingRequest = TravelRequest.objects.get(id=request_id)
+
+	if fundingRequest.requestStatus == "Saved":
+		url = ""
 
 	return render_to_response("", fundingRequest)
 
