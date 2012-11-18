@@ -158,3 +158,6 @@ LOGGING = {
         },
     }
 }
+
+# E-mail settings
+
