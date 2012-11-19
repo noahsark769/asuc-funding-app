@@ -20,7 +20,7 @@
 			<h2>Admin Roster</h2>
 			<ul>
 				{% for admin in admins %}
-				<li id='admin_email_{{admin.id}}'>{{admin.email}}</li>
+				<li id='admin_email_{{admin.id}}'>{{admin.email}}<a class='config_remove'href=''>x</a></li>
 				{% endfor %}
 				<li><input type='text' id='admin_email' /><button class='config_submit' id='admin_submit'>Add</button></li>
 			</ul>
@@ -30,7 +30,7 @@
 			<h2>Event Locations</h2>
 			<ul>
 				{% for location in locations %}
-				<li id='location_{{location.id}}'>{{location.location}}</li>
+				<li id='location_{{location.id}}'>{{location.location}}<a class='config_remove' href=''>x</a></li>
 				{% endfor %}
 				<li><input type='text' id='location' /><button class='config_submit' id='location_submit'>Add</button></li>
 			</ul>
@@ -41,7 +41,7 @@
 			<h2>Undergraduate Request Categories</h2>
 			<ul>
 				{% for cat in ug_req_cats %}
-				<li id='ug_req_cat_{{cat.id}}'>{{cat.category}}</li>
+				<li id='ug_req_cat_{{cat.id}}'>{{cat.category}}<a class='config_remove' href=''>x</a></li>
 				{% endfor %}
 				<li><input type='text' id='ug_req_cat' /><button class='config_submit' id='ug_req_cat_submit'>Add</button></li>
 			</ul>
@@ -51,7 +51,7 @@
 			<h2>Graduate Request Categories</h2>
 			<ul>
 				{% for cat in grad_req_cats %}
-				<li id='grad_req_cat_{{cat.id}}'>{{cat.category}}</li>
+				<li id='grad_req_cat_{{cat.id}}'>{{cat.category}}<a class='config_remove' href=''>x</a></li>
 				{% endfor %}
 				<li> <input type='text' id='grad_req_cat' /><button class='config_submit' id='grad_req_cat_submit'>Add</button></li>
 			</ul>
@@ -61,7 +61,7 @@
 			<h2>Undergraduate Grant Categories</h2>
 			<ul>
 				{% for cat in ug_grant_cats %}
-				<li id='ug_grant_cat_{{cat.id}}'>{{cat.category}}</li>
+				<li id='ug_grant_cat_{{cat.id}}'>{{cat.category}}<a class='config_remove' href=''>x</a></li>
 				{% endfor %}
 				<li><input type='text' id='ug_grant_cat' /><button class='config_submit' id='ug_grant_cat_submit'>Add</button></li>
 			</ul>
@@ -71,7 +71,7 @@
 			<h2>Graduate Grant Categories</h2>
 			<ul>
 				{% for cat in grad_grant_cats %}
-				<li id='grad_grant_cat_{{cat.id}}'>{{cat.category}}</li>
+				<li id='grad_grant_cat_{{cat.id}}'>{{cat.category}}<a class='config_remove' href=''>x</a></li>
 				{% endfor %}
 				<li><input type='text' id='grad_grant_cat' /><button class='config_submit' id='grad_grant_cat_submit'>Add</button></li>
 			</ul>
@@ -82,7 +82,7 @@
 			<h2>Funding Rounds</h2>
 			<ul>
 				{% for round in funding_rounds %}
-				<li id='round_{{round.id}}'>{{round.name}}&nbsp;{{round.deadline}}</li>
+				<li id='round_{{round.id}}'>{{round.name}}&nbsp;{{round.deadline}}<a class='config_remove' href=''>x</a></li>
 				{% endfor %}
 				<li><input type='text' id='round_name' />
 					<input type='text' id='round_date' /><button class='config_submit' id='round_submit'>Add</button></li>
@@ -93,7 +93,7 @@
 			<h2>Graduate Assembly Delegates</h2>
 			<ul>
 				{% for delegate in grad_delegates %}
-				<li id='delegate_{{delegate.id}}'>{{delegate.name}}&nbsp;{{delegate.email}}</li>
+				<li id='delegate_{{delegate.id}}'>{{delegate.name}}&nbsp;{{delegate.email}}<a class='config_remove' href=''>x</a></li>
 				{% endfor %}
 				<li id='delegate'><input type='text' id='delegate_name' />
 					<input type='text' id='delegate_email' /><button class='config_submit' id='delegate_submit'>Add</button></li>
