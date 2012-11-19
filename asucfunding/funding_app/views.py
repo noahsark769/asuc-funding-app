@@ -62,20 +62,25 @@ def process_calnet(request):
 	This view method will complete only if the user's ticket is properly validated.
 	Otherwise, they will be continuously redirected to the CalNet login page.
 	"""
+
+	# If there's no ticket given to us, redirect them to the login page
 	if request.method != 'GET' or request.GET.get('ticket') is None:
 		return redirect(calnet_login_url())
 
+	# Check the ticket. If it's invalid, login page.
 	f = urllib2.urlopen(calnet_validation_url(request))
 	doc = xml.dom.minidom.parse(f)
 	if len(doc.documentElement.getElementsByTagName('cas:authenticationSuccess')) == 0:
 		return redirect(calnet_login_url())
 
+	# At this point we're good. extract the user data from LDAP
 	uid = int(doc.documentElement.getElementsByTagName('cas:user')[0].firstChild.nodeValue)
 	l = ldap.open("ldap.berkeley.edu")
 	l.simple_bind_s('', '') # no credentials needed for anonymous bind
 	result_id = l.search("ou=people,dc=berkeley,dc=edu", ldap.SCOPE_SUBTREE, "uid=" + str(uid), None)
 	data = l.result(result_id, 0)[1][0][1]
 
+	# Set all the appropriate cookies, and take the user home!
 	response = redirect('funding_app.views.home')
 	response.set_cookie('uid', str(uid), max_age=None)
 	response.set_cookie('name', data['displayName'][0].title(), max_age=None)
@@ -245,16 +250,22 @@ def change_config(request):
 
 	# ADDING VALUES	
 	elif request.method == 'POST' and request.POST.get('config_key') is not None:
+		# which table we're pulling from 
 		config_key = request.POST.get('config_key')
+
+		# the 1-2 input value(s), depending on which field we're editing.
 		value1 = request.POST.get('value1')
 		value2 = request.POST.get('value2')
+
+		# if value1 is empty, then no data has been passed. this is bad.
 		if value1 is None:
 			return HttpResponse('FAILURE')
 
+		# it's repeated so much...
 		remove_html = '<a class="config_remove" href="">x</a></li>'
 
+		# in this case, we must be choosing between one of the 1-parameter options
 		if value2 is None:
-			# in this case, we must be choosing between one of the one-parameter options
 			if config_key == 'admin_roster':
 				o = ConfigAdmin.objects.create(email=value1)
 				return HttpResponse('<li id="admin_email_'+ str(o.id) +'">' + value1 + remove_html)
@@ -277,7 +288,7 @@ def change_config(request):
 				# if it's none of the above, then fail
 				return HttpResponse('FAILURE')
 
-		# if we're here, we must have 2 arguments.
+		# in this case, we must be choosing between one of the 2-parameter options
 		if config_key == 'funding_rounds':
 			if value2:
 				partitions = value2.split('/')

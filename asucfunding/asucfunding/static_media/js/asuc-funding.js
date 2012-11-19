@@ -1,7 +1,9 @@
 $(document).ready(function() {
 	
+	/* we're using FORMS because of CSRF simplicity
+	we can now just use {% csrf_token %} in config.html, which avoids auth problems. */
 	$('form#config_form').submit(function() {
-		// get the button that was currently clicked
+		// get the button that was used to submit the form (see .click() below)
 		$currentButton = $('.config_submit[clicked=true]');
 
 		// name of the table we're inserting into
@@ -32,12 +34,13 @@ $(document).ready(function() {
 		return false;
 	});
 
-	// when a submit button for adding is clicked, make it the only one clicked.
+	// when a submit button for adding is clicked, make it the only one with the "clicked" attribute.
 	$('button.config_submit').click(function() {
 		$('button.config_submit').removeAttr("clicked");
     	$(this).attr("clicked", "true");
 	});
 
+	// handles requests to remove objects
 	$('a.config_remove').click(function() {
 		// confirm...
 		if (!window.confirm(this.title || 'Are you sure you wish to delete this?')) {
