@@ -14,24 +14,42 @@ from funding_app.models import *
 # Authentication
 
 def calnet_login_url():
+	"""
+	Return the CalNet authentication URL.
+	"""
 	return "https://auth-test.berkeley.edu/cas/login?service=http://localhost:8000/process_calnet/"
 
 def calnet_validation_url(request):
+	"""
+	Return the validation URL for CalNet authentication tickets.
+	"""
 	return "https://auth-test.berkeley.edu/cas/serviceValidate?ticket=" + request.GET.get('ticket') + "&service=http://localhost:8000/process_calnet/"
 
 def calnet_logout_url():
+	"""
+	Return the URL to log out of CalNet.
+	"""
 	return "https://auth-test.berkeley.edu/cas/logout"
 
 def check_credentials(request):
+	"""
+	Check whether the user currently has the proper credentials to be logged in (should have authZ and authN).
+	"""
 	if request.COOKIES.has_key('uid'):
 		return True
 	else:
 		return False
 
 def get_credentials(request):
+	"""
+	Grab the user's credentials from the cookies, assuming they are properly logged in.
+	"""
 	return {'uid': request.COOKIES['uid'], 'name': request.COOKIES['name'], 'phone': request.COOKIES['phone'], 'email': request.COOKIES['email']}
 
 def is_admin(request):
+	"""
+	Check whether a user is an administrator by comparing their e-mail address with the admin roster.
+	"""
 	try:
 		admin = ConfigAdmin.objects.get(email=get_credentials(request)['email'])
 		return True
@@ -39,6 +57,11 @@ def is_admin(request):
 		return False
 
 def process_calnet(request):
+	"""
+	Process the data given to us by CalNet authentication and log the user in.
+	This view method will complete only if the user's ticket is properly validated.
+	Otherwise, they will be continuously redirected to the CalNet login page.
+	"""
 	if request.method != 'GET' or request.GET.get('ticket') is None:
 		return redirect(calnet_login_url())
 
@@ -65,6 +88,9 @@ def process_calnet(request):
 	return response
 
 def logout(request):
+	"""
+	Log the user out by destroying the cookies, then logging out of CalNet.
+	"""
 	response = redirect(calnet_logout_url())
 	response.delete_cookie('uid')
 	response.delete_cookie('name')
@@ -73,11 +99,20 @@ def logout(request):
 	return response
 
 def convert_phone(phone):
+	"""
+	Convert from LDAP phone number format to normal format:
+	ex. "+1 ABC DEF-GHIJ" ==> "ABC-DEF-GHIJ".
+	"""
 	return phone[3:6] + "-" + phone[7:15]
 
 # Views
 
 def home(request):
+	"""
+	View:
+
+	Redirect to either submitter or admin request log, depending on user credentials.
+	"""
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 
@@ -89,25 +124,16 @@ def home(request):
 # Admin Views
 
 def admin_request_summary(request):
+	"""
+	Admin View:
+
+	Show a table containing every request in the system.
+	"""
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 	if is_admin(request) == False:
 		return redirect('funding_app.views.home')
 
-	""" Returns a list of all funding requests, item by item.
-
-	The following fields are included:
-		- Request ID (pk)
-		- Date Submitted
-		- Request Status
-		- Student Group
-		- Request Type
-		- Request Category
-		- Request For (Event, OC)
-		- Funding Round
-		- Total Requested
-		- Total Awarded
-	"""
 	user = get_credentials(request)
 
 	try:
@@ -118,6 +144,12 @@ def admin_request_summary(request):
 	return render_to_response("admin_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
 
 def admin_render_funding_request(request, request_id):
+	"""
+	Admin View:
+
+	Deliver all information about a funding request to the view.
+	This is used for the "Admin Review" and "Admin Award" pages.
+	"""
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 	if is_admin(request) == False:
@@ -141,6 +173,11 @@ def admin_render_funding_request(request, request_id):
 	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
 
 def config(request):
+	"""
+	Admin View:
+
+	Return all configuration parameters for the configuration page.
+	"""
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 	if is_admin(request) == False:
@@ -170,6 +207,11 @@ def config(request):
 		}, context_instance=RequestContext(request))
 
 def change_config(request):
+	"""
+	Admin View:
+
+	Process adding/removing values from the various tables in the config page.
+	"""
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 	if is_admin(request) == False:
@@ -247,6 +289,8 @@ def change_config(request):
 			if this_date:
 				o = ConfigFundingRound.objects.create(name=value1, deadline=this_date)
 				return HttpResponse('<li id="round_' + str(o.id) +'">' + value1 +'&nbsp;' + this_date.strftime("%b. %d, %Y") + remove_html)
+			else:
+				return HttpResponse('FAILURE')
 		elif config_key == 'delegates':
 			o = ConfigGradDelegate.objects.create(name=value1, email=value2)
 			return HttpResponse('<li id="delegate_' + str(o.id) +'">' + value1 +'&nbsp;' + value2 + remove_html)
@@ -259,23 +303,14 @@ def change_config(request):
 # Submitter Views
 
 def submitter_request_summary(request):
+	"""
+	Submitter View:
+
+	Show a table containing every request in the system.
+	"""
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 
-	""" Returns a list of the submitter's funding requests, item by item.
-
-	The following fields are included:
-		- Request ID
-		- Date Submitted
-		- Request Status
-		- Student Group
-		- Request Type
-		- Request Category
-		- Request For (Event, OC)
-		- Funding Round
-		- Total Requested
-		- Total Awarded
-	"""
 	user = get_credentials(request)
 
 	try:
@@ -286,6 +321,12 @@ def submitter_request_summary(request):
 	return render_to_response("submitter_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
 
 def submitter_render_funding_request(request, request_id):
+	"""
+	Submitter View:
+
+	Deliver all information about a funding request to the view.
+	This is used for the "New Request" and "Review Request" pages.
+	"""
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 
@@ -305,9 +346,12 @@ def submitter_render_funding_request(request, request_id):
 	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
 
 def email_delegate(request_id):
+	"""
+	E-mail the graduate delegate the submitted request, IF the request is a graduate request.
+	"""
 	try:
 		graduateRequest = GraduateRequest.objects.get(id=request_id)
-	except:
+	except ObjectDoesNotExist:
 		return
 
 	subject = 'New GA Funding Request for ' + graduateRequest.studentGroup
