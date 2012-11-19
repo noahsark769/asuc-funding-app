@@ -170,80 +170,88 @@ def config(request):
 		}, context_instance=RequestContext(request))
 
 def change_config(request):
-	if request.method == 'POST' and is_admin(request) and request.POST.get('remove') and request.POST.get('config_key'):
-		pass
-	elif request.method == 'POST' and is_admin(request) and request.POST.get('config_key') is not None:
+	if check_credentials(request) == False:
+		return redirect(calnet_login_url())
+	if is_admin(request) == False:
+		return redirect('funding_app.views.home')
+
+	# DELETING VALUES
+	if request.method == 'POST' and request.POST.get('id') and request.POST.get('remove') and request.POST.get('config_key'):
+		# select the proper table to delete from
 		config_key = request.POST.get('config_key')
 		if config_key == 'admin_roster':
-			email = request.POST.get('admin_email')
-			if email:
-				o = ConfigAdmin.objects.create(email=email)
-				return HttpResponse('<li id="admin_email_'+ str(o.id) +'">' + o.email + '<a class="config_remove" href="">x</a></li>')
-			else:
-				return HttpResponse('FAILURE')
+			table = ConfigAdmin
 		elif config_key == 'event_locations':
-			location = request.POST.get('location')
-			if location:
-				o = ConfigLocation.objects.create(location=location)
-				return HttpResponse('<li id="location_'+ str(o.id) +'">' + o.location + '<a class="config_remove" href="">x</a></li>')
-			else:
-				return HttpResponse('FAILURE')
+			table = ConfigLocation
 		elif config_key == 'ug_request_categories':
-			cat = request.POST.get('ug_req_cat')
-			if cat:
-				o = ConfigUGReqCat.objects.create(category=cat)
-				return HttpResponse('<li id="ug_req_cat_'+ str(o.id) +'">' + o.category + '<a class="config_remove" href="">x</a></li>')
-			else:
-				return HttpResponse('FAILURE')
+			table = ConfigUGReqCat
 		elif config_key == 'grad_request_categories':
-			cat = request.POST.get('grad_req_cat')
-			if cat:
-				o = ConfigGradReqCat.objects.create(category=cat)
-				return HttpResponse('<li id="grad_req_cat_'+ str(o.id) +'">' + o.category + '<a class="config_remove" href="">x</a></li>')
-			else:
-				return HttpResponse('FAILURE')
+			table = ConfigGradReqCat
 		elif config_key == 'ug_grant_categories':
-			cat = request.POST.get('ug_grant_cat')
-			if cat:
-				o = ConfigUGGrant.objects.create(category=cat)
-				return HttpResponse('<li id="ug_grant_cat_'+ str(o.id) +'">' + o.category + '<a class="config_remove" href="">x</a></li>')
-			else:
-				return HttpResponse('FAILURE')
+			table = ConfigUGGrant
 		elif config_key == 'grad_grant_categories':
-			cat = request.POST.get('grad_grant_cat')
-			if cat:
-				o = ConfigGradGrant.objects.create(category=cat)
-				return HttpResponse('<li id="grad_grant_cat_'+ str(o.id) +'">' + o.category + '<a class="config_remove" href="">x</a></li>')
-			else:
-				return HttpResponse('FAILURE')
+			table = ConfigGradGrant
 		elif config_key == 'funding_rounds':
-			try:
-				name = request.POST.get('round_name')
-				date_repr = request.POST.get('round_date')
-				if date_repr:
-					partitions = date_repr.split('/')
-					months, days, years = partitions[0], partitions[1], partitions[2]
-					this_date = date(int(years), int(months), int(days))
-					# print "butt"
-				else:
-					this_date = None
-
-				if this_date and name:
-					o = ConfigFundingRound.objects.create(name=name, deadline=this_date)
-					return HttpResponse('<li id="round_' + str(o.id) +'">' + o.name +'&nbsp;' + str(o.deadline) + '<a class="config_remove" href="">x</a></li>')
-				else:
-					return HttpResponse('FAILURE')
-			except Exception as e:
-				print e
+			table = ConfigFundingRound
 		elif config_key == 'delegates':
-			name = request.POST.get('delegate_name')
-			email = request.POST.get('delegate_email')
+			table = ConfigGradDelegate
 
-			if email and name:
-				o = ConfigGradDelegate.objects.create(name=name, email=email)
-				return HttpResponse('<li id="delagate_' + str(o.id) +'">' + o.name +'&nbsp;' + o.email + '<a class="config_remove" href="">x</a></li>')
+		# delete the item with the proper id from the table
+		table.objects.filter(id=request.POST.get('id')).delete()
+
+		return HttpResponse('')
+
+	# ADDING VALUES	
+	elif request.method == 'POST' and request.POST.get('config_key') is not None:
+		config_key = request.POST.get('config_key')
+		value1 = request.POST.get('value1')
+		value2 = request.POST.get('value2')
+		if value1 is None:
+			return HttpResponse('FAILURE')
+
+		remove_html = '<a class="config_remove" href="">x</a></li>'
+
+		if value2 is None:
+			# in this case, we must be choosing between one of the one-parameter options
+			if config_key == 'admin_roster':
+				o = ConfigAdmin.objects.create(email=value1)
+				return HttpResponse('<li id="admin_email_'+ str(o.id) +'">' + value1 + remove_html)
+			elif config_key == 'event_locations':
+				o = ConfigLocation.objects.create(location=value1)
+				return HttpResponse('<li id="location_'+ str(o.id) +'">' + value1 + remove_html)
+			elif config_key == 'ug_request_categories':
+				o = ConfigUGReqCat.objects.create(category=value1)
+				return HttpResponse('<li id="ug_req_cat_'+ str(o.id) +'">' + value1 + remove_html)
+			elif config_key == 'grad_request_categories':
+				o = ConfigGradReqCat.objects.create(category=value1)
+				return HttpResponse('<li id="grad_req_cat_'+ str(o.id) +'">' + value1 + remove_html)
+			elif config_key == 'ug_grant_categories':
+				o = ConfigUGGrant.objects.create(category=value1)
+				return HttpResponse('<li id="ug_grant_cat_'+ str(o.id) +'">' + value1 + remove_html)
+			elif config_key == 'grad_grant_categories':
+				o = ConfigGradGrant.objects.create(category=value1)
+				return HttpResponse('<li id="grad_grant_cat_'+ str(o.id) +'">' + value1 + remove_html)
 			else:
+				# if it's none of the above, then fail
 				return HttpResponse('FAILURE')
+
+		# if we're here, we must have 2 arguments.
+		if config_key == 'funding_rounds':
+			if value2:
+				partitions = value2.split('/')
+				months, days, years = partitions[0], partitions[1], partitions[2]
+				this_date = date(int(years), int(months), int(days))
+			else:
+				this_date = None
+
+			if this_date:
+				o = ConfigFundingRound.objects.create(name=value1, deadline=this_date)
+				return HttpResponse('<li id="round_' + str(o.id) +'">' + value1 +'&nbsp;' + this_date.strftime("%b. %d, %Y") + remove_html)
+		elif config_key == 'delegates':
+			o = ConfigGradDelegate.objects.create(name=value1, email=value2)
+			return HttpResponse('<li id="delegate_' + str(o.id) +'">' + value1 +'&nbsp;' + value2 + remove_html)
+		else: # well, this should never happen.
+			return HttpResponse('FAILURE')
 	else:
 		return HttpResponse('FAILURE')
 

@@ -84,40 +84,29 @@ class TravelEvent(Event):
     presenting = models.BooleanField()
     presentationTitle = models.CharField(max_length=50)
     
-class Config(models.Model):
-    pass
-    
 class ConfigAdmin (models.Model):
-    config = models.ForeignKey(Config)
     email = models.CharField(max_length=50)
     
 class ConfigLocation (models.Model):
-    config = models.ForeignKey(Config)
     location = models.CharField(max_length=50)
 
 class ConfigUGReqCat (models.Model):
-    config = models.ForeignKey(Config)
     category = models.CharField(max_length=50)
     
 class ConfigGradReqCat (models.Model):
-    config = models.ForeignKey(Config)
     category = models.CharField(max_length=50) 
 
 class ConfigUGGrant (models.Model):
-    config = models.ForeignKey(Config)
     category = models.CharField(max_length=50) 
     
 class ConfigGradGrant (models.Model):
-    config = models.ForeignKey(Config)
     category = models.CharField(max_length=50) 
 
 class ConfigFundingRound (models.Model):
-    config = models.ForeignKey(Config)
     name = models.CharField(max_length=50)
     deadline = models.DateField('%m/%d/%Y')
 
 class ConfigGradDelegate (models.Model):
-    config = models.ForeignKey(Config)
     name = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
 
