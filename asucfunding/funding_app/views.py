@@ -228,8 +228,8 @@ def change_config(request):
 		# select the proper table to delete from
 		config_key = request.POST.get('config_key')
 		if config_key == 'admin_roster':
-			user = ConfigAdmin.objects.filter(id=request.POST.get('id'))[0]
-			if user is not None and user.id == ConfigAdmin.objects.filter(email=get_credentials(request).get('email'))[0].id:
+			user = ConfigAdmin.objects.get(id=request.POST.get('id'))
+			if user is not None and user.id == ConfigAdmin.objects.get(email=get_credentials(request).get('email')).id:
 				return HttpResponse('FAILURE')
 			table = ConfigAdmin
 		elif config_key == 'event_locations':
