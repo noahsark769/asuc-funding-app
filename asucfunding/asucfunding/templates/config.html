@@ -11,6 +11,7 @@
 		'funding_rounds': funding_rounds,
 		'grad_delegates': grad_delegates,
 		'name': user['name'], 'is_admin': user['is_admin']
+		'email': user['email']
 }
 {% endcomment %}
 
@@ -21,7 +22,7 @@
 				<h2>Admin Roster</h2>
 				<ul>
 					{% for admin in admins %}
-					<li id='admin_email_{{admin.id}}'>{{admin.email}}<a class='config_remove' href=''>x</a></li>
+					<li id='admin_email_{{admin.id}}'>{{admin.email}}{% if admin.email != email %}<a class='config_remove' href=''>x</a></li>{% endif %}
 					{% endfor %}
 					<li><input type='text' id='admin_email' /><button class='config_submit' id='admin_submit'>Add</button></li>
 				</ul>

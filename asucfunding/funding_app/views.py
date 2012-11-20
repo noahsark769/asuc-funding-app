@@ -227,7 +227,8 @@ def config(request):
 		'grad_grant_cats': grad_grant_cats,
 		'funding_rounds': funding_rounds,
 		'grad_delegates': grad_delegates,
-		'name': user['name'], 'is_admin': is_admin(request)
+		'name': user['name'], 'is_admin': is_admin(request),
+		'email': user['email']
 		}, context_instance=RequestContext(request))
 
 def change_config(request):
@@ -247,6 +248,10 @@ def change_config(request):
 		config_key = request.POST.get('config_key')
 		cls = CONFING_KEY_CLASS_MAP[config_key]
 
+		if config_key == 'admin_roster':
+			user = ConfigAdmin.objects.get(id=int(request.POST.get('id')))
+			if user is not None and user.id == ConfigAdmin.objects.get(email=get_credentials(request).get('email')).id:
+				return HttpResponse('FAILURE')
 
 		# delete the item with the proper id from the table
 		cls.objects.filter(id=int(request.POST.get('id'))).delete()
@@ -257,7 +262,7 @@ def change_config(request):
 	elif request.method == 'POST' and request.POST.get('config_key') is not None:
 		# which table we're pulling from 
 		config_key = request.POST.get('config_key')
-		cls = CONFING_KEY_CLASS_MAP[config_key]
+		# cls = CONFING_KEY_CLASS_MAP[config_key] #we can possible use this here too?
 
 		# the 1-2 input value(s), depending on which field we're editing.
 		value1 = request.POST.get('value1')

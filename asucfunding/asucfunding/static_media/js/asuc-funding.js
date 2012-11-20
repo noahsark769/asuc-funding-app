@@ -50,17 +50,20 @@ $(document).ready(function() {
 		$item = $(this).parent();
 
 		// id of the parent <li>, which determines the id # of the item
-		var parentID = $item.prop('id');
-
+		var parentID = parseInt(/\d+/.exec($item.prop('id')))
 		// now we need to know which list we're in
 		var config_key = $item.parent().parent().prop('id');
 
 		var options = {};
-		options['id'] = parseInt(/\d+/.exec(parentID));
+		options['id'] = parentID;
 		options['remove'] = 1;
 		options['config_key'] = config_key;
 
 		$.post('/update_config/', options, function(data) {
+			if (data === 'FAILURE') {
+				console.log("Failed to remove item " + parentID + " from " + config_key);
+				return;
+			}
 			// get rid of it.
 			$item.remove();
 		});
