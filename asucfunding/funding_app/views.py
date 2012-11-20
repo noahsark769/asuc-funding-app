@@ -11,6 +11,25 @@ import urllib2
 
 from funding_app.models import *
 
+## Constants
+CONFING_KEY_CLASS_MAP = { 'admin_roster': ConfigAdmin,
+						'event_locations': ConfigLocation,
+						'ug_request_categories': ConfigUGReqCat,
+						'grad_request_categories': ConfigGradReqCat,
+						'ug_grant_categories': ConfigUGGrant,
+						'grad_grant_categories': ConfigGradGrant,
+						'funding_rounds': ConfigFundingRound,
+						'delegates': ConfigGradDelegate }
+
+CONFING_KEY_ID_MAP = { 'admin_roster': 'admin_email',
+						'event_locations': 'location',
+						'ug_request_categories': 'ug_req_cat',
+						'grad_request_categories': 'grad_req_cat',
+						'ug_grant_categories': 'ug_grant_cat',
+						'grad_grant_categories': 'grad_grant_cat',
+						'funding_rounds': 'round',
+						'delegates': 'delegate' }
+
 # Authentication
 
 def calnet_login_url():
@@ -226,32 +245,19 @@ def change_config(request):
 	if request.method == 'POST' and request.POST.get('id') and request.POST.get('remove') and request.POST.get('config_key'):
 		# select the proper table to delete from
 		config_key = request.POST.get('config_key')
-		if config_key == 'admin_roster':
-			table = ConfigAdmin
-		elif config_key == 'event_locations':
-			table = ConfigLocation
-		elif config_key == 'ug_request_categories':
-			table = ConfigUGReqCat
-		elif config_key == 'grad_request_categories':
-			table = ConfigGradReqCat
-		elif config_key == 'ug_grant_categories':
-			table = ConfigUGGrant
-		elif config_key == 'grad_grant_categories':
-			table = ConfigGradGrant
-		elif config_key == 'funding_rounds':
-			table = ConfigFundingRound
-		elif config_key == 'delegates':
-			table = ConfigGradDelegate
+		cls = CONFING_KEY_CLASS_MAP[config_key]
+
 
 		# delete the item with the proper id from the table
-		table.objects.filter(id=request.POST.get('id')).delete()
+		cls.objects.filter(id=int(request.POST.get('id'))).delete()
 
-		return HttpResponse('')
+		return HttpResponse('SUCCESS')
 
 	# ADDING VALUES	
 	elif request.method == 'POST' and request.POST.get('config_key') is not None:
 		# which table we're pulling from 
 		config_key = request.POST.get('config_key')
+		cls = CONFING_KEY_CLASS_MAP[config_key]
 
 		# the 1-2 input value(s), depending on which field we're editing.
 		value1 = request.POST.get('value1')
