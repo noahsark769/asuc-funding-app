@@ -208,7 +208,8 @@ def config(request):
 		'grad_grant_cats': grad_grant_cats,
 		'funding_rounds': funding_rounds,
 		'grad_delegates': grad_delegates,
-		'name': user['name'], 'is_admin': is_admin(request)
+		'name': user['name'], 'is_admin': is_admin(request),
+		'email': user['email']
 		}, context_instance=RequestContext(request))
 
 def change_config(request):
@@ -227,6 +228,9 @@ def change_config(request):
 		# select the proper table to delete from
 		config_key = request.POST.get('config_key')
 		if config_key == 'admin_roster':
+			user = ConfigAdmin.objects.filter(id=request.POST.get('id'))[0]
+			if user is not None and user.id == ConfigAdmin.objects.filter(email=get_credentials(request).get('email'))[0].id:
+				return HttpResponse('FAILURE')
 			table = ConfigAdmin
 		elif config_key == 'event_locations':
 			table = ConfigLocation
