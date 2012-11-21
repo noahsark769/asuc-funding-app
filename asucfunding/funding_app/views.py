@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 import ldap
 from datetime import date
+from cgi import escape
 
 import xml.dom.minidom
 import urllib2
@@ -29,6 +30,13 @@ CONFING_KEY_ID_MAP = { 'admin_roster': 'admin_email',
 						'grad_grant_categories': 'grad_grant_cat',
 						'funding_rounds': 'round',
 						'delegates': 'delegate' }
+
+CONFING_KEY_PARAM_MAP = { 'admin_roster': 'email',
+						'event_locations': 'location',
+						'ug_request_categories': 'category',
+						'grad_request_categories': 'category',
+						'ug_grant_categories': 'category',
+						'grad_grant_categories': 'category'}
 
 # Authentication
 
@@ -274,27 +282,15 @@ def change_config(request):
 
 		# it's repeated so much...
 		remove_html = '<a class="config_remove" href="">x</a></li>'
+		config_class = CONFING_KEY_ID_MAP[config_key]
 
 		# in this case, we must be choosing between one of the 1-parameter options
 		if value2 is None:
-			if config_key == 'admin_roster':
-				o = ConfigAdmin.objects.create(email=value1)
-				return HttpResponse('<li id="admin_email_'+ str(o.id) +'">' + value1 + remove_html)
-			elif config_key == 'event_locations':
-				o = ConfigLocation.objects.create(location=value1)
-				return HttpResponse('<li id="location_'+ str(o.id) +'">' + value1 + remove_html)
-			elif config_key == 'ug_request_categories':
-				o = ConfigUGReqCat.objects.create(category=value1)
-				return HttpResponse('<li id="ug_req_cat_'+ str(o.id) +'">' + value1 + remove_html)
-			elif config_key == 'grad_request_categories':
-				o = ConfigGradReqCat.objects.create(category=value1)
-				return HttpResponse('<li id="grad_req_cat_'+ str(o.id) +'">' + value1 + remove_html)
-			elif config_key == 'ug_grant_categories':
-				o = ConfigUGGrant.objects.create(category=value1)
-				return HttpResponse('<li id="ug_grant_cat_'+ str(o.id) +'">' + value1 + remove_html)
-			elif config_key == 'grad_grant_categories':
-				o = ConfigGradGrant.objects.create(category=value1)
-				return HttpResponse('<li id="grad_grant_cat_'+ str(o.id) +'">' + value1 + remove_html)
+			if CONFING_KEY_CLASS_MAP.get(config_key) is not None:
+				print 'got here'
+				o = CONFING_KEY_CLASS_MAP[config_key].objects.create(**{CONFING_KEY_PARAM_MAP[config_key]: value1})
+				return HttpResponse('<li id="' + config_class + '_'+ str(o.id) +'">' + escape(value1) + remove_html)
+
 			else:
 				# if it's none of the above, then fail
 				return HttpResponse('FAILURE')
@@ -304,18 +300,21 @@ def change_config(request):
 			if value2:
 				partitions = value2.split('/')
 				months, days, years = partitions[0], partitions[1], partitions[2]
-				this_date = date(int(years), int(months), int(days))
+				try:
+					this_date = date(int(years), int(months), int(days))
+				except Exception as e:
+					return HttpResponse('FAILURE')
 			else:
 				this_date = None
 
 			if this_date:
 				o = ConfigFundingRound.objects.create(name=value1, deadline=this_date)
-				return HttpResponse('<li id="round_' + str(o.id) +'">' + value1 +'&nbsp;' + this_date.strftime("%b. %d, %Y") + remove_html)
+				return HttpResponse('<li id="' + CONFING_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 +'&nbsp;' + this_date.strftime("%b. %d, %Y") + remove_html)
 			else:
 				return HttpResponse('FAILURE')
 		elif config_key == 'delegates':
 			o = ConfigGradDelegate.objects.create(name=value1, email=value2)
-			return HttpResponse('<li id="delegate_' + str(o.id) +'">' + value1 +'&nbsp;' + value2 + remove_html)
+			return HttpResponse('<li id="' + CONFING_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 +'&nbsp;' + value2 + remove_html)
 		else: # well, this should never happen.
 			return HttpResponse('FAILURE')
 	else:

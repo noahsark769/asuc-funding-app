@@ -7,7 +7,7 @@ $(document).ready(function() {
 		$currentButton = $('.config_submit[clicked=true]');
 
 		// name of the table we're inserting into
-		var config_key = $currentButton.parent().parent().parent().prop('id');
+		var config_key = $currentButton.parent().parent().parent().prop('id'); //not very good coding practice
 
 		var options = {};
 		options['config_key'] = config_key;
