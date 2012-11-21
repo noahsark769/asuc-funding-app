@@ -13,7 +13,7 @@ import urllib2
 from funding_app.models import *
 
 ## Constants
-CONFING_KEY_CLASS_MAP = { 'admin_roster': ConfigAdmin,
+CONFIG_KEY_CLASS_MAP = { 'admin_roster': ConfigAdmin,
 						'event_locations': ConfigLocation,
 						'ug_request_categories': ConfigUGReqCat,
 						'grad_request_categories': ConfigGradReqCat,
@@ -22,7 +22,7 @@ CONFING_KEY_CLASS_MAP = { 'admin_roster': ConfigAdmin,
 						'funding_rounds': ConfigFundingRound,
 						'delegates': ConfigGradDelegate }
 
-CONFING_KEY_ID_MAP = { 'admin_roster': 'admin_email',
+CONFIG_KEY_ID_MAP = { 'admin_roster': 'admin_email',
 						'event_locations': 'location',
 						'ug_request_categories': 'ug_req_cat',
 						'grad_request_categories': 'grad_req_cat',
@@ -31,7 +31,7 @@ CONFING_KEY_ID_MAP = { 'admin_roster': 'admin_email',
 						'funding_rounds': 'round',
 						'delegates': 'delegate' }
 
-CONFING_KEY_PARAM_MAP = { 'admin_roster': 'email',
+CONFIG_KEY_PARAM_MAP = { 'admin_roster': 'email',
 						'event_locations': 'location',
 						'ug_request_categories': 'category',
 						'grad_request_categories': 'category',
@@ -254,7 +254,7 @@ def change_config(request):
 	if request.method == 'POST' and request.POST.get('id') and request.POST.get('remove') and request.POST.get('config_key'):
 		# select the proper table to delete from
 		config_key = request.POST.get('config_key')
-		cls = CONFING_KEY_CLASS_MAP[config_key]
+		cls = CONFIG_KEY_CLASS_MAP[config_key]
 
 		if config_key == 'admin_roster':
 			user = ConfigAdmin.objects.get(id=int(request.POST.get('id')))
@@ -270,7 +270,7 @@ def change_config(request):
 	elif request.method == 'POST' and request.POST.get('config_key') is not None:
 		# which table we're pulling from 
 		config_key = request.POST.get('config_key')
-		# cls = CONFING_KEY_CLASS_MAP[config_key] #we can possible use this here too?
+		# cls = CONFIG_KEY_CLASS_MAP[config_key] #we can possible use this here too?
 
 		# the 1-2 input value(s), depending on which field we're editing.
 		value1 = request.POST.get('value1')
@@ -282,13 +282,13 @@ def change_config(request):
 
 		# it's repeated so much...
 		remove_html = '<a class="config_remove" href="">x</a></li>'
-		config_class = CONFING_KEY_ID_MAP[config_key]
+		config_class = CONFIG_KEY_ID_MAP[config_key]
 
 		# in this case, we must be choosing between one of the 1-parameter options
 		if value2 is None:
-			if CONFING_KEY_CLASS_MAP.get(config_key) is not None:
+			if CONFIG_KEY_CLASS_MAP.get(config_key) is not None:
 				print 'got here'
-				o = CONFING_KEY_CLASS_MAP[config_key].objects.create(**{CONFING_KEY_PARAM_MAP[config_key]: value1})
+				o = CONFIG_KEY_CLASS_MAP[config_key].objects.create(**{CONFIG_KEY_PARAM_MAP[config_key]: value1})
 				return HttpResponse('<li id="' + config_class + '_'+ str(o.id) +'">' + escape(value1) + remove_html)
 
 			else:
@@ -309,17 +309,16 @@ def change_config(request):
 
 			if this_date:
 				o = ConfigFundingRound.objects.create(name=value1, deadline=this_date)
-				return HttpResponse('<li id="' + CONFING_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 +'&nbsp;' + this_date.strftime("%b. %d, %Y") + remove_html)
+				return HttpResponse('<li id="' + CONFIG_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 +'&nbsp;' + this_date.strftime("%b. %d, %Y") + remove_html)
 			else:
 				return HttpResponse('FAILURE')
 		elif config_key == 'delegates':
 			o = ConfigGradDelegate.objects.create(name=value1, email=value2)
-			return HttpResponse('<li id="' + CONFING_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 +'&nbsp;' + value2 + remove_html)
+			return HttpResponse('<li id="' + CONFIG_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 +'&nbsp;' + value2 + remove_html)
 		else: # well, this should never happen.
 			return HttpResponse('FAILURE')
 	else:
 		return HttpResponse('FAILURE')
-
 
 # Submitter Views
 
@@ -348,6 +347,10 @@ def submitter_render_funding_request(request, request_id):
 	Deliver all information about a funding request to the view.
 	This is used for the "New Request" and "Review Request" pages.
 	"""
+	
+	### should the request_id be passed in as a post parameter in request?
+	
+	
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 
