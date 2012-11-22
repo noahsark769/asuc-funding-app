@@ -25,16 +25,16 @@
 				<label>Requested by:</label>{{name}}
 			</div>
 			<div id='email'>
-				<label>Email:</label><input type='text' name='email_input'>
+				<label>Email:</label><input type='text' name='email_input' value='{{funding_request.email}}'>
 			</div>
 			<div id='phone'>
-				<label>Phone:</label> <input type='text' name='phone_input'>
+				<label>Phone:</label><input type='text' name='phone_input' value='{{funding_request.phone}}'>
 			</div>
 			<div id='request_type'>
 				<labeL>Request Type</label>
-				<input type='radio' name='request_type' value='grad'>Graduate Funding Request<br>
-				<input type='radio' name='request_type' value='ug'>Undergraduate Funding Request<br>
-				<input type='radio' name='request_type' value='travel'>Travel Award Application<br>
+				<input type='radio' name='request_type' value='Graduate' {% if funding_request.requestType == 'Graduate' %} checked='True'{% endif %}><label>Graduate Funding Request</label><br>
+				<input type='radio' name='request_type' value='ug' {% if funding_request.requestType == 'Undergraduate' %} checked='True'{% endif %}><label>Undergraduate Funding Request</label><br>
+				<input type='radio' name='request_type' value='travel' {% if funding_request.requestType == 'Travel' %} checked='True'{% endif %}><label>Travel Award Application</labe><br>
 			</div>
 			<div id='ug_request_category'>
 				<label>Request category/categories:</label>
@@ -62,14 +62,14 @@
 			</div>
 			<div id='event_type'>
 				<label>Requesting for:</label>
-				<input type='radio' name='event_type' value='single'>Single Event<br>
-				<input type='radio' name='event_type' value='recurring'>Recurring Event<br>
-				<input type='radio' name='event_type' value='costs'>Operational Costs<br>
+				<input type='radio' name='event_type' value='single'><label>Single Event</label><br>
+				<input type='radio' name='event_type' value='recurring'><label>Recurring Event</label><br>
+				<input type='radio' name='event_type' value='costs'><label>Operational Costs</label><br>
 			</div>
 			<div id='funding_round'>
 				<label>Funding round:</label>
-				<input type='checkbox' name='funding_round' value='{{funding_round.id}}'>{{funding_round.deadline}}<br>
-				<input type='checkbox' name='funding_round' value='contingency'>Contingency (refer to monthly contingency deadlines)<br>
+				<input type='checkbox' name='funding_round' value='{{funding_round.id}}'><label>{{funding_round.name}}: {{funding_round.deadline}}</label><br>
+				<input type='checkbox' name='funding_round' value='contingency'><label>Contingency (refer to monthly contingency deadlines)</label><br>
 			</div>
 			<div id='student_group'>
 				<label>Sponsoring Student Group:</label>

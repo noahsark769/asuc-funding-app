@@ -341,7 +341,7 @@ def submitter_request_summary(request):
 
 	return render_to_response("submitter_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
 
-def submitter_render_funding_request(request):
+def submitter_render_funding_request(request, request_id=None):
 	"""
 	Submitter View:
 
@@ -353,11 +353,10 @@ def submitter_render_funding_request(request):
 
 	user = get_credentials(request)
 	
-	if request.method == 'POST' and request.POST.get('request_id') is not None:
+	if request_id is not None:
 		if check_credentials(request) == False:
 			return redirect(calnet_login_url())
-
-		request_id = request.POST.get('request_id')
+		
 		try:
 			fundingRequest = GraduateRequest.objects.get(id=request_id)
 		except ObjectDoesNotExist as e:
@@ -368,7 +367,7 @@ def submitter_render_funding_request(request):
 					fundingRequest = TravelRequest.objects.get(id=request_id)
 				except ObjectDoesNotExist as e:
 					# Request not found, so we send them home.
-					redirect('funding_app.views.home')
+					return redirect('funding_app.views.home')
 	
 		if fundingRequest.requestStatus == "Submitted":
 			url = "submitter_review.html"

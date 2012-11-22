@@ -20,11 +20,11 @@ urlpatterns = patterns('',
     url(r'^admin/$', 'funding_app.views.admin_request_summary'),
     url(r'^config/$', 'funding_app.views.config'),
     url(r'^update_config/$', 'funding_app.views.change_config'),
-    url(r'^process_calnet/', 'funding_app.views.process_calnet'),
-    url(r'^logout/', 'funding_app.views.logout'),
-    url(r'^create_request/', 'funding_app.views.submitter_render_funding_request'),
-    url(r'^edit_request/', 'funding_app.views.submitter_render_funding_request'),
-    url(r'^review_request/', 'funding_app.views.submitter_render_funding_request'),
-    url(r'^admin_review_request/', 'funding_app.views.admin_render_funding_request'),
-    url(r'^admin_award_request/', 'funding_app.views.admin_render_funding_request')
+    url(r'^process_calnet/$', 'funding_app.views.process_calnet'),
+    url(r'^logout/$', 'funding_app.views.logout'),
+    url(r'^create_request/$', 'funding_app.views.submitter_render_funding_request'),
+    url(r'^edit_request/(?P<request_id>\w{1,50})/$', 'funding_app.views.submitter_render_funding_request'),
+    url(r'^review_request/$', 'funding_app.views.submitter_render_funding_request'),
+    url(r'^admin_review_request/$', 'funding_app.views.admin_render_funding_request'),
+    url(r'^admin_award_request/$', 'funding_app.views.admin_render_funding_request')
 )
