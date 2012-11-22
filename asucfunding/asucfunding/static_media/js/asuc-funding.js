@@ -7,7 +7,7 @@ $(document).ready(function() {
 		$currentButton = $('.config_submit[clicked=true]');
 
 		// name of the table we're inserting into
-		var config_key = $currentButton.closest('div').prop('id'); //not very good coding practice
+		var config_key = $currentButton.closest('div').prop('id');
 
 		var options = {};
 		options['config_key'] = config_key;
@@ -41,7 +41,7 @@ $(document).ready(function() {
 	});
 
 	// handles requests to remove objects
-	$('a.config_remove').click(function() {
+	$(document).on('click', 'a.config_remove', function() {
 		// confirm...
 		if (!window.confirm(this.title || 'Are you sure you wish to delete this?')) {
 			return false;
