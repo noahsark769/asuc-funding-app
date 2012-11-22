@@ -7,7 +7,7 @@ $(document).ready(function() {
 		$currentButton = $('.config_submit[clicked=true]');
 
 		// name of the table we're inserting into
-		var config_key = $currentButton.parent().parent().parent().prop('id'); //not very good coding practice
+		var config_key = $currentButton.closest('div').prop('id'); //not very good coding practice
 
 		var options = {};
 		options['config_key'] = config_key;
@@ -51,8 +51,9 @@ $(document).ready(function() {
 
 		// id of the parent <li>, which determines the id # of the item
 		var parentID = parseInt(/\d+/.exec($item.prop('id')))
+		console.log(parentID);
 		// now we need to know which list we're in
-		var config_key = $item.parent().parent().prop('id');
+		var config_key = $item.closest('div').prop('id');
 
 		var options = {};
 		options['id'] = parentID;
@@ -71,5 +72,8 @@ $(document).ready(function() {
 		// just so that we don't go anywhere...
 		return false;
 	});
+
+	// returns the first parent of the object with the given id
+
 
 });

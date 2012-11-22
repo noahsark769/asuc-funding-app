@@ -22,5 +22,9 @@ urlpatterns = patterns('',
     url(r'^update_config/$', 'funding_app.views.change_config'),
     url(r'^process_calnet/', 'funding_app.views.process_calnet'),
     url(r'^logout/', 'funding_app.views.logout'),
-    url(r'^funding_request/', 'funding_app.views.submitter_render_funding_request'),
+    url(r'^create_request/', 'funding_app.views.submitter_render_funding_request'),
+    url(r'^edit_request/', 'funding_app.views.submitter_render_funding_request'),
+    url(r'^review_request/', 'funding_app.views.submitter_render_funding_request'),
+    url(r'^admin_review_request/', 'funding_app.views.admin_render_funding_request'),
+    url(r'^admin_award_request/', 'funding_app.views.admin_render_funding_request')
 )

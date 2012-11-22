@@ -4,7 +4,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.http import HttpResponse
 import ldap
-from datetime import date
+import datetime
+from datetime import date, timedelta
 from cgi import escape
 
 import xml.dom.minidom
@@ -173,7 +174,7 @@ def admin_request_summary(request):
 	except ObjectDoesNotExist as e:
 		fundingRequests = []
 
-	return render_to_response("admin_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
+	return render_to_response("admin_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': True}, context_instance=RequestContext(request))
 
 def admin_render_funding_request(request, request_id):
 	"""
@@ -202,7 +203,7 @@ def admin_render_funding_request(request, request_id):
 	else:
 		url = "admin_award.html"
 
-	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
+	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': True}, context_instance=RequestContext(request))
 
 def config(request):
 	"""
@@ -219,23 +220,23 @@ def config(request):
 
 	admins = ConfigAdmin.objects.all()
 	locations = ConfigLocation.objects.all()
-	ug_req_cats = ConfigUGReqCat.objects.all()
-	grad_req_cats = ConfigGradReqCat.objects.all()
-	ug_grant_cats = ConfigUGGrant.objects.all()
-	grad_grant_cats = ConfigGradGrant.objects.all()
+	ug_request_categories = ConfigUGReqCat.objects.all()
+	grad_request_categories = ConfigGradReqCat.objects.all()
+	ug_grant_categories = ConfigUGGrant.objects.all()
+	grad_grant_categories = ConfigGradGrant.objects.all()
 	funding_rounds = ConfigFundingRound.objects.all()
 	grad_delegates = ConfigGradDelegate.objects.all()
 
 	return render_to_response("config.html",{
 		'admins': admins,
 		'locations': locations,
-		'ug_req_cats': ug_req_cats,
-		'grad_req_cats': grad_req_cats,
-		'ug_grant_cats': ug_grant_cats,
-		'grad_grant_cats': grad_grant_cats,
+		'ug_req_cats': ug_request_categories,
+		'grad_req_cats': grad_request_categories,
+		'ug_grant_cats': ug_grant_categories,
+		'grad_grant_cats': grad_grant_categories,
 		'funding_rounds': funding_rounds,
 		'grad_delegates': grad_delegates,
-		'name': user['name'], 'is_admin': is_admin(request),
+		'name': user['name'], 'is_admin': True,
 		'email': user['email']
 		}, context_instance=RequestContext(request))
 
@@ -347,22 +348,14 @@ def submitter_render_funding_request(request):
 	Deliver all information about a funding request to the view.
 	This is used for the "New Request" and "Review Request" pages.
 	"""
+	if check_credentials(request) == False:
+		return redirect(calnet_login_url())
+
+	user = get_credentials(request)
 	
-	### should the request_id be passed in as a post parameter in request?
 	if request.method == 'POST' and request.POST.get('request_id') is not None:
-	
-	
 		if check_credentials(request) == False:
 			return redirect(calnet_login_url())
-		
-		#need to pass all config information to the form
-		locations = ConfigLocation.objects.all()
-		ug_request_cat = ConfigUGReqCat.bojects.all()
-		grad_request_cat = ConfigGradReqCat.objects.all()
-		ug_grant_cat = ConfigUGGrant.objects.all()
-		grad_grant_cat = ConfigGradGrant.objects.all()
-		funding_rounds = ConfigFundingRound.objects.all()
-		grad_delegates = ConfigGradDelegate.objects.all()
 
 		request_id = request.POST.get('request_id')
 		try:
@@ -372,24 +365,39 @@ def submitter_render_funding_request(request):
 				fundingRequest = UndergraduateRequest.objects.get(id=request_id)
 			except ObjectDoesNotExist as e:
 				try:
-				fundingRequest = TravelRequest.objects.get(id=request_id)
+					fundingRequest = TravelRequest.objects.get(id=request_id)
 				except ObjectDoesNotExist as e:
-					# If we get here that means no request has been created so serve the user a fresh form
-					url = "submitter_create.html"
-					return render_to_response(url, {'funding_request': None, 'name': user['name']
-									, 'is_admin': is_admin(request)}
-									, 'locations': locations, 'ug_request_cat': ug_request_cat
-									, 'grad_request_cat':grad_request_cat, 'ug_grant_cat':ug_grant_cat
-									, 'grad_grant_cat':grad_grant_cat, 'funding_rounds':funding_rounds
-									, 'grad_delegates':grad_delegates, context_instance=RequestContext(request))
+					# Request not found, so we send them home.
+					redirect('funding_app.views.home')
 	
 		if fundingRequest.requestStatus == "Submitted":
 			url = "submitter_review.html"
 		else:
-			url = "submitter_create.html"
-	
-		return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name']
-									, 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
+			url = "submitter_edit.html"
+	else:
+		fundingRequest = None
+		url = "submitter_create.html"
+
+	# need to pass all config information to the form
+	locations = ConfigLocation.objects.all()
+	ug_request_categories = ConfigUGReqCat.objects.all()
+	grad_request_categories = ConfigGradReqCat.objects.all()
+	ug_grant_categories = ConfigUGGrant.objects.all()
+	grad_grant_categories = ConfigGradGrant.objects.all()
+	funding_round = current_round()
+	grad_delegates = ConfigGradDelegate.objects.all()
+
+	return render_to_response(url, {'funding_request': fundingRequest,
+									'name': user['name'],
+									'is_admin': is_admin(request),
+									'locations': locations,
+									'ug_request_categories': ug_request_categories,
+									'grad_request_categories': grad_request_categories,
+									'ug_grant_categories': ug_grant_categories,
+									'grad_grant_categories': grad_grant_categories,
+									'funding_round': funding_round,
+									'grad_delegates': grad_delegates
+									}, context_instance=RequestContext(request))
 		
 
 def email_delegate(request_id):
@@ -417,5 +425,21 @@ def email_delegate(request_id):
 	"""
 
 	send_mail(subject, message, 'no-reply@berkeley.edu', ['aiyengar@berkeley.edu'], fail_silently=False)
-	
+
+# Misc functions
+
+def current_round():
+	"""
+	Return the round ending next in chronological order relative to the current system time.
+	"""
+	fundingRounds = ConfigFundingRound.objects.all()
+	now = date.today()
+	delta = timedelta.max
+	for fundingRound in fundingRounds:
+		if fundingRound.deadline - now < delta:
+			delta = fundingRound.deadline - now
+			nearestRound = fundingRound
+
+	return nearestRound
+
 # EOF
