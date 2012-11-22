@@ -340,7 +340,7 @@ def submitter_request_summary(request):
 
 	return render_to_response("submitter_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
 
-def submitter_render_funding_request(request, request_id):
+def submitter_render_funding_request(request):
 	"""
 	Submitter View:
 
@@ -349,25 +349,48 @@ def submitter_render_funding_request(request, request_id):
 	"""
 	
 	### should the request_id be passed in as a post parameter in request?
+	if request.method == 'POST' and request.POST.get('request_id') is not None:
 	
 	
-	if check_credentials(request) == False:
-		return redirect(calnet_login_url())
+		if check_credentials(request) == False:
+			return redirect(calnet_login_url())
+		
+		#need to pass all config information to the form
+		locations = ConfigLocation.objects.all()
+		ug_request_cat = ConfigUGReqCat.bojects.all()
+		grad_request_cat = ConfigGradReqCat.objects.all()
+		ug_grant_cat = ConfigUGGrant.objects.all()
+		grad_grant_cat = ConfigGradGrant.objects.all()
+		funding_rounds = ConfigFundingRound.objects.all()
+		grad_delegates = ConfigGradDelegate.objects.all()
 
-	try:
-		fundingRequest = GraduateRequest.objects.get(id=request_id)
-	except ObjectDoesNotExist as e:
+		request_id = request.POST.get('request_id')
 		try:
-			fundingRequest = UndergraduateRequest.objects.get(id=request_id)
+			fundingRequest = GraduateRequest.objects.get(id=request_id)
 		except ObjectDoesNotExist as e:
-			fundingRequest = TravelRequest.objects.get(id=request_id)
-
-	if fundingRequest.requestStatus == "Submitted":
-		url = "submitter_review.html"
-	else:
-		url = "submitter_create.html"
-
-	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
+			try:
+				fundingRequest = UndergraduateRequest.objects.get(id=request_id)
+			except ObjectDoesNotExist as e:
+				try:
+				fundingRequest = TravelRequest.objects.get(id=request_id)
+				except ObjectDoesNotExist as e:
+					# If we get here that means no request has been created so serve the user a fresh form
+					url = "submitter_create.html"
+					return render_to_response(url, {'funding_request': None, 'name': user['name']
+									, 'is_admin': is_admin(request)}
+									, 'locations': locations, 'ug_request_cat': ug_request_cat
+									, 'grad_request_cat':grad_request_cat, 'ug_grant_cat':ug_grant_cat
+									, 'grad_grant_cat':grad_grant_cat, 'funding_rounds':funding_rounds
+									, 'grad_delegates':grad_delegates, context_instance=RequestContext(request))
+	
+		if fundingRequest.requestStatus == "Submitted":
+			url = "submitter_review.html"
+		else:
+			url = "submitter_create.html"
+	
+		return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name']
+									, 'is_admin': is_admin(request)}, context_instance=RequestContext(request))
+		
 
 def email_delegate(request_id):
 	"""

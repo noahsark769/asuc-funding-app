@@ -3,8 +3,28 @@
 
 
 {% block content %}
-<div>
-	this is where the form goes.	
+<div id="form" >
+	<div id="request_selector_block">
+		<div id="name">
+			Requested by {{ name }}
+		</div>
+		<div id="email">
+			Email: <input type='text' id='email_input' />
+		</div>
+		<div id="phone_number">
+			Phone: <input type='text' id='phone_number_input' />
+		</div>
+		<div id="request_type">
+			Request Type
+			<input type="radio" name="type" value="grad">Graduate Funding Request<br>
+			<input type="radio" name="type" value="Und">Undergraduate Funding Request<br>
+			<input type="radio" name="type" value="travel">Travel Award Application<br>
+		</div>
+		<div id="request_category">
+			{% for type in ug_request_cat %}
+			<input type="checkbox" name="ug_request_cat" value="{{type.category}}">{{type.category}}<br>
+		</div>
+	</div>	
 </div>
 
 {% endblock %}
