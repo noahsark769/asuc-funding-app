@@ -436,7 +436,7 @@ def current_round():
 	now = date.today()
 	delta = timedelta.max
 	for fundingRound in fundingRounds:
-		if fundingRound.deadline - now < delta:
+		if fundingRound.deadline > now and fundingRound.deadline - now < delta:
 			delta = fundingRound.deadline - now
 			nearestRound = fundingRound
 

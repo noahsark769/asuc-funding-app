@@ -29,50 +29,50 @@
 			</div>
 			<div id='request_type'>
 				<labeL>Request Type</label>
-				<input type='radio' name='request_type' value='grad'>Graduate Funding Request<br />
-				<input type='radio' name='request_type' value='ug'>Undergraduate Funding Request<br />
-				<input type='radio' name='request_type' value='travel'>Travel Award Application<br />
+				<input type='radio' name='request_type' value='grad'>Graduate Funding Request<br>
+				<input type='radio' name='request_type' value='ug'>Undergraduate Funding Request<br>
+				<input type='radio' name='request_type' value='travel'>Travel Award Application<br>
 			</div>
 			<div id='ug_request_category'>
 				<label>Request category/categories:</label>
 				{% for type in ug_request_categories %}
-					<input type='checkbox' name='ug_req_cat' value='{{type.id}}'>{{type.category}}<br />
+					<input type='checkbox' name='ug_req_cat' value='{{type.id}}'>{{type.category}}<br>
 				{% endfor %}
 			</div>
 			<div id='grad_request_category'>
 				<label>Request category/categories:</label>
 				{% for type in grad_request_categories %}
-					<input type='checkbox' name='grad_req_cat' value='{{type.id}}'>{{type.category}}<br />
+					<input type='checkbox' name='grad_req_cat' value='{{type.id}}'>{{type.category}}<br>
 				{% endfor %}
 			</div>
 			<div id='ug_grant_category'>
 				<label>Grant category/categories:</label>
 				{% for type in grad_grant_categories %}
-					<input type='checkbox' name='ug_grant_cat' value='{{type.id}}'>{{type.category}}<br />
+					<input type='checkbox' name='ug_grant_cat' value='{{type.id}}'>{{type.category}}<br>
 				{% endfor %}
 			</div>
 			<div id='grad_grant_category'>
 				<label>Grant category/categories:</label>
 				{% for type in grad_grant_categories %}
-					<input type='checkbox' name='grad_grant_cat' value='{{type.id}}'>{{type.category}}<br />
+					<input type='checkbox' name='grad_grant_cat' value='{{type.id}}'>{{type.category}}<br>
 				{% endfor %}
 			</div>
 			<div id='event_type'>
 				<label>Requesting for:</label>
-				<input type='radio' name='event_type' value='single'>Single Event<br />
-				<input type='radio' name='event_type' value='recurring'>Recurring Event<br />
-				<input type='radio' name='event_type' value='costs'>Operational Costs<br />
+				<input type='radio' name='event_type' value='single'>Single Event<br>
+				<input type='radio' name='event_type' value='recurring'>Recurring Event<br>
+				<input type='radio' name='event_type' value='costs'>Operational Costs<br>
 			</div>
 			<div id='funding_round'>
 				<label>Funding round:</label>
-				<input type='checkbox' name='funding_round' value='current_round'>
-				<input type='checkbox' name='funding_round' value='contingency'>
+				<input type='checkbox' name='funding_round' value='{{funding_round.id}}'>{{funding_round.name}}: {{funding_round.deadline}}<br>
+				<input type='checkbox' name='funding_round' value='contingency'>Contingency (refer to monthly contingency deadlines)<br>
 			</div>
 			<div id='student_group'>
 				<label>Sponsoring Student Group:</label>
 				<select>
 					<option>group 1</option>
-				</select><br />
+				</select><br>
 				<input type='text' name='pending_group' disabled='true' />
 			</div>
 		</div>
