@@ -2,9 +2,12 @@ $(document).ready(function() {
 	
 	/* we're using FORMS because of CSRF simplicity
 	we can now just use {% csrf_token %} in config.html, which avoids auth problems. */
-	$('form#config_form').submit(function() {
+	$('button.config_submit').click(function(event) {
+		event.preventDefault();
+		// console.log('submit fired');
 		// get the button that was used to submit the form (see .click() below)
-		$currentButton = $('.config_submit[clicked=true]');
+		$currentButton = $(this);
+		// console.log($currentButton);
 
 		// name of the table we're inserting into
 		var config_key = $currentButton.closest('div').prop('id');
@@ -34,11 +37,20 @@ $(document).ready(function() {
 		return false;
 	});
 
-	// when a submit button for adding is clicked, make it the only one with the "clicked" attribute.
-	$('button.config_submit').click(function() {
-		$('button.config_submit').removeAttr("clicked");
-    	$(this).attr("clicked", "true");
+	//submit the form if enter was pressed
+	$('form#config_form input').keypress(function(event){
+		// console.log('key pressed');
+		if (event.keyCode == 13) {
+			event.preventDefault();
+			$(this).siblings('.config_submit').click();
+		}
 	});
+
+	// when a submit button for adding is clicked, make it the only one with the "clicked" attribute.
+	// $('button.config_submit').click(function() {
+	// 	$('button.config_submit').removeAttr("clicked");
+ //    	$(this).attr("clicked", "true");
+	// });
 
 	// handles requests to remove objects
 	$(document).on('click', 'a.config_remove', function() {
