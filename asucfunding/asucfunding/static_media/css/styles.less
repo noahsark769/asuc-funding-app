@@ -68,6 +68,9 @@ a.nostyle {
 @bgblue: lighten(@buttondarkblue, 50%);
 @gray: #E9EFF0;
 @subtlebg: url(../img/debut_light.png);
+
+@page-margin: 5px;
+
 // convenience
 
 .border-radius(@topleft: 5px, @topright: 5px, @bottomright: 5px, @bottomleft: 5px) {
@@ -109,7 +112,7 @@ div#header {
 	background-color: @buttondarkblue;
 	color: white;
 
-	padding: 5px 0px 20px 5px;
+	padding: 5px 0px 20px @page-margin+5;
 
 	border-bottom: 1px solid #000;
 }
@@ -177,7 +180,6 @@ ul#submitter_menu, ul#admin_menu {
 
 		margin-right: 5px;
 		margin-top: -1px;
-		margin-left: 5px;
 
 		border-right: 1px solid black;
 		border-left: 1px solid black;
@@ -197,6 +199,6 @@ ul#submitter_menu, ul#admin_menu {
 		}
 	}
 
+	margin-left: @page-margin;
 	margin-bottom: 10px;
-
 }
