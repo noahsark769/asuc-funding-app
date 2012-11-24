@@ -7,6 +7,7 @@ import ldap
 import datetime
 from datetime import date, timedelta
 from cgi import escape
+from xlwt import Workbook
 
 import xml.dom.minidom
 import urllib2
@@ -321,6 +322,57 @@ def change_config(request):
 	else:
 		return HttpResponse('FAILURE')
 
+def admin_export_to_excel(request):
+	"""
+	Admin View:
+	When run, outputs an excel file that can then be saved to the admin's PC.
+	"""
+	if check_credentials(request) == False:
+		return redirect(calnet_login_url())
+	if is_admin(request) == False:
+		return redirect('funding_app.views.home')
+
+	book = Workbook()
+	sheet = book.add_sheet('Funding Requests')
+	fundingRequests = FundingRequest.objects.all()
+
+	# title
+	sheet.write(0, 0, 'Funding Requests')
+
+	# column headers
+	sheet.write(1, 0, 'Request ID')
+	sheet.write(1, 1, 'Submitter Email')
+	sheet.write(1, 2, 'Date Submitted')
+	sheet.write(1, 3, 'Request Status')
+	sheet.write(1, 4, 'Student Group')
+	sheet.write(1, 5, 'Request Type')
+	sheet.write(1, 6, 'Request Category')
+	sheet.write(1, 7, 'Request For')
+	sheet.write(1, 8, 'Funding Round')
+	sheet.write(1, 9, 'Requested Total')
+	sheet.write(1, 10, 'Awarded Total')
+
+	# write each one to the file
+	row = 3
+	for req in fundingRequests:
+		sheet.write(row, 0, "%06d" % (req.id,))
+		sheet.write(row, 1, req.email)
+		sheet.write(row, 2, req.dateSubmitted.strftime("%b. %d, %Y"))
+		sheet.write(row, 3, req.requestStatus)
+		sheet.write(row, 4, req.studentGroup)
+		sheet.write(row, 5, req.requestType)
+		sheet.write(row, 6, req.requestCategory)
+		sheet.write(row, 7, req.eventType)
+		sheet.write(row, 8, req.fundingRound)
+		sheet.write(row, 9, req.compute_requested_total())
+		sheet.write(row, 10, req.compute_awarded_total())
+		row += 1
+
+	response = HttpResponse(mimetype="application/ms-excel")
+	response['Content-Disposition'] = 'attachment; filename=request_list.xls'
+	book.save(response)
+	return response
+
 # Submitter Views
 
 def submitter_request_summary(request):
@@ -356,7 +408,7 @@ def submitter_render_funding_request(request, request_id=None):
 	if request_id is not None:
 		if check_credentials(request) == False:
 			return redirect(calnet_login_url())
-		
+
 		try:
 			fundingRequest = GraduateRequest.objects.get(id=request_id)
 		except ObjectDoesNotExist as e:

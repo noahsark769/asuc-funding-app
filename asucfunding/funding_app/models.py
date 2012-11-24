@@ -14,9 +14,12 @@ class FundingRequest (models.Model):
     grantCategory = models.CharField(max_length=50)
     eventType = models.CharField(max_length=50)
     fundingRound = models.CharField(max_length=50)
+    contingency = models.BooleanField()
     studentGroup = models.CharField(max_length=50)
     requestStatus = models.CharField(max_length=50)
     dateSubmitted = models.DateTimeField(auto_now=True)
+    eventTitle = models.CharField(max_length=50)
+    description = models.CharField(max_length=5000)
 
     def compute_requested_total(self):
         requestedTotal = 0
@@ -33,14 +36,14 @@ class FundingRequest (models.Model):
 class GraduateRequest(FundingRequest):
     academicDepartmentalAffiliate = models.CharField(max_length=50)
     gaDelegate = models.CharField(max_length=50)
-    studentOrgMemTot = models.IntegerField()
+    studentOrgTot = models.IntegerField()
     studentOrgGrad = models.IntegerField()
-    studentOrgUnd = models.IntegerField()
+    studentOrgUG = models.IntegerField()
     attendedWaiver = models.BooleanField()
     
 class UndergraduateRequest(FundingRequest):
     studentOrgTot = models.IntegerField()
-    stduentOrgStud = models.IntegerField()
+    studentOrgStud = models.IntegerField()
     attended = models.BooleanField()
     
 class TravelRequest(FundingRequest):
@@ -66,15 +69,13 @@ class ItemDescription(models.Model):
 
 class Event(models.Model):
     fundingRequest = models.ForeignKey(FundingRequest)
-    eventTitle = models.CharField(max_length=50)
-    description = models.CharField(max_length=5000)
     sameBudgetForRecurringEvents = models.BooleanField()
     startDate = models.DateField('%m/%d/%y')
     endDate = models.DateField('%m/%d/%y')
     location = models.CharField(max_length=100)
     waiverRequested = models.BooleanField()
     attendenceNonStudent = models.IntegerField()
-    attendenceUnd = models.IntegerField()
+    attendenceUG = models.IntegerField()
     attendenceGrad = models.IntegerField()
     budget = models.ForeignKey(Budget)
     
