@@ -123,7 +123,7 @@
 			</fieldset>
 
 			<fieldset id='ug_grant_categories'>
-				<legend>Request category/categories:</legend>
+				<legend>Grant category/categories:</legend>
 				{% for type in ug_grant_categories %}
 					<input type='checkbox' name='ug_grant_cat_{{type.id}}' value='{{type.category}}' id='ug_grant_cat_{{type.id}}'>
 					<label for='ug_grant_cat_{{type.id}}'>{{type.category}}</label>
@@ -131,14 +131,14 @@
 			</fieldset>
 
 			<fieldset id='grad_grant_categories'>
-				<legend>Request category/categories:</legend>
+				<legend>Grant category/categories:</legend>
 				{% for type in grad_grant_categories %}
 					<input type='checkbox' name='grad_grant_cat_{{type.id}}' value='{{type.category}}' id='grad_grant_cat_{{type.id}}'>
 					<label for='grad_grant_cat_{{type.id}}'>{{type.category}}</label>
 				{% endfor %}
 			</fieldset>
 
-			<fieldset>
+			<fieldset id='event_type'>
 				<legend>Requesting for:</legend>
 
 				<input type='radio' name='event_type' value='S' id='event_type_single'>
@@ -167,10 +167,11 @@
 					{% for group in student_groups %}
 						<option value='{{group.id}}'>{{group.name}}</option>
 					{% endfor %}
+					<option value='0'>Example Group</option>
 					<option value='pending'>Registration Pending</option>
 				</select>
 			</fieldset>
-			<input type='text' name='pending_student_group' placeholder='Enter group name...' disabled='false'>
+			<input type='text' name='pending_student_group' placeholder='Enter group name...'>
 		</div>
 
 		<div id='graduate_request_block'>
@@ -280,7 +281,7 @@
 			</fieldset>
 		</div>
 
-		<div id='event_block_1'>
+		<div id='event_block_1' class='event_block'>
 			<h2>Event Details</h2>
 
 			<label for='start_date_1'>Start Date</label>
@@ -308,11 +309,11 @@
 			</fieldset>
 		</div>
 
-		<div id='budget_block_1'>
+		<div id='budget_block_1' class='budget_block'>
 			<h2>Budget Details</h2>
 
 			<table>
-				<tr>
+				<tr id='budget_item_headers'>
 					<td>Item Description</td>
 					<td>Quantity</td>
 					<td>Cost Per Item</td>
@@ -320,7 +321,7 @@
 					<td>Other Funding</td>
 					<td>Item Total</td>
 				</tr>
-				<tr id='budget_item_description_1_1'>
+				<tr id='budget_item_description_1_1' class='budget_item_description'>
 					<td><input type='text' name='budget_description_1_1' id='budget_description_1_1'></td>
 					<td><input type='text' name='budget_quantity_1_1' id='budget_quantity_1_1'></td>
 					<td><input type='text' name='budget_cost_per_item_1_1' id='budget_cost_per_item_1_1'></td>
@@ -330,9 +331,15 @@
 				</tr>
 			</table>
 
+			<button class='add_budget_item'>Add Item Description</button>
+			<button class='remove_budget_item'>Remove Last Item Description</button>
+
 			<label for='budget_additional_info_1'>Additional Info:</label>
 			<textarea name='budget_additional_info_1' id='budget_additional_info_1'></textarea>
 		</div>
+
+		<button id='add_event'>Add Event</button>
+		<button id='remove_event'>Remove Last Event</button>
 
 		<div id='recurring_event_footer_block'>
 			<h2>Recurring Event Totals</h2>
@@ -382,19 +389,22 @@
 			<h2>Travel Budget Details</h2>
 
 			<table>
-				<tr>
+				<tr id='travel_budget_item_headers'>
 					<td>Item Description</td>
 					<td>Quantity</td>
 					<td>Cost Per Item</td>
 					<td>Item Total</td>
 				</tr>
-				<tr id='travel_budget_item_description_1'>
+				<tr id='travel_budget_item_description_1' class='travel_budget_item_description'>
 					<td><input type='text' name='travel_budget_description_1' id='travel_budget_description_1'></td>
 					<td><input type='text' name='travel_budget_quantity_1' id='travel_budget_quantity_1'></td>
 					<td><input type='text' name='travel_budget_cost_per_item_1' id='travel_budget_cost_per_item_1'></td>
 					<td><input type='text' name='travel_budget_item_total_1' id='travel_budget_item_total_1' disabled='true'></td>
 				</tr>
 			</table>
+
+			<button class='travel_add_budget_item'>Add Item Description</button>
+			<button class='travel_remove_budget_item'>Remove Last Item Description</button>
 		</div>
 
 		<div id='submission_confirmation'>

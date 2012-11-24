@@ -435,7 +435,7 @@ def submitter_render_funding_request(request, request_id=None):
 	grad_request_categories = ConfigGradReqCat.objects.all()
 	ug_grant_categories = ConfigUGGrant.objects.all()
 	grad_grant_categories = ConfigGradGrant.objects.all()
-	funding_round = current_round()
+	funding_round = current_round() if current_round() != None else {'name':'No upcoming rounds.', 'deadline':'none'}
 	grad_delegates = ConfigGradDelegate.objects.all()
 
 	return render_to_response(url, {'funding_request': fundingRequest,
@@ -491,6 +491,9 @@ def current_round():
 			delta = fundingRound.deadline - now
 			nearestRound = fundingRound
 
-	return nearestRound
+	if delta == timedelta.max:
+		return None
+	else:
+		return nearestRound
 
 # EOF
