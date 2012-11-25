@@ -63,13 +63,14 @@ a.nostyle {
 
 
 @buttondarkblue: #2F5378;
-@buttonlightblue: lighten(@buttondarkblue, 10%);
+@buttonlightblue: lighten(saturate(@buttondarkblue, 10%), 10%);
 
 @bgblue: lighten(@buttondarkblue, 50%);
 @gray: #E9EFF0;
 @subtlebg: url(../img/debut_light.png);
 
 @page-margin: 5px;
+@config-width: 450px;
 
 // convenience
 
@@ -139,7 +140,7 @@ div#nav {
 ul#tabs {
 	display: block;
 	position: absolute;
-	right: 7px;
+	right: @page-margin;
 	top: -30px;
 
 	li {
@@ -201,4 +202,204 @@ ul#submitter_menu, ul#admin_menu {
 
 	margin-left: @page-margin;
 	margin-bottom: 10px;
+}
+
+//config styles
+div#config {
+	display: block;
+	width: 90%;
+	height: 100%;
+
+	margin-left: @page-margin;
+
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+
+	div.config-list {
+		display: inline-block;
+		width: 500px;
+		height: 210px;
+		overflow: scroll;
+
+		padding-right: 20px;
+
+		margin-left: @page-margin;
+		margin-bottom: 25px;
+
+		ul {
+			display: block;
+			margin-left: 10px;
+
+			li {
+				display: block;
+				padding: 5px 5px 5px 5px;
+				margin-bottom: 2px;
+
+				border: 1px solid black;
+				.border-radius(5px);
+
+				background-color: @buttondarkblue;
+				.linear-gradient-two(@buttondarkblue, @buttonlightblue, 10%);
+				color: white;
+			}
+
+			li.config_add {
+				border: none;
+				.border-radius(0,0,0,0);
+				color: inherit;
+				background: inherit;
+			}
+
+		}
+
+		a.config_remove {
+			display: block;
+			float: right;
+			color: white;
+
+			text-decoration: none;
+
+			&:hover {
+				color: darken(white, 20%);
+			}
+		}
+
+		input[type=text] {
+			width: @config-width * 4 / 5;
+
+			&.oneoftwo {
+				width: (@config-width * 4 / 5) / 2;
+			}
+		}
+		button {
+			width: @config-width / 5 - 10px - 5px;
+		}
+
+		h2 {
+			display: block;
+			margin-bottom: 5px;
+			border-bottom: 1px solid black;
+		}
+
+		button.config_submit {
+			margin-left: 5px;
+		}
+
+	}
+
+}
+
+// the actual form styles
+form#request_form > div {
+	display: block;
+
+	margin-left: @page-margin;
+	margin-right: @page-margin;
+	margin-bottom: 10px;
+
+	padding: 5px;
+
+	border: 1px solid black;
+
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+
+	background-color: @buttondarkblue;
+	.linear-gradient-two(@buttondarkblue, @buttonlightblue);
+	color: white;
+
+	h2 {
+		font-size: 1.2em;
+		margin-bottom: 10px;
+	}
+
+	textarea {
+		/// teztarea width matches fieldsets
+		// 700 width + 10 padding + 10 padding
+		width: 700px + 20px;
+	}
+
+	.form-container {
+		margin-left: 20px;
+
+		.form-field {
+			margin-bottom: 5px;
+
+			label {
+				display: inline-block;
+				width: 150px;
+			}
+
+			input[type=text] {
+				width: 200px;
+			}
+
+			&.block-label {
+				// for textarea, we want the label to be above it.
+				label {
+					// so make the label block instead of inline-block
+					display: block;
+					margin-bottom: 5px;
+				}
+			}
+		}
+
+		&.long-label {
+			label {
+				display: inline-block;
+				width: 400px + 10px + 1px;
+			}
+		}
+	}
+
+	fieldset {
+		display: inline-block;
+		width: 700px;
+
+		padding: 5px 10px 10px 10px;
+
+		border: 1px solid white;
+
+		margin-left: 20px;
+		margin-bottom: 10px;
+
+		legend {
+			margin-bottom: 5px;
+			padding: 0 5px 0 5px;
+		}
+
+		.form-field {
+			margin-bottom: 5px;
+			width: 100%;
+
+			label {
+				display: inline-block;
+				width: 400px;
+			}
+
+		}
+
+		input[type=text], select {
+			width: 200px;
+		}
+
+	}
+
+	table {
+		margin-bottom: 10px;
+		margin-left: 20px;
+		tr {
+			td {
+				color: white;
+				* {
+					// make everything have 5px padding and white
+					margin-right: 5px;
+					margin-bottom: 5px;
+				}
+			}
+		}
+	}
+
+	.button-group {
+		margin-bottom: 10px;
+		margin-left: 20px;
+	}
 }

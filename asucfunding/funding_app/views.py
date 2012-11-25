@@ -311,12 +311,12 @@ def change_config(request):
 
 			if this_date:
 				o = ConfigFundingRound.objects.create(name=value1, deadline=this_date)
-				return HttpResponse('<li id="' + CONFIG_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 +'&nbsp;' + this_date.strftime("%b. %d, %Y") + remove_html)
+				return HttpResponse('<li id="' + CONFIG_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + this_date.strftime("%b. %d, %Y") + '&nbsp;-&nbsp;' + value1 + remove_html)
 			else:
 				return HttpResponse('FAILURE')
 		elif config_key == 'delegates':
 			o = ConfigGradDelegate.objects.create(name=value1, email=value2)
-			return HttpResponse('<li id="' + CONFIG_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 +'&nbsp;' + value2 + remove_html)
+			return HttpResponse('<li id="' + CONFIG_KEY_ID_MAP[config_key] + '_' + str(o.id) +'">' + value1 + '&nbsp;-&nbsp;' + value2 + remove_html)
 		else: # well, this should never happen.
 			return HttpResponse('FAILURE')
 	else:
