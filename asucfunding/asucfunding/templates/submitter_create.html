@@ -84,81 +84,111 @@
 		<div id='request_selector_block'>
 			<h2>Request Information</h2>
 
-			<label for='request_selector_name'>Requested by:</label>
-			<input type='text' name='name' id='request_selector_name' value='{{name}}' disabled='true'>
+			<div class='form-container'>
+				<div class='form-field'>
+					<label for='request_selector_name'>Requested by:</label>
+					<input type='text' name='name' id='request_selector_name' value='{{name}}' disabled='true'>
+				</div>
 
-			<label for='request_selector_email'>Email:</label>
-			<input type='text' name='email' id='request_selector_email'>
+				<div class='form-field'>
+					<label for='request_selector_email'>Email:</label>
+					<input type='text' name='email' id='request_selector_email'>
+				</div>
 
-			<label for='request_selector_phone'>Phone:</label>
-			<input type='text' name='phone' id='request_selector_phone'>
+				<div class='form-field'>
+					<label for='request_selector_phone'>Phone:</label>
+					<input type='text' name='phone' id='request_selector_phone'>
+				</div>
+			</div>
 
 			<fieldset>
 				<legend>Request Type</legend>
 
-				<input type='radio' name='request_type' value='G' id='request_type_graduate'>
-				<label for='request_type_graduate'>Graduate Funding Request</label>
-
-				<input type='radio' name='request_type' value='U' id='request_type_undergraduate'>
-				<label for='request_type_undergraduate'>Undergraduate Funding Request</label>
-
-				<input type='radio' name='request_type' value='T' id='request_type_travel'>
-				<label for='request_type_travel'>Travel Award Application</label>
+				<div class='form-field'>
+					<input type='radio' name='request_type' value='G' id='request_type_graduate'>
+					<label for='request_type_graduate'>Graduate Funding Request</label>
+				</div>
+				<div class='form-field'>
+					<input type='radio' name='request_type' value='U' id='request_type_undergraduate'>
+					<label for='request_type_undergraduate'>Undergraduate Funding Request</label>
+				</div>
+				<div class='form-field'>
+					<input type='radio' name='request_type' value='T' id='request_type_travel'>
+					<label for='request_type_travel'>Travel Award Application</label>
+				</div>
 			</fieldset>
 
 			<fieldset id='ug_request_categories'>
 				<legend>Request category/categories:</legend>
 				{% for type in ug_request_categories %}
+				<div class='form-field'>
 					<input type='checkbox' name='ug_req_cat_{{type.id}}' value='{{type.category}}' id='ug_req_cat_{{type.id}}'>
 					<label for='ug_req_cat_{{type.id}}'>{{type.category}}</label>
+					</div>
 				{% endfor %}
 			</fieldset>
 
 			<fieldset id='grad_request_categories'>
 				<legend>Request category/categories:</legend>
 				{% for type in grad_request_categories %}
+				<div class='form-field'>
 					<input type='checkbox' name='grad_req_cat_{{type.id}}' value='{{type.category}}' id='grad_req_cat_{{type.id}}'>
 					<label for='grad_req_cat_{{type.id}}'>{{type.category}}</label>
+					</div>
 				{% endfor %}
 			</fieldset>
 
 			<fieldset id='ug_grant_categories'>
 				<legend>Grant category/categories:</legend>
 				{% for type in ug_grant_categories %}
+				<div class='form-field'>
 					<input type='checkbox' name='ug_grant_cat_{{type.id}}' value='{{type.category}}' id='ug_grant_cat_{{type.id}}'>
 					<label for='ug_grant_cat_{{type.id}}'>{{type.category}}</label>
+					</div>
 				{% endfor %}
 			</fieldset>
 
 			<fieldset id='grad_grant_categories'>
 				<legend>Grant category/categories:</legend>
 				{% for type in grad_grant_categories %}
+				<div class='form-field'>
 					<input type='checkbox' name='grad_grant_cat_{{type.id}}' value='{{type.category}}' id='grad_grant_cat_{{type.id}}'>
 					<label for='grad_grant_cat_{{type.id}}'>{{type.category}}</label>
+					</div>
 				{% endfor %}
 			</fieldset>
 
 			<fieldset id='event_type'>
 				<legend>Requesting for:</legend>
 
+				<div class='form-field'>
 				<input type='radio' name='event_type' value='S' id='event_type_single'>
 				<label for='event_type_single'>Single Event</label>
+				</div>
 
+				<div class='form-field'>
 				<input type='radio' name='event_type' value='R' id='event_type_recurring'>
 				<label for='event_type_recurring'>Recurring Event</label>
+				</div>
 
+				<div class='form-field'>
 				<input type='radio' name='event_type' value='O' id='event_type_costs'>
 				<label for='event_type_costs'>Operational Costs</label>
+				</div>
 			</fieldset>
 
 			<fieldset>
 				<legend>Funding round:</legend>
 
+				<div class='form-field'>
 				<input type='checkbox' name='funding_round_{{funding_round.id}}' value='{{funding_round.name}}: Deadline - {{funding_round.deadline}}' id='funding_round_{{funding_round.id}}'>
 				<label for='funding_round_{{funding_round.id}}'>{{funding_round.name}} - Deadline: {{funding_round.deadline}}</label>
+				</div>
 
+				<div class='form-field'>
 				<input type='checkbox' name='contingency' value='contingency' id='contingency'>
 				<label for='contingency'>Contingency (refer to monthly contingency deadlines)</label>
+				</div>
 			</fieldset>
 
 			<fieldset>
@@ -170,15 +200,19 @@
 					<option value='0'>Example Group</option>
 					<option value='pending'>Registration Pending</option>
 				</select>
+				<input type='text' name='pending_student_group' placeholder='Enter group name...'>
 			</fieldset>
-			<input type='text' name='pending_student_group' placeholder='Enter group name...'>
 		</div>
 
 		<div id='graduate_request_block'>
 			<h2>Graduate Request Details</h2>
 
-			<label for='affiliate'>Academic Departmental Affiliate</label>
-			<input type='text' name='affiliate' id='affiliate'>
+			<div class='form-container long-label'>
+			<div class='form-field'>
+				<label for='affiliate'>Academic Departmental Affiliate</label>
+				<input type='text' name='affiliate' id='affiliate'>
+			</div>
+			</div>
 
 			<fieldset>
 				<legend>GA Delegate Reference</legend>
@@ -192,24 +226,34 @@
 			<fieldset>
 				<legend>Student organization membership:</legend>
 
+				<div class='form-field'>
 				<label for='grad_membership_total'>Total</label>
 				<input type='text' name='grad_membership_total' id='grad_membership_total'>
+				</div>
 
+				<div class='form-field'>
 				<label for='grad_membership_grad'>Graduate</label>
 				<input type='text' name='grad_membership_grad' id='grad_membership_grad'>
+				</div>
 
+				<div class='form-field'>
 				<label for='grad_membership_ug'>Undergraduate</label>
 				<input type='text' name='grad_membership_ug' id='grad_membership_ug'>
+				</div>
 			</fieldset>
 
 			<fieldset>
 				<legend>Have you attended a GA funding workshop or received a funding workshop waiver?</legend>
 
+				<div class='form-field'>
 				<input type='radio' name='grad_waiver' value='Y' id='grad_waiver_Y'>
 				<label for='grad_waiver_Y'>Yes</label>
+				</div>
 
+				<div class='form-field'>
 				<input type='radio' name='grad_waiver' value='N' id='grad_waiver_N'>
 				<label for='grad_waiver_N'>No</label>
+				</div>
 			</fieldset>
 		</div>
 
@@ -219,21 +263,29 @@
 			<fieldset>
 				<legend>Student organization membership:</legend>
 
+				<div class='form-field'>
 				<label for='ug_membership_total'>total</label>
 				<input type='text' name='ug_membership_total' id='ug_membership_total'>
+				</div>
 
+				<div class='form-field'>
 				<label for='ug_membership_student'>student</label>
 				<input type='text' name='ug_membership_student' id='ug_membership_student'>
+				</div>
 			</fieldset>
 
 			<fieldset>
 				<legend>Have you attended an ASUC agent training?</legend>
 
+				<div class='form-field'>
 				<input type='radio' name='ug_waiver' value='Y' id='ug_waiver_Y'>
 				<label for='ug_waiver_Y'>Yes</label>
+				</div>
 
+				<div class='form-field'>
 				<input type='radio' name='ug_waiver' value='N' id='ug_waiver_N'>
 				<label for='ug_waiver_N'>No</label>
+				</div>
 			</fieldset>
 		</div>
 
@@ -243,55 +295,81 @@
 			<fieldset>
 				<legend>Requesting as:</legend>
 
+				<div class='form-field'>
 				<input type='radio' name='travel_requesting_as' value='I' id='travel_requesting_as_I'>
 				<label for='travel_requesting_as_I'>Individual</label>
+				</div>
 
+				<div class='form-field'>
 				<input type='radio' name='travel_requesting_as' value='G' id='travel_requesting_as_G'>
 				<label for='travel_requesting_as_G'>Group</label>
+				</div>
 			</fieldset>
 		</div>
 
 		<div id='event_header_block'>
 			<h2>Event Title/Description</h2>
 
-			<label for='event_title'>Event title:</label>
-			<input type='text' name='event_title' id='event_title'>
+			<div class='form-container long-label'>
+				<div class='form-field'>
+					<label for='event_title'>Event title:</label>
+					<input type='text' name='event_title' id='event_title'>
+				</div>
 
-			<label for='event_description'>Event description:</label>
-			<textarea name='event_description' id='event_description'></textarea>
+				<div class='form-field block-label'>
+					<label for='event_description'>Event description:</label>
+					<textarea name='event_description' id='event_description'></textarea>
+				</div>
+			</div>
 		</div>
 
 		<div id='recurring_event_header_block'>
 			<h2>Recurring Event Title/Description</h2>
 
-			<label for='recurring_event_title'>Event title:</label>
-			<input type='text' name='recurring_event_title' id='recurring_event_title'>
-
-			<label for='recurring_event_description'>Event description:</label>
-			<textarea name='recurring_event_description' id='recurring_event_description'></textarea>
-
 			<fieldset>
 				<legend>Is the budget the same for each occurrence of the event?</legend>
 
-				<input type='radio' name='recurring_same_budget' value='Y' id='recurring_same_budget_Y'>
-				<label for='recurring_same_budget_Y'>Yes</label>
+				<div class='form-field'>
+					<input type='radio' name='recurring_same_budget' value='Y' id='recurring_same_budget_Y'>
+					<label for='recurring_same_budget_Y'>Yes</label>
+				</div>
 
-				<input type='radio' name='recurring_same_budget' value='N' id='recurring_same_budget_N'>
-				<label for='recurring_same_budget_N'>No</label>
+				<div class='form-field'>
+					<input type='radio' name='recurring_same_budget' value='N' id='recurring_same_budget_N'>
+					<label for='recurring_same_budget_N'>No</label>
+				</div>
 			</fieldset>
+
+			<div class='form-container long-label'>
+				<div class='form-field'>
+					<label for='recurring_event_title'>Event title:</label>
+					<input type='text' name='recurring_event_title' id='recurring_event_title'>
+				</div>
+				<div class='form-field block-label'>
+					<label for='recurring_event_description'>Event description:</label>
+					<textarea name='recurring_event_description' id='recurring_event_description'></textarea>
+				</div>
+			</div>
+
 		</div>
 
 		<div id='event_block_1' class='event_block'>
 			<h2>Event Details</h2>
 
-			<label for='start_date_1'>Start Date</label>
-			<input type='text' name='start_date_1' id='start_date_1'>
+			<div class='form-container'>
+				<div class='form-field'>
+					<label for='start_date_1'>Start Date</label>
+					<input type='text' name='start_date_1' id='start_date_1'>
+				</div>
 
-			<label for='end_date_1'>End Date</label>
-			<input type='text' name='end_date_1' id='end_date_1'>
+				<div class='form-field'>
+					<label for='end_date_1'>End Date</label>
+					<input type='text' name='end_date_1' id='end_date_1'>
+				</div>
+			</div>
 
 			<fieldset>
-				<label>Location</label>
+				<legend>Location</legend>
 				<select name='event_location_1'>
 					{% for location in locations %}
 						<option value='{{location.id}}'>{{location.location}}</option>
@@ -314,12 +392,12 @@
 
 			<table>
 				<tr id='budget_item_headers'>
-					<td>Item Description</td>
-					<td>Quantity</td>
-					<td>Cost Per Item</td>
-					<td>Amount Requested</td>
-					<td>Other Funding</td>
-					<td>Item Total</td>
+					<td><p>Item Description</p></td>
+					<td><p>Quantity</p></td>
+					<td><p>Cost Per Item</p></td>
+					<td><p>Amount Requested</p></td>
+					<td><p>Other Funding</p></td>
+					<td><p>Item Total</p></td>
 				</tr>
 				<tr id='budget_item_description_1_1' class='budget_item_description'>
 					<td><input type='text' name='budget_description_1_1' id='budget_description_1_1'></td>
@@ -331,11 +409,17 @@
 				</tr>
 			</table>
 
-			<button class='add_budget_item'>Add Item Description</button>
-			<button class='remove_budget_item'>Remove Last Item Description</button>
+			<div class='button-group'>
+				<button class='add_budget_item'>Add Item Description</button>
+				<button class='remove_budget_item'>Remove Last Item Description</button>
+			</div>
 
-			<label for='budget_additional_info_1'>Additional Info:</label>
-			<textarea name='budget_additional_info_1' id='budget_additional_info_1'></textarea>
+			<div class='form-container'>
+				<div class='form-field block-label'>
+					<label for='budget_additional_info_1'>Additional Info:</label>
+					<textarea name='budget_additional_info_1' id='budget_additional_info_1'></textarea>
+				</div>
+			</div>
 		</div>
 
 		<button id='add_event'>Add Event</button>
@@ -353,36 +437,54 @@
 		<div id='travel_event_block'>
 			<h2>Travel Event Details</h2>
 
+			<div class='form-field'>
 			<label for='travel_event_title'>Event</label>
 			<input type='text' name='travel_event_title' id='travel_event_title'>
+			</div>
 
+			<div class='form-field'>
 			<label for='travel_event_location'>Location</label>
 			<input type='text' name='travel_event_location' id='travel_event_location'>
+			</div>
 
+			<div class='form-field'>
 			<label for='travel_event_start_date'>Event Start Date</label>
 			<input type='text' name='travel_event_start_date' id='travel_event_start_date'>
+			</div>
 
+			<div class='form-field'>
 			<label for='travel_event_end_date'>Event End Date</label>
 			<input type='text' name='travel_event_end_date' id='travel_event_end_date'>
+			</div>
 
+			<div class='form-field'>
 			<label for='travel_event_departure_date'>Your Departure Date</label>
 			<input type='text' name='travel_event_departure_date' id='travel_event_departure_date'>
+			</div>
 
+			<div class='form-field'>
 			<label for='travel_event_return_date'>Your Return Date</label>
 			<input type='text' name='travel_event_return_date' id='travel_event_return_date'>
+			</div>
 
 			<fieldset>
 				<legend>Are you presenting?</legend>
 
+				<div class='form-field'>
 				<input type='radio' name='travel_presenting' value='Y' id='travel_presenting_Y'>
 				<label for='travel_presenting_Y'>Yes</label>
+				</div>
 
+				<div class='form-field'>
 				<input type='radio' name='travel_presenting' value='N' id='travel_presenting_N'>
 				<label for='travel_presenting_N'>No</label>
+				</div>
 			</fieldset>
 
-			<label for='travel_presentation_title'>Title of your presentation:</label>
-			<input type='text' name='travel_presentation_title' id='travel_presentation_title'>
+			<div class='form-field'>
+				<label for='travel_presentation_title'>Title of your presentation:</label>
+				<input type='text' name='travel_presentation_title' id='travel_presentation_title'>
+			</div>
 		</div>
 
 		<div id='travel_budget_block'>
@@ -390,10 +492,10 @@
 
 			<table>
 				<tr id='travel_budget_item_headers'>
-					<td>Item Description</td>
-					<td>Quantity</td>
-					<td>Cost Per Item</td>
-					<td>Item Total</td>
+					<td><p>Item Description</p></td>
+					<td><p>Quantity</p></td>
+					<td><p>Cost Per Item</p></td>
+					<td><p>Item Total</p></td>
 				</tr>
 				<tr id='travel_budget_item_description_1' class='travel_budget_item_description'>
 					<td><input type='text' name='travel_budget_description_1' id='travel_budget_description_1'></td>
@@ -403,8 +505,10 @@
 				</tr>
 			</table>
 
-			<button class='travel_add_budget_item'>Add Item Description</button>
-			<button class='travel_remove_budget_item'>Remove Last Item Description</button>
+			<div class='button-group'>
+				<button class='travel_add_budget_item'>Add Item Description</button>
+				<button class='travel_remove_budget_item'>Remove Last Item Description</button>
+			</div>
 		</div>
 
 		<div id='submission_confirmation'>

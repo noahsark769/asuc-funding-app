@@ -63,7 +63,7 @@ a.nostyle {
 
 
 @buttondarkblue: #2F5378;
-@buttonlightblue: lighten(@buttondarkblue, 10%);
+@buttonlightblue: lighten(saturate(@buttondarkblue, 10%), 10%);
 
 @bgblue: lighten(@buttondarkblue, 50%);
 @gray: #E9EFF0;
@@ -140,7 +140,7 @@ div#nav {
 ul#tabs {
 	display: block;
 	position: absolute;
-	right: 7px;
+	right: @page-margin;
 	top: -30px;
 
 	li {
@@ -286,7 +286,120 @@ div#config {
 
 	}
 
+}
 
+// the actual form styles
+form#request_form > div {
+	display: block;
 
+	margin-left: @page-margin;
+	margin-right: @page-margin;
+	margin-bottom: 10px;
 
+	padding: 5px;
+
+	border: 1px solid black;
+
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+
+	background-color: @buttondarkblue;
+	.linear-gradient-two(@buttondarkblue, @buttonlightblue);
+	color: white;
+
+	h2 {
+		font-size: 1.2em;
+		margin-bottom: 10px;
+	}
+
+	textarea {
+		/// teztarea width matches fieldsets
+		// 700 width + 10 padding + 10 padding
+		width: 700px + 20px;
+	}
+
+	.form-container {
+		margin-left: 20px;
+
+		.form-field {
+			margin-bottom: 5px;
+
+			label {
+				display: inline-block;
+				width: 150px;
+			}
+
+			input[type=text] {
+				width: 200px;
+			}
+
+			&.block-label {
+				// for textarea, we want the label to be above it.
+				label {
+					// so make the label block instead of inline-block
+					display: block;
+					margin-bottom: 5px;
+				}
+			}
+		}
+
+		&.long-label {
+			label {
+				display: inline-block;
+				width: 400px + 10px + 1px;
+			}
+		}
+	}
+
+	fieldset {
+		display: inline-block;
+		width: 700px;
+
+		padding: 5px 10px 10px 10px;
+
+		border: 1px solid white;
+
+		margin-left: 20px;
+		margin-bottom: 10px;
+
+		legend {
+			margin-bottom: 5px;
+			padding: 0 5px 0 5px;
+		}
+
+		.form-field {
+			margin-bottom: 5px;
+			width: 100%;
+
+			label {
+				display: inline-block;
+				width: 400px;
+			}
+
+		}
+
+		input[type=text], select {
+			width: 200px;
+		}
+
+	}
+
+	table {
+		margin-bottom: 10px;
+		margin-left: 20px;
+		tr {
+			td {
+				color: white;
+				* {
+					// make everything have 5px padding and white
+					margin-right: 5px;
+					margin-bottom: 5px;
+				}
+			}
+		}
+	}
+
+	.button-group {
+		margin-bottom: 10px;
+		margin-left: 20px;
+	}
 }
