@@ -70,6 +70,7 @@ a.nostyle {
 @subtlebg: url(../img/debut_light.png);
 
 @page-margin: 5px;
+@config-width: 450px;
 
 // convenience
 
@@ -201,4 +202,91 @@ ul#submitter_menu, ul#admin_menu {
 
 	margin-left: @page-margin;
 	margin-bottom: 10px;
+}
+
+//config styles
+div#config {
+	display: block;
+	width: 90%;
+	height: 100%;
+
+	margin-left: @page-margin;
+
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+
+	div.config-list {
+		display: inline-block;
+		width: 500px;
+		height: 210px;
+		overflow: scroll;
+
+		padding-right: 20px;
+
+		margin-left: @page-margin;
+		margin-bottom: 25px;
+
+		ul {
+			display: block;
+			margin-left: 10px;
+
+			li {
+				display: block;
+				padding: 5px 5px 5px 5px;
+				margin-bottom: 2px;
+
+				border: 1px solid black;
+				.border-radius(5px);
+
+				background-color: @buttondarkblue;
+				.linear-gradient-two(@buttondarkblue, @buttonlightblue, 10%);
+				color: white;
+			}
+
+			li.config_add {
+				border: none;
+				.border-radius(0,0,0,0);
+				color: inherit;
+				background: inherit;
+			}
+
+		}
+
+		a.config_remove {
+			display: block;
+			float: right;
+			color: white;
+
+			text-decoration: none;
+
+			&:hover {
+				color: darken(white, 20%);
+			}
+		}
+
+		input[type=text] {
+			width: @config-width * 4 / 5;
+
+			&.oneoftwo {
+				width: (@config-width * 4 / 5) / 2;
+			}
+		}
+		button {
+			width: @config-width / 5 - 10px - 5px;
+		}
+
+		h2 {
+			display: block;
+			margin-bottom: 5px;
+			border-bottom: 1px solid black;
+		}
+
+		button.config_submit {
+			margin-left: 5px;
+		}
+
+	}
+
+
+
+
 }
