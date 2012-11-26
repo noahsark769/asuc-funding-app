@@ -9,38 +9,38 @@
 
 {% block content %}
 	{% if funding_requests|length == 0 %}
-	<p>No requests exist at this time.</p>
+	<p class='block'>No requests exist at this time.</p>
 	{% else %}
 	<table class='request-summary'>
 		<thead>
 			<tr>
-				<td>&nbsp;Request ID</td>
-				<td>&nbsp;Submitter Email</td>
-				<td>&nbsp;Date Submitted</td>
-				<td>&nbsp;Request Status</td>
-				<td>&nbsp;Student Group</td>
-				<td>&nbsp;Request Type</td>
-				<td>&nbsp;Request Category</td>
-				<td>&nbsp;Request For</td>
-				<td>&nbsp;Funding Round</td>
-				<td>&nbsp;Requested Total</td>
-				<td>&nbsp;Awarded Total</td>
+				<td id='id'>&nbsp;Request ID<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='email'>&nbsp;Submitter Email<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='submitted'>&nbsp;Date Submitted<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='status'>&nbsp;Request Status<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='group'>&nbsp;Student Group<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='type'>&nbsp;Request Type<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='category'>&nbsp;Request Category<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='for'>&nbsp;Request For<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='round'>&nbsp;Funding Round<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='requested'>&nbsp;Requested Total<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
+				<td id='awarded'>&nbsp;Awarded Total<a href='' class='sort-down'>D</a><a href='' class='sort-up'>U</a></td>
 			</tr>
 		</thead>
 		<tbody>
 			{% for request in funding_requests %}
 			<tr>
-				<td>&nbsp;{{request.id}}</td>
-				<td>&nbsp;{{request.email}}</td>
-				<td>&nbsp;{{request.date_submitted_formatted}}</td>
-				<td>&nbsp;{{request.requestStatus}}</td>
-				<td>&nbsp;{{request.studentGroup}}</td>
-				<td>&nbsp;{{request.requestType}}</td>
-				<td>&nbsp;{{request.requestCategory}}</td>
-				<td>&nbsp;{{request.eventType}}</td>
-				<td>&nbsp;{{request.fundingRound}}</td>
-				<td class='requested-total'>${{request.compute_requested_total}}</td>
-				<td class='awarded-total'>${{request.compute_awarded_total}}</td>
+				<td class='id'>&nbsp;{{request.id}}</td>
+				<td class='email'>&nbsp;{{request.email}}</td>
+				<td class='submitted'>&nbsp;{{request.date_submitted_formatted}}</td>
+				<td class='status'>&nbsp;{{request.requestStatus}}</td>
+				<td class='group'>&nbsp;{{request.studentGroup}}</td>
+				<td class='type'>&nbsp;{{request.requestType}}</td>
+				<td class='category'>&nbsp;{{request.requestCategory}}</td>
+				<td class='for'>&nbsp;{{request.eventType}}</td>
+				<td class='round'>&nbsp;{{request.fundingRound}}</td>
+				<td class='requested requested-total'>${{request.compute_requested_total}}</td>
+				<td class='awarded awarded-total'>${{request.compute_awarded_total}}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
@@ -55,8 +55,8 @@
 				<td></td>
 				<td></td>
 				<td>Totals:</td>
-				<td class='requested-grand-total'>Calculating...</td>
-				<td class='awarded-grand-total'>Calculating...</td>
+				<td id='requested_grand_total'>Calculating...</td>
+				<td id='awarded_grand_total'>Calculating...</td>
 			</tr>
 		</tfoot>
 	</table>

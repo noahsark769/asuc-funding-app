@@ -9,18 +9,39 @@ $(document).ready(function () {
 		value,
 		$requestedData,
 		$awardedData;
-		
+
 	$('tbody tr').each(function() {
-		$requestedData = $(this).child('.requested-total');
-		$awardedData = $(this).child('.awarded-total');
+		$requestedData = $(this).find('.requested-total');
+		$awardedData = $(this).find('.awarded-total');
 		html = $requestedData.html();
 		number = html.slice(1); // have to slice off the $ sign
-		value = parseInt(number); //will break if something is not an integer
+		value = parseFloat(number); //will break if something is not an integer
 		grandRequestedTotal += value;
 
 		html = $awardedData.html();
 		number = html.slice(1); // have to slice off the $ sign
 		value = parseInt(number); //will break if something is not an integer
 		grandAwardedTotal += value;
+	});
+
+	$('td#requested_grand_total').html(grandRequestedTotal);
+	$('td#awarded_grand_total').html(grandAwardedTotal);
+
+	// sorting
+	var $rows,
+		sorted,
+		parentID;
+
+	$('a.sort-up').click(function () {
+		// get all the rows, then clear out everything, then put everything back in in sorted order.
+		$rows = $('tbody tr');
+		parentID = $(this).parent().prop('id');
+		sorted = $rows.sort(function (a, b) {
+			// a and b are tr html DOM elements.
+			$aChild = $(a).children('td.' + parentID);
+			$bChild = $(b).children('td.' + parentID);
+			return $aChild.html().localeCompare($bChild.html());
+		});
+		$('tbody').append($(sorted));
 	});
 });
