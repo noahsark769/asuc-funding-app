@@ -1,5 +1,9 @@
 {% extends "submitter.html" %}
 
+{% block scripts %}
+<script type='text/javascript' src="{{ STATIC_URL }}js/asuc-forms.js"></script>
+{% endblock %}
+
 {% comment %}
 	This is a django document that expects to be rendered with the following options.
 
@@ -382,7 +386,7 @@
 			<fieldset>
 				<legend>Waiver Requested</legend>
 				<select name='event_waiver_1'>
-					<option=''>Select an option...</option>
+					<option value=''>Select an option...</option>
 					<option value='N'>No</option>
 					<option value='F'>Full</option>
 					<option value='P'>Partial</option>
