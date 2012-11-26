@@ -8,6 +8,8 @@ import datetime
 from datetime import date, timedelta
 from cgi import escape
 from xlwt import Workbook
+import pdb
+import re
 
 import xml.dom.minidom
 import urllib2
@@ -289,7 +291,6 @@ def change_config(request):
 		# in this case, we must be choosing between one of the 1-parameter options
 		if value2 is None:
 			if CONFIG_KEY_CLASS_MAP.get(config_key) is not None:
-				print 'got here'
 				o = CONFIG_KEY_CLASS_MAP[config_key].objects.create(**{CONFIG_KEY_PARAM_MAP[config_key]: value1})
 				return HttpResponse('<li id="' + config_class + '_'+ str(o.id) +'">' + escape(value1) + remove_html)
 
@@ -422,7 +423,7 @@ def submitter_render_funding_request(request, request_id=None):
 					return redirect('funding_app.views.home')
 	
 		if fundingRequest.requestStatus == "Submitted":
-			url = "submitter_review.html"
+			url = "submitter_edit.html"
 		else:
 			url = "submitter_edit.html"
 	else:
@@ -449,7 +450,496 @@ def submitter_render_funding_request(request, request_id=None):
 									'funding_round': funding_round,
 									'grad_delegates': grad_delegates
 									}, context_instance=RequestContext(request))
-		
+
+def submitter_submit_funding_request(request):
+	"""
+	Submitter View;
+	Process form submissions, return HttpResponse('FAILURE') if ANY data is invalid/missing.
+	"""
+	if check_credentials(request) == False:
+		return redirect(calnet_login_url())
+
+	user = get_credentials(request)
+
+	post = request.POST
+
+	email = post.get('email')
+	phone = post.get('phone')
+	request_type = post.get('request_type')
+	funding_round_list = post.getlist('funding_round')
+	contingency = False
+	funding_round = ''
+	for item in funding_round_list:
+		if item == 'contingency':
+			contingency = True
+		else:
+			funding_round = item
+	student_group = post.get('student_group')
+	if student_group == 'pending':
+		student_group = post.get('pending_student_group')
+		studentGroupPending = True
+	else:
+		studentGroupPending = False
+	travel_requesting_as = post.get('travel_requesting_as')
+
+	# Get request_type specific details
+	if request_type == 'Travel':
+		travel_requesting_as = post.get('travel_requesting_as')
+		travel_event_title = post.get('travel_event_title')
+		travel_event_location = post.get('travel_event_location')
+		travel_event_start_date = post.get('travel_event_start_date')
+		travel_event_end_date = post.get('travel_event_end_date')
+		travel_event_departure_date = post.get('travel_event_departure_date')
+		travel_event_return_date = post.get('travel_event_return_date')
+		travel_presenting = post.get('travel_presenting')
+		if travel_presenting == 'Y':
+			travel_presentation_title = post.get('travel_presentation_title')
+		else:
+			travel_presentation_title = ''
+		# create travel request
+		travelReq = TravelRequest.objects.create(**{
+			'uid': user['uid'],
+			'name': user['name'],
+			'email': email,
+			'phone': phone,
+			'requestType': request_type,
+			'requestCategory': '',
+			'grantCategory': '',
+			'eventType': '',
+			'fundingRound': funding_round,
+			'contingency': contingency,
+			'studentGroup': student_group,
+			'studentGroupPending': studentGroupPending,
+			'requestStatus': 'Submitted',
+			'dateSubmitted': date.today(),
+			'eventTitle': travel_event_title,
+			'description': '',
+			'sameBudgetForRecurringEvents': True,
+			'budget': None,
+			'requestingAs': travel_requesting_as
+		})
+		# create budget
+		travelBudget = Budget.objects.create(**{
+			'additionalInfo': '',
+			'amountAwarded': 0,
+			'comment': '',
+			'totalRequestedAmount': 0,
+			'totalOtherFunding': 0,
+			'grandTotal': 0
+		})
+		# extract total amounts from travel budget item descriptions
+		i = 1
+		total = 0
+		while True:
+			strI = str(i)
+			if post.get('travel_budget_description_' + strI) is None:
+				break
+			qty = int(post.get('travel_budget_quantity_' + strI))
+			cpi = float(post.get('travel_budget_cost_per_item_' + strI))
+			ItemDescription.objects.create(**{
+				'budget': travelBudget,
+				'description': post.get('travel_budget_description_' + strI),
+				'comment': '',
+				'quantity': qty,
+				'itemCost': cpi,
+				'requestedAmount': qty*cpi,
+				'otherFunding': 0,
+				'total': qty*cpi
+			})
+			total += qty*cpi
+			i += 1
+
+		# set totals in travel budget to reflect calculated total
+		travelBudget.totalRequestedAmount = total
+		travelBudget.grandTotal = total
+		travelBudget.save()
+
+		# create travel event
+		travelEvent = TravelEvent.objects.create(**{
+			'fundingRequest': travelReq,
+			'startDate': datetime.datetime.strptime(travel_event_start_date, '%m/%d/%Y'),
+			'endDate': datetime.datetime.strptime(travel_event_end_date, '%m/%d/%Y'),
+			'location': travel_event_location,
+			'waiverRequested': True,
+			'attendenceNonStudent': 1,
+			'attendenceUG': 1,
+			'attendenceGrad': 1,
+			'budget': travelBudget,
+			'depatureDate': datetime.datetime.strptime(travel_event_departure_date, '%m/%d/%Y'),
+			'returnDate': datetime.datetime.strptime(travel_event_return_date, '%m/%d/%Y'),
+			'presenting': True if travel_presenting == 'Y' else False,
+			'presentationTitle': travel_presentation_title
+		})
+		return HttpResponse('SUCCESS')
+
+	# request categories
+	if request_type == 'Graduate':
+		reqSearch = 'grad_req_cat'
+		grantSearch = 'grad_grant_cat'
+	elif request_type == 'Undergraduate':
+		reqSearch = 'ug_req_cat'
+		grantSearch = 'ug_grant_cat'
+	grant = False
+	reqCatString = ''
+	grantCatString = ''
+	i = 0
+	for item in request.POST.getlist(reqSearch):
+		if item == 'Grant':
+			grant = True
+		reqCatString += item
+		i += 1
+		if i != len(request.POST.getlist(reqSearch)):
+			reqCatString += ','
+
+	# grant categories
+	if grant == True:
+		grantCatString = ''
+		i = 0
+		for item in request.POST.getlist(grantSearch):
+			grantCatString += item
+			i += 1
+			if i != len(request.POST.getlist(grantSearch)):
+				grantCatString += ','
+
+	# get new non-travel parameters
+	event_type = post.get('event_type')
+
+	if request_type == 'Graduate':
+		reqSearchString = 'grad_req_cat'
+		grantSearchString = 'grad_grant_cat'
+		affiliate = post.get('affiliate')
+		delegate = post.get('delegate') # isdigit()
+		grad_membership_total = post.get('grad_membership_total') # isdigit()
+		grad_membership_grad = post.get('grad_membership_grad') # isdigit()
+		grad_membership_ug = post.get('grad_membership_ug') # isdigit()
+		grad_waiver = post.get('grad_waiver') # Y or N
+		event_title = post.get('event_title')
+		event_description = post.get('event_description')
+		if event_type == 'R':
+			recurring_same_budget = post.get('recurring_same_budget')
+		else:
+			recurring_same_budget = 'N'
+
+		fundingRequest = GraduateRequest.objects.create(**{
+			'uid': user['uid'],
+			'name': user['name'],
+			'email': email,
+			'phone': phone,
+			'requestType': request_type,
+			'requestCategory': reqCatString,
+			'grantCategory': grantCatString,
+			'eventType': event_type,
+			'fundingRound': funding_round,
+			'contingency': contingency,
+			'studentGroup': student_group,
+			'studentGroupPending': studentGroupPending,
+			'requestStatus': 'Submitted',
+			'dateSubmitted': date.today(),
+			'eventTitle': event_title,
+			'description': event_description,
+			'sameBudgetForRecurringEvents': True if recurring_same_budget == 'Y' else False,
+			'budget': None,
+			'academicDepartmentalAffiliate': affiliate,
+			'gaDelegate': ConfigGradDelegate.objects.get(id=delegate).name + ', ' + ConfigGradDelegate.objects.get(id=delegate).email,
+			'studentOrgTot': grad_membership_total,
+			'studentOrgGrad': grad_membership_grad,
+			'studentOrgUG': grad_membership_ug,
+			'attendedWaiver': True if grad_waiver == 'Y' else False
+		})
+
+	elif request_type == 'Undergraduate':
+		reqSearchString = 'ug_req_cat'
+		grantSearchString = 'ug_grant_cat'
+		ug_membership_total = post.get('grad_membership_grad')
+		ug_membership_student = post.get('ug_membership_student')
+		ug_waiver = post.get('ug_waiver')
+
+		fundingRequest = UndergraduateRequest.objects.create(**{
+			'uid': user['uid'],
+			'name': user['name'],
+			'email': email,
+			'phone': phone,
+			'requestType': request_type,
+			'requestCategory': reqCatString,
+			'grantCategory': grantCatString,
+			'eventType': event_type,
+			'fundingRound': funding_round,
+			'contingency': contingency,
+			'studentGroup': student_group,
+			'studentGroupPending': studentGroupPending,
+			'requestStatus': 'Submitted',
+			'dateSubmitted': date.today(),
+			'eventTitle': event_title,
+			'description': event_description,
+			'sameBudgetForRecurringEvents': True if recurring_same_budget == 'Y' else False,
+			'budget': None,
+			'studentOrgTot': ug_membership_total,
+			'studentOrgStud': ug_membership_student,
+			'attended': True if ug_waiver == 'Y' else False
+		})
+
+	if event_type == 'Single Event':
+		# get budget details (only additional info)
+		budget_additional_info = post.get('budget_additional_info_1')
+		# create budget
+		budget = Budget.objects.create(**{
+			'additionalInfo': budget_additional_info,
+			'amountAwarded': 0,
+			'comment': '',
+			'totalRequestedAmount': 0,
+			'totalOtherFunding': 0,
+			'grandTotal': 0
+		})
+		# create (loop thru) budget items
+		i = 1
+		totalReqAmt = 0
+		totalOthFund = 0
+		total = 0
+		while True:
+			strI = str(i)
+			if post.get('budget_description_1_' + strI) is None:
+				break
+			qty = int(post.get('budget_quantity_1_' + strI))
+			cpi = float(post.get('budget_cost_per_item_1_' + strI))
+			reqAmt = float(post.get('budget_amount_requested_1_' + strI))
+			othFund = float(post.get('budget_other_funding_1_' + strI))
+			ItemDescription.objects.create(**{
+				'budget': budget,
+				'description': post.get('budget_description_1_' + strI),
+				'comment': '',
+				'quantity': qty,
+				'itemCost': cpi,
+				'requestedAmount': reqAmt,
+				'otherFunding': othFund,
+				'total': qty*cpi
+			})
+			totalReqAmt += reqAmt
+			totalOthFund += othFund
+			total += qty*cpi
+			i += 1
+
+		# update totals
+		budget.totalRequestedAmount = totalReqAmt
+		budget.totalOtherFunding = totalOthFund
+		budget.grandTotal = total
+		budget.save()
+
+		# get event details
+		start_date = post.get('start_date_1')
+		end_date = post.get('end_date_1')
+		event_location = post.get('event_location_1')
+		event_waiver = post.get('event_waiver_1')
+		event_non_students_1 = post.get('event_non_students_1')
+		event_undergraduate_1 = post.get('event_undergraduate_1')
+		event_graduate_1 = post.get('event_graduate_1')
+		# create event
+		Event.objects.create(**{
+			'fundingRequest': fundingRequest,
+			'startDate': datetime.datetime.strptime(start_date, '%m/%d/%Y'),
+			'endDate': datetime.datetime.strptime(end_date, '%m/%d/%Y'),
+			'location': event_location,
+			'waiverRequested': event_waiver,
+			'attendenceNonStudent': event_non_students_1,
+			'attendenceUG': event_undergraduate_1,
+			'attendenceGrad': event_graduate_1,
+			'budget': budget,
+		})
+		return HttpResponse('SUCCESS')
+	elif event_type == 'Recurring Event':
+		if recurring_same_budget == 'Y':
+			# get budget details (only additional info)
+			budget_additional_info = post.get('budget_additional_info_1')
+			# create budget
+			budget = Budget.objects.create(**{
+				'additionalInfo': budget_additional_info,
+				'amountAwarded': 0,
+				'comment': '',
+				'totalRequestedAmount': 0,
+				'totalOtherFunding': 0,
+				'grandTotal': 0
+			})
+			# create (loop thru) budget items
+			i = 1
+			totalReqAmt = 0
+			totalOthFund = 0
+			total = 0
+			while True:
+				strI = str(i)
+				if post.get('budget_description_1_' + strI) is None:
+					break
+				qty = int(post.get('budget_quantity_1_' + strI))
+				cpi = float(post.get('budget_cost_per_item_1_' + strI))
+				reqAmt = float(post.get('budget_amount_requested_1_' + strI))
+				othFund = float(post.get('budget_other_funding_1_' + strI))
+				ItemDescription.objects.create(**{
+					'budget': budget,
+					'description': post.get('budget_description_1_' + strI),
+					'comment': '',
+					'quantity': qty,
+					'itemCost': cpi,
+					'requestedAmount': reqAmt,
+					'otherFunding': othFund,
+					'total': qty*cpi
+				})
+				totalReqAmt += reqAmt
+				totalOthFund += othFund
+				total += qty*cpi
+				i += 1
+
+			# update totals
+			budget.totalRequestedAmount = totalReqAmt
+			budget.totalOtherFunding = totalOthFund
+			budget.grandTotal = total
+			budget.save()
+
+			# create events
+			i = 1
+			while True:
+				strI = str(i)
+				# get event details
+				start_date = post.get('start_date_' + strI)
+				end_date = post.get('end_date_' + strI)
+				event_location = post.get('event_location_' + strI)
+				event_waiver = post.get('event_waiver_' + strI)
+				event_non_students = post.get('event_non_students_' + strI)
+				event_undergraduate = post.get('event_undergraduate_' + strI)
+				event_graduate = post.get('event_graduate_' + strI)
+				Event.objects.create(**{
+					'fundingRequest': fundingRequest,
+					'startDate': datetime.datetime.strptime(start_date, '%m/%d/%Y'),
+					'endDate': datetime.datetime.strptime(end_date, '%m/%d/%Y'),
+					'location': event_location,
+					'waiverRequested': event_waiver,
+					'attendenceNonStudent': event_non_students,
+					'attendenceUG': event_undergraduate,
+					'attendenceGrad': event_graduate,
+					'budget': budget,
+				})
+				i += 1
+			return HttpResponse('SUCCESS')
+		elif recurring_same_budget == 'N':
+			i = 1
+			while True:
+				strI = str(i)
+				if post.get('budget_additional_info_' + strI) is None:
+					break
+				# get budget details (only additional info)
+				budget_additional_info = post.get('budget_additional_info_' + strI)
+				# create budget
+				budget = Budget.objects.create(**{
+					'additionalInfo': budget_additional_info,
+					'amountAwarded': 0,
+					'comment': '',
+					'totalRequestedAmount': 0,
+					'totalOtherFunding': 0,
+					'grandTotal': 0
+				})
+				# create (loop thru) budget items
+				j = 1
+				totalReqAmt = 0
+				totalOthFund = 0
+				total = 0
+				while True:
+					strJ = str(j)
+					if post.get('budget_description_' + strI + '_' + strJ) is None:
+						break
+					qty = int(post.get('budget_quantity_' + strI + '_' + strJ))
+					cpi = float(post.get('budget_cost_per_item_' + strI + '_' + strJ))
+					reqAmt = float(post.get('budget_amount_requested_' + strI + '_' + strJ))
+					othFund = float(post.get('budget_other_funding_' + strI + '_' + strJ))
+					ItemDescription.objects.create(**{
+						'budget': budget,
+						'description': post.get('budget_description_' + strI + '_' + strJ),
+						'comment': '',
+						'quantity': qty,
+						'itemCost': cpi,
+						'requestedAmount': reqAmt,
+						'otherFunding': othFund,
+						'total': qty*cpi
+					})
+					totalReqAmt += reqAmt
+					totalOthFund += othFund
+					total += qty*cpi
+					j += 1
+
+				# update totals
+				budget.totalRequestedAmount = totalReqAmt
+				budget.totalOtherFunding = totalOthFund
+				budget.grandTotal = total
+				budget.save()
+
+				# get event details
+				start_date = post.get('start_date_' + strI)
+				end_date = post.get('end_date_' + strI)
+				event_location = post.get('event_location_' + strI)
+				event_waiver = post.get('event_waiver_' + strI)
+				event_non_students = post.get('event_non_students_' + strI)
+				event_undergraduate = post.get('event_undergraduate_' + strI)
+				event_graduate = post.get('event_graduate_' + strI)
+				# create event
+				Event.objects.create(**{
+					'fundingRequest': fundingRequest,
+					'startDate': datetime.datetime.strptime(start_date, '%m/%d/%Y'),
+					'endDate': datetime.datetime.strptime(end_date, '%m/%d/%Y'),
+					'location': event_location,
+					'waiverRequested': event_waiver,
+					'attendenceNonStudent': event_non_students,
+					'attendenceUG': event_undergraduate,
+					'attendenceGrad': event_graduate,
+					'budget': budget,
+				})
+				i += 1
+			return HttpResponse('SUCCESS')
+	elif event_type == 'Operational Costs':
+		pass
+
+	return HttpResponse('')
+
+def dne(post, values):
+	"""
+	Check if any of the values in the list "values" does not exist as an index in the list "post".
+	"""
+	for value in values:
+		if post.get(value) is None or post.get(value) is '':
+			return True
+	return False
+
+def validateEmail(email):
+	"""
+	Validate an e-mail address
+	"""
+	from django.core.validators import validate_email
+	from django.core.exceptions import ValidationError
+	try:
+		validate_email(email)
+		return True
+	except ValidationError:
+		return False
+
+def validatePhone(phone):
+	if re.match(r'^(\d{3})-(\d{3})-(\d{4})$', phone) is None:
+		return False
+	else:
+		return True
+
+def validateDate(date):
+	try:
+		valid_date = datetime.strptime(date, '%m/%d/%Y')
+	except ValueError:
+		return False
+	return True
+
+def validateDates(dates):
+	for date in dates:
+		if validateDate(date) == False:
+			return False
+	return True
+
+def validateChars(field, charList):
+	for item in charList:
+		if field == item:
+			return True
+	return False
 
 def email_delegate(request_id):
 	"""

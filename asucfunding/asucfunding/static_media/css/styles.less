@@ -75,7 +75,8 @@ a.nostyle {
 
 @sans: "Helvetica Neue", Helvetica, sans-serif;
 
-@errorred: lighten(#f00, 30%);
+@red: #f00;
+@errorred: lighten(@red, 30%);
 
 // convenience
 
@@ -493,7 +494,7 @@ p.block {
 }
 
 .error {
-	background-color: @errorred;
+	background-color: @errorred !important;
 }
 
 .error[type=checkbox], .error[type=radio] {

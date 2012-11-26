@@ -84,7 +84,7 @@
 {% endcomment %}
 
 {% block content %}
-	<form id='request_form' action='/submit_request/' method='POST'>{% csrf_token %}
+	<form id='request_form' class='edit' action='/submit_request/' method='POST'>{% csrf_token %}
 		<div id='request_selector_block'>
 			<h2>Request Information</h2>
 			
@@ -109,33 +109,18 @@
 				<legend>Request Type</legend>
 
 				<div class='form-field'>
-				{% if funding_request.requestType == "G" %}
-					<input type='radio' name='request_type' value='G' id='request_type_graduate' checked>
+					<input type='radio' name='request_type' value='Graduate' id='request_type_graduate' {% if funding_request.requestType == 'Graduate' %}checked{% endif %}>
 					<label for='request_type_graduate'>Graduate Funding Request</label>
-				{% else %}
-					<input type='radio' name='request_type' value='G' id='request_type_graduate'>
-					<label for='request_type_graduate'>Graduate Funding Request</label>
-				{% endif %}
 				</div>
 				
 				<div class='form-field'>
-				{% if funding_request.requestType == "U" %}
-					<input type='radio' name='request_type' value='U' id='request_type_undergraduate' checked>
+					<input type='radio' name='request_type' value='Undergraduate' id='request_type_undergraduate' {% if funding_request.requestType == 'Undergraduate' %}checked{% endif %}>
 					<label for='request_type_undergraduate'>Undergraduate Funding Request</label>
-				{% else %}
-					<input type='radio' name='request_type' value='U' id='request_type_undergraduate'>
-					<label for='request_type_undergraduate'>Undergraduate Funding Request</label>
-				{% endif %}
 				</div>
 				
 				<div class='form-field'>
-				{% if funding_request.requestType == "T" %}
-					<input type='radio' name='request_type' value='T' id='request_type_travel' checked>
+					<input type='radio' name='request_type' value='Travel' id='request_type_travel' {% if funding_request.requestType == 'Travel' %}checked{% endif %}>
 					<label for='request_type_travel'>Travel Award Application</label>
-				{% else %}
-					<input type='radio' name='request_type' value='T' id='request_type_travel'>
-					<label for='request_type_travel'>Travel Award Application</label>
-				{% endif %}
 				</div>
 				
 			</fieldset>
@@ -144,7 +129,7 @@
 				<legend>Request category/categories:</legend>
 				{% for type in ug_request_categories %}
 					{% comment %} parse grant category string and check all boxes {% endcomment %}
-					{% if type in funding_request.requestCategory.split(",") %}
+					{% if type in funding_request.splitRequestCategory %}
 					<div class='form-field'>	
 						<input type='checkbox' name='ug_req_cat' value='{{type.category}}' id='ug_req_cat_{{type.id}}' checked="checked">
 						<label for='ug_req_cat_{{type.id}}'>{{type.category}}</label>
@@ -161,7 +146,7 @@
 			<fieldset id='grad_request_categories'>
 				<legend>Request category/categories:</legend>
 				{% for type in grad_request_categories %}
-					{% if type in funding_request.requestCategory.split(",") %}
+					{% if type in funding_request.splitRequestCategory %}
 					<div class='form-field'>
 						<input type='checkbox' name='grad_req_cat' value='{{type.category}}' id='grad_req_cat_{{type.id}}' checked="checked">
 						<label for='grad_req_cat_{{type.id}}'>{{type.category}}</label>
@@ -178,7 +163,7 @@
 			<fieldset id='ug_grant_categories'>
 				<legend>Grant category/categories:</legend>
 				{% for type in ug_grant_categories %}
-					{% if type in funding_request.grantCategory.split(",") %}
+					{% if type in funding_request.splitGrantCategory %}
 					<div class='form-field'>
 						<input type='checkbox' name='ug_grant_cat' value='{{type.category}}' id='ug_grant_cat_{{type.id}}' checked="checked">
 						<label for='ug_grant_cat_{{type.id}}'>{{type.category}}</label>
@@ -195,7 +180,7 @@
 			<fieldset id='grad_grant_categories'>
 				<legend>Grant category/categories:</legend>
 				{% for type in grad_grant_categories %}
-					{% if type in funding_request.grantCategory.split(",") %}
+					{% if type in funding_request.splitGrantCategory %}
 					<div class='form-field'>
 						<input type='checkbox' name='grad_grant_cat' value='{{type.category}}' id='grad_grant_cat_{{type.id}}' checked="checked">
 						<label for='grad_grant_cat_{{type.id}}'>{{type.category}}</label>
@@ -214,36 +199,36 @@
 				
 				{% if funding_request.eventType == "S" %}
 				<div class='form-field'>
-					<input type='radio' name='event_type' value='S' id='event_type_single' checked>
+					<input type='radio' name='event_type' value='Single Event' id='event_type_single' checked>
 					<label for='event_type_single'>Single Event</label>
 				</div>
 				{% else %}
 				<div class='form-field'>
-					<input type='radio' name='event_type' value='S' id='event_type_single'>
+					<input type='radio' name='event_type' value='Single Event' id='event_type_single'>
 					<label for='event_type_single'>Single Event</label>
 				</div>
 				{% endif %}
 
 				{% if funding_request.eventType == "R" %}
 				<div class='form-field'>
-					<input type='radio' name='event_type' value='R' id='event_type_recurring' checked>
+					<input type='radio' name='event_type' value='Recurring Event' id='event_type_recurring' checked>
 					<label for='event_type_recurring'>Recurring Event</label>
 				</div>
 				{% else %}
 				<div class='form-field'>
-					<input type='radio' name='event_type' value='R' id='event_type_recurring'>
+					<input type='radio' name='event_type' value='Recurring Event' id='event_type_recurring'>
 					<label for='event_type_recurring'>Recurring Event</label>
 				</div>
 				{% endif %}
 				
 				{% if funding_request.eventType == "O" %}
 				<div class='form-field'>
-					<input type='radio' name='event_type' value='O' id='event_type_costs' checked>
+					<input type='radio' name='event_type' value='Operational Costs' id='event_type_costs' checked>
 					<label for='event_type_costs'>Operational Costs</label>
 				</div>
 				{% else %}
 				<div class='form-field'>
-					<input type='radio' name='event_type' value='O' id='event_type_costs'>
+					<input type='radio' name='event_type' value='Operational Costs' id='event_type_costs'>
 					<label for='event_type_costs'>Operational Costs</label>
 				</div>
 				{% endif %}
@@ -493,7 +478,7 @@
 		</div>
 
 		{% if funding_request.sameBudgetForRecurringEvents == True %}
-			{% for event in funding_request.event_set.all() %}
+			{% for event in funding_request.events %}
 		<div id='event_block_{{forloop.counter}}' class='event_block'>
 			<h2>Event Details</h2>
 
@@ -541,7 +526,7 @@
 					<td>Other Funding</td>
 					<td>Item Total</td>
 				</tr>
-				{% for item in funding_request.event_set.all()[0].budget.itemdescription_set.all() %}
+				{% for item in funding_request.budget_items %}
 				<tr id='budget_item_description_1_{{forloop.counter}}' class='budget_item_description'>
 					<td><input type='text' name='budget_description_1_{{forloop.counter}}' id='budget_description_1_{{forloop.counter}}' value='{{event.description}}'></td>
 					<td><input type='text' name='budget_quantity_1_{{forloop.counter}}' id='budget_quantity_1_{{forloop.counter}}' value='{{event.quantity}}'></td>
@@ -568,7 +553,7 @@
 		
 		{% else %}
 			{% if funding_request.sameBudgetForRecurringEvents == False %}
-			{% for event in funding_request.event_set.all() %}
+			{% for event in funding_request.events %}
 		<div id='event_block_{{forloop.counter}}' class='event_block'>
 			<h2>Event Details</h2>
 
@@ -616,7 +601,7 @@
 					<td>Other Funding</td>
 					<td>Item Total</td>
 				</tr>
-				{% for item in funding_request.event_set.all()[0].budget.itemdescription_set.all() %}
+				{% for item in funding_request.budget_items %}
 				<tr id='budget_item_description_{{forloop.parentloop.counter}}_{{forloop.counter}}' class='budget_item_description'>
 					<td><input type='text' name='budget_description_{{forloop.parentloop.counter}}_{{forloop.counter}}' id='budget_description_{{forloop.parentloop.counter}}_{{forloop.counter}}' value='{{event.description}}'></td>
 					<td><input type='text' name='budget_quantity_{{forloop.parentloop.counter}}_{{forloop.counter}}' id='budget_quantity_{{forloop.parentloop.counter}}_{{forloop.counter}}' value='{{event.quantity}}'></td>
@@ -700,7 +685,18 @@
 					<td>$ <input type='text' name='budget_item_total_1_1' id='budget_item_total_1_1' class='item_total'></td>
 				</tr>
 			</table>
-			
+			<div class='button-group'>
+				<button class='add_budget_item'>Add Item Description</button>
+				<button class='remove_budget_item'>Remove Last Item Description</button>
+			</div>
+
+			<div class='form-container'>
+				<div class='form-field block-label'>
+					<label for='budget_additional_info_1'>Additional Info:</label>
+					<textarea name='budget_additional_info_1' id='budget_additional_info_1'></textarea>
+				</div>
+			</div>
+		</div>
 			{% endif %}
 		{% endif %}
 			
@@ -720,40 +716,42 @@
 		<div id='travel_event_block'>
 			<h2>Travel Event Details</h2>
 
-			<div class='form-field'>
-			<label for='travel_event_title'>Event</label>
-			<input type='text' name='travel_event_title' id='travel_event_title' value='{{funding_request.eventTitle}}'>
-			</div>
+			<div class='form-container'>
+				<div class='form-field'>
+				<label for='travel_event_title'>Event</label>
+				<input type='text' name='travel_event_title' id='travel_event_title' value='{{funding_request.eventTitle}}'>
+				</div>
 
-			<div class='form-field'>
-			<label for='travel_event_location'>Location</label>
-			<input type='text' name='travel_event_location' id='travel_event_location' value='{{funding_request.event_set.all()[0].location}}'>
-			</div>
-			
-			<div class='form-field'>
-			<label for='travel_event_start_date'>Event Start Date</label>
-			<input type='text' name='travel_event_start_date' id='travel_event_start_date' value='{{funding_request.event_set.all()[0].startDate}}'>
-			</div>
-			
-			<div class='form-field'>
-			<label for='travel_event_end_date'>Event End Date</label>
-			<input type='text' name='travel_event_end_date' id='travel_event_end_date' value='{{funding_request.event_set.all()[0].endDate}}'>
-			</div>
+				<div class='form-field'>
+				<label for='travel_event_location'>Location</label>
+				<input type='text' name='travel_event_location' id='travel_event_location' value='{{funding_request.travel_event.location}}'>
+				</div>
+				
+				<div class='form-field'>
+				<label for='travel_event_start_date'>Event Start Date</label>
+				<input type='text' name='travel_event_start_date' id='travel_event_start_date' value='{{funding_request.travel_event.startDate}}'>
+				</div>
+				
+				<div class='form-field'>
+				<label for='travel_event_end_date'>Event End Date</label>
+				<input type='text' name='travel_event_end_date' id='travel_event_end_date' value='{{funding_request.travel_event.endDate}}'>
+				</div>
 
-			<div class='form-field'>
-			<label for='travel_event_departure_date'>Your Departure Date</label>
-			<input type='text' name='travel_event_departure_date' id='travel_event_departure_date' value='{{funding_request.event_set.all()[0].departureDate}}'>
-			</div>
-			
-			<div class='form-field'>
-			<label for='travel_event_return_date'>Your Return Date</label>
-			<input type='text' name='travel_event_return_date' id='travel_event_return_date' value='{{funding_request.event_set.all()[0].returnDate}}'>
+				<div class='form-field'>
+				<label for='travel_event_departure_date'>Your Departure Date</label>
+				<input type='text' name='travel_event_departure_date' id='travel_event_departure_date' value='{{funding_request.travel_event.departureDate}}'>
+				</div>
+				
+				<div class='form-field'>
+				<label for='travel_event_return_date'>Your Return Date</label>
+				<input type='text' name='travel_event_return_date' id='travel_event_return_date' value='{{funding_request.travel_event.returnDate}}'>
+				</div>
 			</div>
 			
 			<fieldset>
 				<legend>Are you presenting?</legend>
 
-				{% if funding_request.event_set.all()[0].presenting == True%}
+				{% if funding_request.travel_event.presenting == True %}
 				<div class='form-field'>
 				<input type='radio' name='travel_presenting' value='Y' id='travel_presenting_Y'checked>
 				<label for='travel_presenting_Y'>Yes</label>
@@ -765,7 +763,7 @@
 				</div>
 				{% endif %}
 				
-				{% if funding_request.event_set.all()[0].presenting -- False%}
+				{% if funding_request.travel_event.presenting == False %}
 				<div class='form-field'>
 				<input type='radio' name='travel_presenting' value='N' id='travel_presenting_N' checked>
 				<label for='travel_presenting_N'>No</label>
@@ -780,7 +778,7 @@
 
 			<div class='form-field'>
 			<label for='travel_presentation_title'>Title of your presentation:</label>
-			<input type='text' name='travel_presentation_title' id='travel_presentation_title' value='{{funding_request.event_set.all()[0].presentationTitle}}'>
+			<input type='text' name='travel_presentation_title' id='travel_presentation_title' value='{{funding_request.travel_event.presentationTitle}}'>
 			</div>
 		</div>
 
@@ -794,7 +792,7 @@
 					<td>Cost Per Item</td>
 					<td>Item Total</td>
 				</tr>
-				{% for item in funding_request.event_set.all()[0].budget.itemdescription_set.all() %}
+				{% for item in funding_request.budget_items %}
 				<tr id='travel_budget_item_description_{{forloop.counter}}' class='travel_budget_item_description'>
 					<td><input type='text' name='travel_budget_description_{{forloop.counter}}' id='travel_budget_description_{{forloop.counter}}' value='{{item.description}}'></td>
 					<td><input type='text' name='travel_budget_quantity_{{forloop.counter}}' id='travel_budget_quantity_{{forloop.counter}}' value='{{item.quantity}}'></td>
@@ -811,6 +809,7 @@
 		</div>
 
 		<button id='submit'>Submit Funding Request</button>
+		<button id='save' class='cancel'>Save</button>
 
 		<div id='submission_confirmation'>
 			<h2 id='sc_title'>Thank you for submitting the following request:</h2>

@@ -46,8 +46,8 @@
 		Travel Request Block
 			r - travel_requesting_as (I, or G)
 		Event Header Block
-			t - recurring_event_title
-			t - recurring_event_description
+			t - event_title
+			t - event_description
 		Recurring Event Header Block
 			t - recurring_event_title
 			t - recurring_event_description
@@ -62,6 +62,7 @@
 				t - budget_description_k_l
 				t - budget_quantity_k_l
 				t - budget_cost_per_item_k_l
+				t - budget_amount_requested_1_1
 				t - budget_other_funding_k_l
 			t - budget_additional_info_k
 			(other values should be calculated back-end)
@@ -84,7 +85,7 @@
 {% endcomment %}
 
 {% block content %}
-	<form id='request_form' action='/submit_request/' method='POST'>{% csrf_token %}
+	<form id='request_form' class='create' action='/submit_request/' method='POST'>{% csrf_token %}
 		<div id='request_selector_block'>
 			<h2>Request Information</h2>
 
@@ -109,15 +110,15 @@
 				<legend>Request Type</legend>
 
 				<div class='form-field'>
-					<input type='radio' name='request_type' value='G' id='request_type_graduate'>
+					<input type='radio' name='request_type' value='Graduate' id='request_type_graduate'>
 					<label for='request_type_graduate'>Graduate Funding Request</label>
 				</div>
 				<div class='form-field'>
-					<input type='radio' name='request_type' value='U' id='request_type_undergraduate'>
+					<input type='radio' name='request_type' value='Undergraduate' id='request_type_undergraduate'>
 					<label for='request_type_undergraduate'>Undergraduate Funding Request</label>
 				</div>
 				<div class='form-field'>
-					<input type='radio' name='request_type' value='T' id='request_type_travel'>
+					<input type='radio' name='request_type' value='Travel' id='request_type_travel'>
 					<label for='request_type_travel'>Travel Award Application</label>
 				</div>
 			</fieldset>
@@ -166,17 +167,17 @@
 				<legend>Requesting for:</legend>
 
 				<div class='form-field'>
-				<input type='radio' name='event_type' value='S' id='event_type_single'>
+				<input type='radio' name='event_type' value='Single Event' id='event_type_single'>
 				<label for='event_type_single'>Single Event</label>
 				</div>
 
 				<div class='form-field'>
-				<input type='radio' name='event_type' value='R' id='event_type_recurring'>
+				<input type='radio' name='event_type' value='Recurring Event' id='event_type_recurring'>
 				<label for='event_type_recurring'>Recurring Event</label>
 				</div>
 
 				<div class='form-field'>
-				<input type='radio' name='event_type' value='O' id='event_type_costs'>
+				<input type='radio' name='event_type' value='Operational Costs' id='event_type_costs'>
 				<label for='event_type_costs'>Operational Costs</label>
 				</div>
 			</fieldset>
@@ -392,6 +393,25 @@
 					<option value='P'>Partial</option>
 				</select>
 			</fieldset>
+
+			<fieldset>
+				<legend>Expected Attendance</legend>
+
+				<div class='form-field'>
+				<label for='event_non_students_1'>Total</label>
+				<input type='text' name='event_non_students_1' id='event_non_students_1' class='attendance'>
+				</div>
+
+				<div class='form-field'>
+				<label for='event_undergraduate'>Undergraduate</label>
+				<input type='text' name='event_undergraduate_1' id='event_undergraduate_1' class='attendance'>
+				</div>
+
+				<div class='form-field'>
+				<label for='event_graduate'>Graduate</label>
+				<input type='text' name='event_graduate_1' id='event_graduate_1' class='attendance'>
+				</div>
+			</fieldset>
 		</div>
 
 		<div id='budget_block_1' class='budget_block'>
@@ -521,6 +541,7 @@
 		</div>
 
 		<button id='submit'>Submit Funding Request</button>
+		<button id='save' class='cancel'>Save</button>
 
 		<div id='submission_confirmation'>
 			<h2 id='sc_title'>Thank you for submitting the following request:</h2>
