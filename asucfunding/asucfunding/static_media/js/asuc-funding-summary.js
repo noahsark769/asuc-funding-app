@@ -1,6 +1,36 @@
 // asuc-funding-summary.js - functions and bindings for sorting, filtering, and calculating things about the request summary table
 
 $(document).ready(function () {
+
+	// lemme start you off with something easy...
+	// calculate requested totals
+	function calculateRequestedTotals() {
+		var grandRequestedTotal = 0,
+			grandAwardedTotal = 0,
+			number,
+			html,
+			value,
+			$requestedData,
+			$awardedData;
+
+		$('tbody tr:visible').each(function() {
+			$requestedData = $(this).find('.requested-total');
+			$awardedData = $(this).find('.awarded-total');
+			html = $requestedData.html();
+			number = html.slice(1); // have to slice off the $ sign
+			value = parseFloat(number); //will break if something is not an integer
+			grandRequestedTotal += value;
+
+			html = $awardedData.html();
+			number = html.slice(1); // have to slice off the $ sign
+			value = parseInt(number); //will break if something is not an integer
+			grandAwardedTotal += value;
+		});
+
+		$('td#requested_grand_total').html(grandRequestedTotal);
+		$('td#awarded_grand_total').html(grandAwardedTotal);
+	}
+
 	// populate the options panel
 	var $bodyElems,
 		set,
@@ -32,7 +62,7 @@ $(document).ready(function () {
 		for (var html in set) {
 			// console.log('html is' + html)
 			checkboxHTML = '<div class="form-option" id="' + html +'">' +
-			'<input type="checkbox" name="' + id + '" value="' + html + '" >' +
+			'<input type="checkbox" checked="true" name="' + id + '" value="' + html + '" >' +
 			'<label for="' + id + '">'+ html + '</label></div>';
 			$toAppend.append(checkboxHTML);
 		}
@@ -73,14 +103,31 @@ $(document).ready(function () {
 			console.log("trololo!" + $elemsIntersection.length);
 
 			$('tbody tr').hide();
-			$elemsIntersection.show();
+			$.when($elemsIntersection.show()).done(function () {
+				calculateRequestedTotals();
+			});
 		});
 	});
 
 	// bind select all
 	$('a#select_all').click(function () {
-		$('div.form-option input[type=checkbox]').prop('checked', 'true');
+		$('div.form-option input[type=checkbox]').prop('checked', true);
 	});
+
+	// bind deselect all
+	$('a#deselect_all').click(function () {
+		$('div.form-option input[type=checkbox]').prop('checked', false);
+	});
+
+	// show options panel on funnel click
+	// the "remove options panel" button also has this class
+	$('a.funnel').click(function () {
+		$.when($('tr#request_summary_options_form').fadeToggle()).done(function () {
+			calculateRequestedTotals();
+		});
+	});
+
+
 
 	// sorting
 	var $rows,
@@ -107,29 +154,6 @@ $(document).ready(function () {
 		$('tbody').append($(sorted));
 	});
 
-	// calculate requested totals
-	var grandRequestedTotal = 0,
-		grandAwardedTotal = 0,
-		number,
-		html,
-		value,
-		$requestedData,
-		$awardedData;
-
-	$('tbody tr').each(function() {
-		$requestedData = $(this).find('.requested-total');
-		$awardedData = $(this).find('.awarded-total');
-		html = $requestedData.html();
-		number = html.slice(1); // have to slice off the $ sign
-		value = parseFloat(number); //will break if something is not an integer
-		grandRequestedTotal += value;
-
-		html = $awardedData.html();
-		number = html.slice(1); // have to slice off the $ sign
-		value = parseInt(number); //will break if something is not an integer
-		grandAwardedTotal += value;
-	});
-
-	$('td#requested_grand_total').html(grandRequestedTotal);
-	$('td#awarded_grand_total').html(grandAwardedTotal);
+	//actual calculate initially
+	calculateRequestedTotals();
 });
