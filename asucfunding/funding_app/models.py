@@ -37,7 +37,7 @@ class FundingRequest (models.Model):
     
 class GraduateRequest(FundingRequest):
     academicDepartmentalAffiliate = models.CharField(max_length=50)
-    gaDelegate = models.CharField(max_length=50)
+    gaDelegate = models.IntegerField()
     studentOrgTot = models.IntegerField()
     studentOrgGrad = models.IntegerField()
     studentOrgUG = models.IntegerField()
