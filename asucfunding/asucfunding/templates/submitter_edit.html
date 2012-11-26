@@ -776,7 +776,7 @@
 
 			<div class='form-field'>
 			<label for='travel_presentation_title'>Title of your presentation:</label>
-			<input type='text' name='travel_presentation_title' id='travel_presentation_title' value='{{{{funding_request.event_set.all()[0].presentationTitle}}'>
+			<input type='text' name='travel_presentation_title' id='travel_presentation_title' value='{{funding_request.event_set.all()[0].presentationTitle}}'>
 			</div>
 		</div>
 
@@ -790,12 +790,14 @@
 					<td>Cost Per Item</td>
 					<td>Item Total</td>
 				</tr>
-				<tr id='travel_budget_item_description_1' class='travel_budget_item_description'>
-					<td><input type='text' name='travel_budget_description_1' id='travel_budget_description_1'></td>
-					<td><input type='text' name='travel_budget_quantity_1' id='travel_budget_quantity_1'></td>
-					<td><input type='text' name='travel_budget_cost_per_item_1' id='travel_budget_cost_per_item_1'></td>
-					<td><input type='text' name='travel_budget_item_total_1' id='travel_budget_item_total_1' disabled='true'></td>
+				{% for item in funding_request.event_set.all()[0].budget.itemdescription_set.all() %}
+				<tr id='travel_budget_item_description_{{forloop.counter}}' class='travel_budget_item_description'>
+					<td><input type='text' name='travel_budget_description_{{forloop.counter}}' id='travel_budget_description_{{forloop.counter}}' value='{{item.description}}'></td>
+					<td><input type='text' name='travel_budget_quantity_{{forloop.counter}}' id='travel_budget_quantity_{{forloop.counter}}' value='{{item.quantity}}'></td>
+					<td><input type='text' name='travel_budget_cost_per_item_{{forloop.counter}}' id='travel_budget_cost_per_item_{{forloop.counter}}' value='{{item.itemCost}}'></td>
+					<td><input type='text' name='travel_budget_item_total_{{forloop.counter}}' id='travel_budget_item_total_{{forloop.counter}}' disabled='true' value='{{item.total}}'></td>
 				</tr>
+				{% endfor %}
 			</table>
 
 			<div class='button-group'>

@@ -18,7 +18,7 @@ class FundingRequest (models.Model):
     studentGroup = models.CharField(max_length=50)
     studentGroupPending = models.BooleanField()
     requestStatus = models.CharField(max_length=50)
-    dateSubmitted = models.DateTimeField(auto_now=True)
+    dateSubmitted = models.DateField(auto_now=True)
     eventTitle = models.CharField(max_length=50)
     description = models.CharField(max_length=5000)
     sameBudgetForRecurringEvents = models.BooleanField()
@@ -60,7 +60,7 @@ class Budget(models.Model):
     comment = models.CharField(max_length=500)
     totalRequestedAmount = models.DecimalField(max_digits=10,decimal_places=2)
     totalOtherFunding = models.DecimalField(max_digits=10,decimal_places=2)
-    requestedTotal = models.DecimalField(max_digits=10,decimal_places=2)
+    grandTotal = models.DecimalField(max_digits=10,decimal_places=2)
 
 class ItemDescription(models.Model):
     budget = models.ForeignKey(Budget)
