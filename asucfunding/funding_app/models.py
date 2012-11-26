@@ -33,12 +33,16 @@ class FundingRequest (models.Model):
 	budget = models.OneToOneField(Budget, null=True)
 
 	def compute_requested_total(self):
+		if self.eventType == 'Operational Costs':
+			return self.budget.totalRequestedAmount
 		requestedTotal = 0
 		for event in self.event_set.all():
 			requestedTotal += event.budget.totalRequestedAmount
 		return requestedTotal
 
 	def compute_awarded_total(self):
+		if self.eventType == 'Operational Costs':
+			return self.budget.amountAwarded
 		awardedTotal = 0
 		for event in self.event_set.all():
 			awardedTotal += event.budget.amountAwarded

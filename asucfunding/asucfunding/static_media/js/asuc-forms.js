@@ -63,6 +63,9 @@ $(document).ready(function() {
 
 				// reset event_type and event/budget blocks
 				$('#event_type input:radio').prop('checked', false);
+
+				// hide recurring event footer
+				$('#recurring_event_footer_block').hide();
 				resetEventsAndBudgets();
 				break;
 		}
@@ -93,8 +96,10 @@ $(document).ready(function() {
 				resetBudget($('#budget_block_1'), 1);
 
 				// add/remove event buttons
-				$('#add_event').hide();
-				$('#remove_event').hide();
+				$('#add_event_group').hide();
+
+				// hide recurring event footer
+				$('#recurring_event_footer_block').hide();
 				break;
 			case 'Recurring Event':
 				// show the appropriate header
@@ -107,6 +112,9 @@ $(document).ready(function() {
 				// then, reset same/diff budget choice
 				$('#recurring_same_budget_Y').removeAttr('checked');
 				$('#recurring_same_budget_N').removeAttr('checked');
+
+				// show recurring event footer
+				$('#recurring_event_footer_block').hide();
 				break;
 			case 'Operational Costs':
 				// show the appropriate header
@@ -119,8 +127,10 @@ $(document).ready(function() {
 				resetBudget($('#budget_block_1'), 1);
 
 				// add/remove event buttons
-				$('#add_event').hide();
-				$('#remove_event').hide();
+				$('#add_event_group').hide();
+
+				// hide recurring event footer
+				$('#recurring_event_footer_block').hide();
 				break;
 		}
 	});
@@ -147,8 +157,10 @@ $(document).ready(function() {
 				}
 
 				// add/remove event buttons
-				$('#add_event').show();
-				$('#remove_event').show();
+				$('#add_event_group').show();
+
+				// hide recurring event footer
+				$('#recurring_event_footer_block').hide();
 				break;
 			case 'N': // diff
 				// starting from nothing, alternate 4 events and budgets
@@ -176,8 +188,10 @@ $(document).ready(function() {
 				}
 
 				// add/remove event buttons
-				$('#add_event').show();
-				$('#remove_event').show();
+				$('#add_event_group').show();
+
+				// show recurring event footer
+				$('#recurring_event_footer_block').show();
 				break;
 		}
 	});
@@ -511,6 +525,25 @@ $(document).ready(function() {
 			$('#budget_item_total_' + num).val((amtReq+othFund).toFixed(2));
 		}
 		$('#budget_item_total_' + num).valid();
+
+		// handle recurring event footer
+		if ($('#recurring_event_footer_block').is(':visible') && $('.calculate').valid()) {
+			console.log('a');
+			var totalAmtReq = 0;
+			var totalOthFund = 0;
+			$('.calculate').each(function() {
+				var id = $(this).prop('id');
+				if (id.indexOf('amount_requested') != -1) {
+					totalAmtReq += parseInt($(this).val());
+				}
+				else if (id.indexOf('other_funding') != -1) {
+					totalOthFund += parseInt($(this).val());
+				}
+			});
+			$('#recurring_total_amount_requested').html(totalAmtReq);
+			$('#recurring_total_other_funding').html(totalOthFund);
+			$('#recurring_grand_total').html(totalAmtReq + totalOthFund);
+		}
 	});
 
 	// handle calculation of travel budget item total
@@ -786,7 +819,7 @@ $(document).ready(function() {
 			$('#sc_total_requested').html();
 
 			// hide others
-			window.$divs = $('#request_form > div:visible, #submit');
+			window.$divs = $('#request_form > div:visible, #submit, #add_event_group'); // add #save
 			window.$divs.hide();
 			// show form.
 			$('#submission_confirmation').show();
@@ -797,17 +830,22 @@ $(document).ready(function() {
 	});
 	
 	// handle cancel
-	$('.cancel').click(function() {
+	$('#return').click(function() {
 		$('#submission_confirmation').hide();
 		window.$divs.show();
 
 		return false;
 	});
 
+	/*$('#save').click(function(){
+		return false;
+	});*/
+
 		// Initialize
 	{
 		// hide unnecessary blocks
 		$('#request_form > div').hide();
+		$('#request_form > div.button-group').show();
 		$('#request_selector_block').show();
 		$('#ug_request_categories').hide();
 		$('#grad_request_categories').hide();
@@ -817,8 +855,7 @@ $(document).ready(function() {
 		$('#travel_presentation_title').hide();
 
 		// add/remove event buttons
-		$('#add_event').hide();
-		$('#remove_event').hide();
+		$('#add_event_group').hide();
 
 		// disable student group textbox
 		$('input:text[name=pending_student_group]').prop('disabled', true);

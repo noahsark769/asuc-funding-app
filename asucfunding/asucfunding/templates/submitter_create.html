@@ -449,16 +449,18 @@
 			</div>
 		</div>
 
-		<button id='add_event'>Add Event</button>
-		<button id='remove_event'>Remove Last Event</button>
+		<div id='add_event_group'>
+			<button id='add_event'>Add Event</button>
+			<button id='remove_event'>Remove Last Event</button>
+		</div>
 
 		<div id='recurring_event_footer_block'>
 			<h2>Recurring Event Totals</h2>
 
-			<span>Grand Totals</span>
-			<span id='recurring_total_amount_requested'></span>
-			<span id='recurring_total_other_funding'></span>
-			<span id='recurring_grand_total'></span>
+			<div>Grand Totals</div>
+			<div id='recurring_total_amount_requested'></div>
+			<div id='recurring_total_other_funding'></div>
+			<div id='recurring_grand_total'></div>
 		</div>
 
 		<div id='travel_event_block'>
@@ -540,8 +542,10 @@
 			</div>
 		</div>
 
-		<button id='submit'>Submit Funding Request</button>
-		<button id='save' class='cancel'>Save</button>
+		<div class='button-group'>
+			<button id='submit'>Submit Funding Request</button>
+			{% if false %}<button id='save' class='cancel'>Save</button>{% endif %}
+		</div>
 
 		<div id='submission_confirmation'>
 			<h2 id='sc_title'>Thank you for submitting the following request:</h2>
@@ -553,7 +557,7 @@
 			<div class='sc_label'>Funding Round</div><div id='sc_funding_round' class='sc_value'></div>
 			<div class='sc_label'>Total Requested</div><div id='sc_total_requested' class='sc_value'></div>
 			<button>Confirm</button>
-			<button class='cancel'>Return to Form</button>
+			<button id='return' class='cancel'>Return to Form</button>
 		</div>
 	</form>
 {% endblock %}
