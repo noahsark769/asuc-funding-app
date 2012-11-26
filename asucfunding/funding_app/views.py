@@ -603,6 +603,12 @@ def submitter_submit_funding_request(request):
 
 	# get new non-travel parameters
 	event_type = post.get('event_type')
+	event_title = post.get('event_title')
+	event_description = post.get('event_description')
+	if event_type == 'R':
+		recurring_same_budget = post.get('recurring_same_budget')
+	else:
+		recurring_same_budget = 'N'
 
 	if request_type == 'Graduate':
 		reqSearchString = 'grad_req_cat'
@@ -613,12 +619,6 @@ def submitter_submit_funding_request(request):
 		grad_membership_grad = post.get('grad_membership_grad') # isdigit()
 		grad_membership_ug = post.get('grad_membership_ug') # isdigit()
 		grad_waiver = post.get('grad_waiver') # Y or N
-		event_title = post.get('event_title')
-		event_description = post.get('event_description')
-		if event_type == 'R':
-			recurring_same_budget = post.get('recurring_same_budget')
-		else:
-			recurring_same_budget = 'N'
 
 		fundingRequest = GraduateRequest.objects.create(**{
 			'uid': user['uid'],
@@ -650,7 +650,7 @@ def submitter_submit_funding_request(request):
 	elif request_type == 'Undergraduate':
 		reqSearchString = 'ug_req_cat'
 		grantSearchString = 'ug_grant_cat'
-		ug_membership_total = post.get('grad_membership_grad')
+		ug_membership_total = post.get('ug_membership_total')
 		ug_membership_student = post.get('ug_membership_student')
 		ug_waiver = post.get('ug_waiver')
 
@@ -673,8 +673,8 @@ def submitter_submit_funding_request(request):
 			'description': event_description,
 			'sameBudgetForRecurringEvents': True if recurring_same_budget == 'Y' else False,
 			'budget': None,
-			'studentOrgTot': ug_membership_total,
-			'studentOrgStud': ug_membership_student,
+			'studentOrgTot': int(ug_membership_total),
+			'studentOrgStud': int(ug_membership_student),
 			'attended': True if ug_waiver == 'Y' else False
 		})
 
@@ -891,9 +891,54 @@ def submitter_submit_funding_request(request):
 				i += 1
 			return HttpResponse('SUCCESS')
 	elif event_type == 'Operational Costs':
-		pass
+		# get budget details (only additional info)
+		budget_additional_info = post.get('budget_additional_info_1')
+		# create budget
+		budget = Budget.objects.create(**{
+			'additionalInfo': budget_additional_info,
+			'amountAwarded': 0,
+			'comment': '',
+			'totalRequestedAmount': 0,
+			'totalOtherFunding': 0,
+			'grandTotal': 0
+		})
+		# create (loop thru) budget items
+		i = 1
+		totalReqAmt = 0
+		totalOthFund = 0
+		total = 0
+		while True:
+			strI = str(i)
+			if post.get('budget_description_1_' + strI) is None:
+				break
+			qty = int(post.get('budget_quantity_1_' + strI))
+			cpi = float(post.get('budget_cost_per_item_1_' + strI))
+			reqAmt = float(post.get('budget_amount_requested_1_' + strI))
+			othFund = float(post.get('budget_other_funding_1_' + strI))
+			ItemDescription.objects.create(**{
+				'budget': budget,
+				'description': post.get('budget_description_1_' + strI),
+				'comment': '',
+				'quantity': qty,
+				'itemCost': cpi,
+				'requestedAmount': reqAmt,
+				'otherFunding': othFund,
+				'total': qty*cpi
+			})
+			totalReqAmt += reqAmt
+			totalOthFund += othFund
+			total += qty*cpi
+			i += 1
 
-	return HttpResponse('')
+		# update totals
+		budget.totalRequestedAmount = totalReqAmt
+		budget.totalOtherFunding = totalOthFund
+		budget.grandTotal = total
+		budget.save()
+
+		fundingRequest.budget = budget
+		fundingRequest.save()
+		return HttpResponse('')
 
 def dne(post, values):
 	"""
