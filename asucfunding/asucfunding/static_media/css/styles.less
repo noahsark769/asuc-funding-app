@@ -72,6 +72,8 @@ a.nostyle {
 @page-margin: 5px;
 @config-width: 450px;
 
+@errorred: lighten(#f00, 30%);
+
 // convenience
 
 .border-radius(@topleft: 5px, @topright: 5px, @bottomright: 5px, @bottomleft: 5px) {
@@ -401,5 +403,17 @@ form#request_form > div {
 	.button-group {
 		margin-bottom: 10px;
 		margin-left: 20px;
+	}
+
+	.error {
+		background-color: @errorred;
+	}
+
+	.error[type=checkbox], .error[type=radio] {
+		outline: 1px solid @errorred;
+	}
+
+	#submission-confirmation {
+		
 	}
 }
