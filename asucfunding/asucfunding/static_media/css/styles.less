@@ -69,8 +69,11 @@ a.nostyle {
 @gray: #E9EFF0;
 @subtlebg: url(../img/debut_light.png);
 
-@page-margin: 5px;
+@page-margin: 25px;
 @config-width: 450px;
+@block-padding: 15px 20px 20px 20px;
+
+@sans: "Helvetica Neue", Helvetica, sans-serif;
 
 @errorred: lighten(#f00, 30%);
 
@@ -115,7 +118,7 @@ div#header {
 	background-color: @buttondarkblue;
 	color: white;
 
-	padding: 5px 0px 20px @page-margin+5;
+	padding: 20px 0px 25px @page-margin+5;
 
 	border-bottom: 1px solid #000;
 }
@@ -125,6 +128,8 @@ div#title {
 
 	font-family: "Century Gothic", "Helvetica Neue", Helvetica, sans-serif;
 	font-size: 3.5em;
+
+	margin-left: 20px - 5px;
 }
 
 div#user_info {
@@ -132,7 +137,7 @@ div#user_info {
 
 	font-family: "Helvetica Neue", Helvetica, sans-serif;
 
-	padding: 5px 7px 0px 0px;
+	padding: 5px @page-margin+2px 0px 0px;
 }
 
 div#nav {
@@ -298,7 +303,7 @@ form#request_form > div {
 	margin-right: @page-margin;
 	margin-bottom: 10px;
 
-	padding: 5px;
+	padding: @block-padding;
 
 	border: 1px solid black;
 
@@ -310,7 +315,7 @@ form#request_form > div {
 
 	h2 {
 		font-size: 1.2em;
-		margin-bottom: 10px;
+		margin-bottom: 15px;
 	}
 
 	textarea {
@@ -404,18 +409,99 @@ form#request_form > div {
 		margin-bottom: 10px;
 		margin-left: 20px;
 	}
+<<<<<<< HEAD
+}
 
-	.error {
-		background-color: @errorred;
-	}
+// request summary table styles
 
-	.error[type=checkbox], .error[type=radio] {
-		outline: 1px solid @errorred;
-	}
+table.request-summary {
 
-	#submission-confirmation {
-		.sc_value {
-			color: green;
+	margin: @page-margin;
+
+	color: white;
+
+	tbody {
+		tr {
+			&:nth-child(odd) {
+				background-color: darken(@buttondarkblue, 5%);
+				&:hover {
+					background-color: @buttondarkblue;
+				}
+			}
+			&:nth-child(even) {
+				background-color: @buttonlightblue;
+				&:hover {
+					background-color: lighten(@buttonlightblue, 5%);
+				}
+			}
+			&:first-child {
+				border-top: none;
+			}
+
+			margin-bottom: 10px;
+
+			border-collapse: separate;
+			border-top: 2px solid black;
+
+			td {
+				width: 150px;
+
+				padding: 15px;
+
+				border-collapse: separate;
+
+				font-family: @sans;
+				font-size: .7em;
+				text-align: center;
+			}
 		}
+	}
+
+	thead, tfoot {
+		tr {
+			td {
+				padding-bottom: 20px;
+			}
+
+			font-family: @sans;
+			font-size: .7em;
+			text-align: center;
+			color: black;
+			border: none;
+			padding: @block-padding;
+		}
+	}
+
+	tfoot {
+		&:empty {
+			tr {
+				background: transparent;
+			}
+		}
+		td {
+			padding-top: 20px;
+		}
+	}
+}
+
+p.block {
+	// for the block paragraph (none message), make it have the correct margins
+	margin: @page-margin;
+	margin-left: @page-margin + 5;
+
+	font-family: @sans;
+}
+
+.error {
+	background-color: @errorred;
+}
+
+.error[type=checkbox], .error[type=radio] {
+	outline: 1px solid @errorred;
+}
+
+#submission-confirmation {
+	.sc_value {
+		color: green;
 	}
 }

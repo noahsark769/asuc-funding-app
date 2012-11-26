@@ -9,38 +9,58 @@
 
 {% block content %}
 
-	<table>
-	<tr>
-		<td>&nbsp;Request ID</td>
-		<td>&nbsp;Submitter Email</td>
-		<td>&nbsp;Date Submitted</td>
-		<td>&nbsp;Request Status</td>
-		<td>&nbsp;Student Group</td>
-		<td>&nbsp;Request Type</td>
-		<td>&nbsp;Request Category</td>
-		<td>&nbsp;Request For</td>
-		<td>&nbsp;Funding Round</td>
-		<td>&nbsp;Requested Total</td>
-		<td>&nbsp;Awarded Total</td>
-	</tr>
-	{% for request in funding_requests %}
-	<tr>
-		<td>&nbsp;{{request.id}}</td>
-		<td>&nbsp;{{request.email}}</td>
-		<td>&nbsp;{{request.dateSubmitted}}</td>
-		<td>&nbsp;{{request.requestStatus}}</td>
-		<td>&nbsp;{{request.studentGroup}}</td>
-		<td>&nbsp;{{request.requestType}}</td>
-		<td>&nbsp;{{request.requestCategory}}</td>
-		<td>&nbsp;{{request.eventType}}</td>
-		<td>&nbsp;{{request.fundingRound}}</td>
-		<td>&nbsp;${{request.compute_requested_total}}</td>
-		<td>&nbsp;${{request.compute_awarded_total}}</td>
-	</tr>
-	{% endfor %}
-	</table>
 	{% if funding_requests|length == 0 %}
-	<p>You have not submitted any requests at this time. Click on the new request button to add one.</p>
+		<p class='block'>You have not submitted any requests at this time. Click on the new request button to add one.</p>
+	{% else %}
+	<table class='request-summary'>
+		<thead>
+			<tr>
+				<td>&nbsp;Request ID</td>
+				<td>&nbsp;Submitter Email</td>
+				<td>&nbsp;Date Submitted</td>
+				<td>&nbsp;Request Status</td>
+				<td>&nbsp;Student Group</td>
+				<td>&nbsp;Request Type</td>
+				<td>&nbsp;Request Category</td>
+				<td>&nbsp;Request For</td>
+				<td>&nbsp;Funding Round</td>
+				<td>&nbsp;Requested Total</td>
+				<td>&nbsp;Awarded Total</td>
+			</tr>
+		<thead>
+		<tbody>
+			{% for request in funding_requests %}
+			<tr>
+				<td>&nbsp;{{request.id}}</td>
+				<td>&nbsp;{{request.email}}</td>
+				<td>&nbsp;{{request.date_submitted_formatted}}</td>
+				<td>&nbsp;{{request.requestStatus}}</td>
+				<td>&nbsp;{{request.studentGroup}}</td>
+				<td>&nbsp;{{request.requestType}}</td>
+				<td>&nbsp;{{request.requestCategory}}</td>
+				<td>&nbsp;{{request.eventType}}</td>
+				<td>&nbsp;{{request.fundingRound}}</td>
+				<td>&nbsp;${{request.compute_requested_total}}</td>
+				<td>&nbsp;${{request.compute_awarded_total}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>Totals:</td>
+				<td class='requested-grand-total'>Calculating...</td>
+				<td class='awarded-grand-total'>Calculating...</td>
+			</tr>
+		</tfoot>
+	</table>
 	{% endif %}
 
 {% endblock %}
