@@ -32,6 +32,9 @@ class FundingRequest (models.Model):
         for event in self.event_set.all():
             awardedTotal += event.budget.awardedTotal
         return awardedTotal
+
+    def date_submitted_formatted(self):
+        return str(self.dateSubmitted.month) + '/' + str(self.dateSubmitted.day) + '/' + str(self.dateSubmitted.year)
     
 class GraduateRequest(FundingRequest):
     academicDepartmentalAffiliate = models.CharField(max_length=50)
