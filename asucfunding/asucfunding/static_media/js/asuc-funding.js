@@ -96,6 +96,7 @@ $(document).ready(function() {
 		$('#ug_grant_categories').hide();
 		$('#grad_grant_categories').hide();
 		$('#event_type').hide();
+		$('#travel_presentation_title').hide();
 
 		// add/remove event buttons
 		$('#add_event').hide();
@@ -294,16 +295,20 @@ $(document).ready(function() {
 	
 	// handle grant category display
 	$('input:checkbox[name=ug_req_cat]').click(function() {
-		if ($(this).is(':checked') && $(this).val() == 'Grant')
-			$('#ug_grant_categories').show();
-		else
-			$('#ug_grant_categories').hide();
+		if ($(this).val() == 'Grant') {
+			if ($(this).is(':checked'))
+				$('#ug_grant_categories').show();
+			else
+				$('#ug_grant_categories').hide();
+		}
 	});
 	$('input:checkbox[name=grad_req_cat]').click(function() {
-		if ($(this).is(':checked') && $(this).val() == 'Grant')
-			$('#grad_grant_categories').show();
-		else
-			$('#grad_grant_categories').hide();
+		if ($(this).val() == 'Grant') {
+			if ($(this).is(':checked'))
+				$('#grad_grant_categories').show();
+			else
+				$('#grad_grant_categories').hide();
+		}
 	});
 
 	function addEvent(after) {
@@ -404,6 +409,14 @@ $(document).ready(function() {
 		return false;
 	});
 
+	// travel presenting handler
+	$('input:radio[name=travel_presenting]').click(function() {
+		if ($(this).val() == 'Y')
+			$('#travel_presentation_title').show();
+		else
+			$('#travel_presentation_title').hide();
+	});
+
 	// travel budget item add/remove handlers
 
 	$(document).on('click', '.travel_add_budget_item', function() {
@@ -458,10 +471,7 @@ $(document).ready(function() {
 		}
 		// check whether we are using the same budget or not.
 		var sameBudget;
-		$('input:radio[name=recurring_same_budget]').each(function() {
-			if ($(this).prop('checked') === true)
-				sameBudget = $(this).prop('value');
-		});
+		sameBudget = $('input:radio:checked[name=recurring_same_budget]').prop('value');
 		// add only an event
 		if (sameBudget === 'Y') {
 			addEvent('#event_block_' + $('.event_block').length);
@@ -693,12 +703,6 @@ $(document).ready(function() {
 		var quant = parseInt($('#budget_quantity_' + num).val());
 		var amtReq = parseFloat($('#budget_amount_requested_' + num).val());
 		var othFund = parseFloat($('#budget_other_funding_' + num).val());
-		console.log("BEGIN");
-		console.log(num);
-		console.log(cpi);
-		console.log(quant);
-		console.log(amtReq);
-		console.log(othFund);
 		if (quant*cpi == amtReq+othFund) {
 			$(element).val((cpi*quant).toFixed(2));
 			return this.optional(element) || true;
@@ -708,7 +712,7 @@ $(document).ready(function() {
 			return this.optional(element) || false;
 		}
 		return this.optional(element) || quant*cpi == amtReq+othFund;
-	}, 'CPI * Quanity must be equal to Amt Req. + Other Funding.');
+	}, 'CPI * Quantity must be equal to Amt Req. + Other Funding.');
 
 	// VALIDATE EVERYTHING
 	$('#submit').live('click', function() {
@@ -863,21 +867,60 @@ $(document).ready(function() {
 			if (!$('#request_form').valid())
 				return false;
 
+			// if the form is valid and we're looking at confirm, submit it.
+			if ($('#submission_confirmation').is(':visible'))
+				return true;
+
 			// it's valid, so display the confirmation dialog.
 			// first, populate all fields.
-			$('#sc_date').val();
-			$('#sc_name').val($('#name').val());
-			$('#sc_student_group').val($('#student_group').val());
-			$('#sc_request_type').val();
-			$('#sc_request_category').val();
-			$('#sc_funding_round').val();
-			$('#sc_total_requested').val();
+			$('#sc_date').html();
+			$('#sc_name').html($('#request_selector_name').val());
+			$('#sc_student_group').html($('#student_group').val());
+			$reqType = $('input:radio:checked[name=request_type]');
+			$('#sc_request_type').html($('label[for='+$reqType.prop('id')+']').html());
 
+			// depends on type...
+			reqCats = '';
+			if ($reqType.val() == 'U') {
+				$('input:checkbox:checked[name=ug_req_cat]').each(function() {
+					if (flag == false)
+						flag = true;
+					else
+						reqCats += ', ';
+					reqCats += $(this).val() + ', ';
+				});
+			}
+			else if ($reqType.val() == 'G') {
+				var flag = false;
+				$('input:checkbox:checked[name=grad_req_cat]').each(function() {
+					if (flag == false)
+						flag = true;
+					else
+						reqCats += ', ';
+					reqCats += $(this).val();
+				});
+			}
+			$('#sc_request_category').html(reqCats);
+			$('#sc_funding_round').html();
+			$('#sc_total_requested').html();
+
+			// hide others
+			window.$divs = $('#request_form > div:visible, #submit');
+			window.$divs.hide();
+			// show form.
 			$('#submission_confirmation').show();
 
 			return false;
 		},
 
+	});
+	
+	// handle cancel
+	$('.cancel').click(function() {
+		$('#submission_confirmation').hide();
+		window.$divs.show();
+
+		return false;
 	});
 
 });
