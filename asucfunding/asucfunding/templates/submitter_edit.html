@@ -25,16 +25,16 @@
 				<label>Requested by:</label>{{name}}
 			</div>
 			<div id='email'>
-				<label>Email:</label><input type='text' name='email_input' value='{{funding_request.email}}'>
+				<label>Email:</label><input type='text' name='email' value='{{funding_request.email}}'>
 			</div>
 			<div id='phone'>
-				<label>Phone:</label><input type='text' name='phone_input' value='{{funding_request.phone}}'>
+				<label>Phone:</label><input type='text' name='phone' value='{{funding_request.phone}}'>
 			</div>
 			<div id='request_type'>
 				<labeL>Request Type</label>
 				<input type='radio' name='request_type' value='Graduate' {% if funding_request.requestType == 'Graduate' %} checked='True'{% endif %}><label>Graduate Funding Request</label><br>
 				<input type='radio' name='request_type' value='ug' {% if funding_request.requestType == 'Undergraduate' %} checked='True'{% endif %}><label>Undergraduate Funding Request</label><br>
-				<input type='radio' name='request_type' value='travel' {% if funding_request.requestType == 'Travel' %} checked='True'{% endif %}><label>Travel Award Application</labe><br>
+				<input type='radio' name='request_type' value='travel' {% if funding_request.requestType == 'Travel' %} checked='True'{% endif %}><label>Travel Award Application</label><br>
 			</div>
 			<div id='ug_request_category'>
 				<label>Request category/categories:</label>
@@ -73,7 +73,7 @@
 			</div>
 			<div id='student_group'>
 				<label>Sponsoring Student Group:</label>
-				<select>
+				<select id='student_group'>
 					<option>group 1</option>
 				</select><br>
 				<input type='text' name='pending_group' disabled='true' />
