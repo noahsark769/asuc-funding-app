@@ -75,6 +75,8 @@ a.nostyle {
 
 @sans: "Helvetica Neue", Helvetica, sans-serif;
 
+@errorred: lighten(#f00, 30%);
+
 // convenience
 
 .border-radius(@topleft: 5px, @topright: 5px, @bottomright: 5px, @bottomleft: 5px) {
@@ -407,6 +409,7 @@ form#request_form > div {
 		margin-bottom: 10px;
 		margin-left: 20px;
 	}
+<<<<<<< HEAD
 }
 
 // request summary table styles
@@ -487,4 +490,18 @@ p.block {
 	margin-left: @page-margin + 5;
 
 	font-family: @sans;
+}
+
+.error {
+	background-color: @errorred;
+}
+
+.error[type=checkbox], .error[type=radio] {
+	outline: 1px solid @errorred;
+}
+
+#submission-confirmation {
+	.sc_value {
+		color: green;
+	}
 }
