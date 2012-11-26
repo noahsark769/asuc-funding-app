@@ -73,6 +73,7 @@ $(document).ready(function() {
 		$.post('/update_config/', options, function(data) {
 			if (data === 'FAILURE') {
 				console.log("Failed to remove item " + parentID + " from " + config_key);
+				alert("Failed to remove item " + parentID + " from " + config_key + '.');
 				return;
 			}
 			// get rid of it.
@@ -102,6 +103,18 @@ $(document).ready(function() {
 
 		// disable student group textbox
 		$('input:text[name=pending_student_group]').prop('disabled', true);
+
+		// initialize travel budget
+		addTravelItemDescription();
+		addTravelItemDescription();
+		addTravelItemDescription();
+
+		// date pickers
+		$('.date').datepicker();
+		$('#travel_event_start_date').datepicker();
+		$('#travel_event_end_date').datepicker();
+		$('#travel_event_departure_date').datepicker();
+		$('#travel_event_return_date').datepicker();
 	}
 
 	// handle request_type choice
@@ -112,7 +125,7 @@ $(document).ready(function() {
 				$('#ug_request_categories').hide();
 				$('#grad_request_categories').show();
 				$('#ug_grant_categories').hide();
-				$('#grad_grant_categories').show();
+				//$('#grad_grant_categories').show();
 				$('#event_type').show();
 
 				// header block options
@@ -128,7 +141,7 @@ $(document).ready(function() {
 				// request selector block options
 				$('#ug_request_categories').show();
 				$('#grad_request_categories').hide();
-				$('#ug_grant_categories').show();
+				//$('#ug_grant_categories').show();
 				$('#grad_grant_categories').hide();
 				$('#event_type').show();
 
@@ -178,7 +191,7 @@ $(document).ready(function() {
 		switch ($(this).val()) {
 			case 'S':
 				// show the appropriate header
-				$('#event_header_block').show();
+				$('#single_event_header_block').show();
 				$('#recurring_event_header_block').hide();
 
 				/* we want to have 1 event and 1 budget,
@@ -195,7 +208,7 @@ $(document).ready(function() {
 				break;
 			case 'R':
 				// show the appropriate header
-				$('#event_header_block').hide();
+				$('#single_event_header_block').hide();
 				$('#recurring_event_header_block').show();
 
 				// we want to reset the blocks, and prompt for same/diff. budget choice
@@ -207,7 +220,7 @@ $(document).ready(function() {
 				break;
 			case 'O':
 				// show the appropriate header
-				$('#event_header_block').hide();
+				$('#single_event_header_block').hide();
 				$('#recurring_event_header_block').hide();
 
 				// we want to completely reset everything, and show one budget.
@@ -278,16 +291,34 @@ $(document).ready(function() {
 				break;
 		}
 	});
+	
+	// handle grant category display
+	$('input:checkbox[name=ug_req_cat]').click(function() {
+		if ($(this).is(':checked') && $(this).val() == 'Grant')
+			$('#ug_grant_categories').show();
+		else
+			$('#ug_grant_categories').hide();
+	});
+	$('input:checkbox[name=grad_req_cat]').click(function() {
+		if ($(this).is(':checked') && $(this).val() == 'Grant')
+			$('#grad_grant_categories').show();
+		else
+			$('#grad_grant_categories').hide();
+	});
 
 	function addEvent(after) {
 		// figure out how many event blocks we already have
 		var numEvents = $('.event_block').length;
+		// remove date pickers
+		$('.date').datepicker('destroy');
 		// clone the event, copying data and handlers
 		$clone = $('#event_block_' + numEvents).clone();
 		// fix the numbers
 		setEventInputNumbers($clone, numEvents+1);
 		// add the clone to the document to 'after'
 		$(after).after($clone);
+		// add date pickers again
+		$('.date').datepicker();
 	}
 
 	function setEventInputNumbers($elem, num) {
@@ -321,7 +352,7 @@ $(document).ready(function() {
 		// figure out how many event blocks we already have
 		var numBudgets = $('.budget_block').length;
 		// clone the event, copying data and handlers
-		$clone = $('#budget_block_' + numBudgets).clone();
+		$clone = $('#budget_block_' + numBudgets).clone(true);
 		// add the clone to the document to 'after'
 		$(after).after($clone);
 		// reset the item description fields
@@ -331,7 +362,7 @@ $(document).ready(function() {
 	// budget item add/remove handlers
 
 	$(document).on('click', '.add_budget_item', function() {
-		addItemDescription($(this).closest('div'));
+		addItemDescription($(this).closest('.budget_block'));
 		$(this).siblings().each(function() {
 			if ($(this).get(0).tagName === 'BUTTON')
 				$(this).prop('disabled', false);
@@ -342,7 +373,8 @@ $(document).ready(function() {
 	function addItemDescription($b) {
 		num = extractNumber($b.prop('id'));
 		var numItemDescriptions = $b.find('.budget_item_description').length;
-		$clone = $('#budget_item_description_' + num + '_' + numItemDescriptions).clone();
+		$clone = $('#budget_item_description_' + num + '_' + numItemDescriptions).clone(true);
+		$clone.find('input:text').val('');
 		setBudgetItemNumbers($clone, num, numItemDescriptions+1);
 		$clone.insertAfter($('#budget_item_description_' + num + '_' + numItemDescriptions));
 	}
@@ -360,7 +392,7 @@ $(document).ready(function() {
 	}
 
 	$(document).on('click', '.remove_budget_item', function() {
-		var $parent = $(this).closest('div');
+		var $parent = $(this).closest('.budget_block');
 		var numItems = $parent.find('tr').length - 1;
 		if (numItems === 1)
 			return;
@@ -375,7 +407,7 @@ $(document).ready(function() {
 	// travel budget item add/remove handlers
 
 	$(document).on('click', '.travel_add_budget_item', function() {
-		addTravelItemDescription($(this).closest('div'));
+		addTravelItemDescription();
 		$(this).siblings().each(function() {
 			if ($(this).get(0).tagName === 'BUTTON')
 				$(this).prop('disabled', false);
@@ -383,9 +415,10 @@ $(document).ready(function() {
 		return false;
 	});
 
-	function addTravelItemDescription($b) {
-		var num = $b.find('.travel_budget_item_description').length;
-		$clone = $('#travel_budget_item_description_' + num).clone();
+	function addTravelItemDescription() {
+		var num = $('.travel_budget_item_description').length;
+		$clone = $('#travel_budget_item_description_' + num).clone(true);
+		$clone.find('input:text').val('');
 		setTravelBudgetItemNumbers($clone, num+1);
 		$clone.insertAfter($('#travel_budget_item_description_' + num));
 	}
@@ -403,7 +436,7 @@ $(document).ready(function() {
 	}
 
 	$(document).on('click', '.travel_remove_budget_item', function() {
-		var $parent = $(this).closest('div');
+		var $parent = $('#travel_budget_block');
 		var numItems = $parent.find('tr').length - 1;
 		if (numItems === 1)
 			return;
@@ -430,7 +463,7 @@ $(document).ready(function() {
 				sameBudget = $(this).prop('value');
 		});
 		// add only an event
-		if (sameBudget == 'Y') {
+		if (sameBudget === 'Y') {
 			addEvent('#event_block_' + $('.event_block').length);
 		}
 		// add an event and a budget
@@ -458,7 +491,7 @@ $(document).ready(function() {
 				sameBudget = $(this).prop('value');
 		});
 		// remove only an event
-		if (sameBudget == 'Y') {
+		if (sameBudget === 'Y') {
 			$('#event_block_' + $('.event_block').length).remove();
 		}
 		// remove an event and a budget
@@ -548,5 +581,303 @@ $(document).ready(function() {
 			addItemDescription($budget);
 		}
 	}
+
+
+	// handle calculation of budget item total
+	$('.calculate').change(function() {
+		var $item = $(this).closest('.budget_item_description');
+		var num = /\d+_\d+/.exec($item.prop('id'));
+		// make sure everything's valid
+		if (!$item.find('.calculate').valid())
+			return;
+		var elemID = $(this).prop('id');
+		if (elemID === 'budget_cost_per_item_' + num) {
+			var cpi = parseFloat($(this).val());
+			var quant = parseInt($('#budget_quantity_' + num).val());
+			$('#budget_item_total_' + num).val((cpi*quant).toFixed(2));
+		}
+		else if (elemID === 'budget_quantity_' + num) {
+			var cpi = parseFloat($('#budget_cost_per_item_' + num).val());
+			var quant = parseInt($(this).val());
+			$('#budget_item_total_' + num).val((cpi*quant).toFixed(2));
+		}
+		else if (elemID === 'budget_amount_requested_' + num) {
+			var amtReq = parseFloat($(this).val());
+			var othFund = parseFloat($('#budget_other_funding_' + num).val());
+			$('#budget_item_total_' + num).val((amtReq+othFund).toFixed(2));
+		}
+		else if (elemID === 'budget_other_funding_' + num) {
+			var amtReq = parseFloat($('#budget_amount_requested_' + num).val());
+			var othFund = parseFloat($(this).val());
+			$('#budget_item_total_' + num).val((amtReq+othFund).toFixed(2));
+		}
+		$('#budget_item_total_' + num).valid();
+	});
+
+	// handle calculation of travel budget item total
+	$('.travel_calculate').change(function() {
+		var $item = $(this).closest('.travel_budget_item_description');
+		var num = extractNumber($item.prop('id'));
+		if (!$item.find('.travel_calculate').valid())
+			return;
+		var cpi = parseFloat($('#travel_budget_cost_per_item_' + num).val());
+		var quant = parseInt($('#travel_budget_quantity_' + num).val());
+		$('#travel_budget_item_total_' + num).val((cpi*quant).toFixed(2));
+	});
+
+	// ==== FORM VALIDATION =====
+
+	/**
+	  * Return true, if the value is a valid date, also making this formal check mm/dd/yyyy.
+	  *
+	  * @example jQuery.validator.methods.date("01/01/1900")
+	  * @result true
+	  *
+	  * @example jQuery.validator.methods.date("13/01/1990")
+	  * @result false
+	  *
+	  * @example jQuery.validator.methods.date("01.01.1900")
+	  * @result false
+	  *
+	  * @example <input name="pippo" class="dateUS" />
+	  * @desc Declares an optional input element whose value must be a valid date.
+	  *
+	  * @name jQuery.validator.methods.dateUS
+	  * @type Boolean
+	  * @cat Plugins/Validate/Methods
+	  */
+
+	$.validator.addMethod(
+		'dateUS',
+		function(value, element) {
+			var check = false;
+			var re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+			if( re.test(value)){
+				var adata = value.split('/');
+				var mm = parseInt(adata[0],10);
+				var dd = parseInt(adata[1],10);
+				var yyyy = parseInt(adata[2],10);
+				var xdata = new Date(yyyy,mm-1,dd);
+				if ( ( xdata.getFullYear() == yyyy ) && ( xdata.getMonth () == mm - 1 ) && ( xdata.getDate() == dd ) )
+					check = true;
+				else
+					check = false;
+			} else
+				check = false;
+			return this.optional(element) || check;
+		},
+		'Please enter a date in the format mm/dd/yyyy'
+	);
+
+	// custom validator for money fields
+	$.validator.addMethod('money', function (value, element) {
+		value1 = value.replace('$','').replace(',','');
+		return this.optional(element) || ($.isNumeric(value1) && value1 > 0);
+	}, 'Please enter a valid dollar amount (up to 2 decimal places, you may include commas).');
+
+	// custom validator for integers
+	$.validator.addMethod('integer', function(value, element) {
+		return this.optional(element) || ($.isNumeric(value) && value == Math.floor(value) && value > 0);
+	}, 'Please enter a positive integer.');
+
+	// custom validator for phone numbers
+	$.validator.addMethod('phone', function(value, element) {
+		return this.optional(element) || value.match(/\d{3}-\d{3}-\d{4}/);
+	}, 'Please enter phone number in format xxx-xxx-xxxx.');
+
+	// custom validator for item total
+	$.validator.addMethod('item_total', function(value, element) {
+		var $item = $(element).closest('.budget_item_description');
+		var num = /\d+_\d+/.exec($item.prop('id'));
+		var cpi = parseFloat($('#budget_cost_per_item_' + num).val());
+		var quant = parseInt($('#budget_quantity_' + num).val());
+		var amtReq = parseFloat($('#budget_amount_requested_' + num).val());
+		var othFund = parseFloat($('#budget_other_funding_' + num).val());
+		console.log("BEGIN");
+		console.log(num);
+		console.log(cpi);
+		console.log(quant);
+		console.log(amtReq);
+		console.log(othFund);
+		if (quant*cpi == amtReq+othFund) {
+			$(element).val((cpi*quant).toFixed(2));
+			return this.optional(element) || true;
+		}
+		else {
+			$(element).val((cpi*quant).toFixed(2) + ' or ' + (amtReq+othFund).toFixed(2) + '?');
+			return this.optional(element) || false;
+		}
+		return this.optional(element) || quant*cpi == amtReq+othFund;
+	}, 'CPI * Quanity must be equal to Amt Req. + Other Funding.');
+
+	// VALIDATE EVERYTHING
+	$('#submit').live('click', function() {
+		validateForm();
+	});
+
+	function validateForm() {
+		$('#request_form').validate({
+			onkeyup: false,
+			errorPlacement: function(error, $element) {
+				$element.qtip({
+					content: error,
+					position: {
+						corner: {
+							target: 'middleRight',
+							tooltip: 'middleLeft'
+						}
+					},
+					style: {
+						name: 'red',
+						border: {
+							radius: 3
+						},
+						tip: 'leftTop'
+					}
+				});
+			},
+			rules: {
+				// request selector block
+				email: {
+					required: true,
+					email: true
+				},
+				phone: {
+					required: true,
+					phone: true
+				},
+				request_type: "required",
+				ug_req_cat: "required",
+				grad_req_cat: "required",
+				ug_grant_cat: "required",
+				grad_grant_cat: "required",
+				event_type: "required",
+				funding_round: {
+					required: true,
+					minlength: 1
+				},
+				student_group: "required",
+				pending_student_group: {
+					required: function(element) {return $('select[name=student_group]').val() === 'pending';}
+				},
+
+				// graduate request block
+				affiliate: "required",
+				delegate: "required",
+				grad_membership_total: {
+					required: true,
+					range: [0,99999]
+				},
+				grad_membership_grad: {
+					required: true,
+					range: [0,99999]
+				},
+				grad_membership_ug: {
+					required: true,
+					range: [0,99999]
+				},
+				grad_waiver: "required",
+
+				// undergraduate request block
+				ug_membership_total: {
+					required: true,
+					range: [0,99999]
+				},
+				ug_membership_student: {
+					required: true,
+					range: [0,99999]
+				},
+				ug_waiver: "required",
+
+				// travel request block
+				travel_requesting_as: "required",
+
+				// single event header block
+				event_title: "required",
+				event_description: "required",
+
+				// recurring event header block
+				recurring_same_budget: "required",
+				recurring_event_title: "required",
+				recurring_event_description: "required",
+
+				// event blocks, budget blocks, travel budget blocks ***
+				////////////liahdsflkjhasdfkljhasdflkjhasdflkjahsdflkjhasdfkljhasdf///////// REMEMEBR MEEEEEEEEEE
+
+				// travel event block
+				travel_event_title: "required",
+				travel_event_location: "required",
+				travel_presenting: "required",
+				travel_presentation_title: "required",
+			}
+		});
+		// dates
+		$('.hasDatepicker').each(function() {
+			$(this).rules('add', {
+				required: true,
+				dateUS: true
+			});
+		});
+		// event block
+		$('.event_block').each(function() {
+			$(this).find('select').each(function() {
+				$(this).rules('add', {
+					required: true
+				});
+			});
+		});
+		// (travel) budget item descriptions
+		$('.budget_item_description,.travel_budget_item_description').each(function() {
+			$(this).find('input:text').each(function() {
+				$(this).rules('add', {
+					required: true
+				});
+			});
+		});
+		// money
+		$('.money').each(function() {
+			$(this).rules('add', {
+				money: true
+			});
+		});
+		// number
+		$('.quantity').each(function() {
+			$(this).rules('add', {
+				integer: true
+			});
+		});
+		// item total
+		$('.item_total').each(function() {
+			$(this).rules('add', {
+				required: true,
+				item_total: true
+			});
+		});
+	}
+	// initially
+	validateForm();
+
+	$('#request_form').ajaxForm({
+		beforeSubmit: function() {
+			// don't submit invalid forms
+			if (!$('#request_form').valid())
+				return false;
+
+			// it's valid, so display the confirmation dialog.
+			// first, populate all fields.
+			$('#sc_date').val();
+			$('#sc_name').val($('#name').val());
+			$('#sc_student_group').val($('#student_group').val());
+			$('#sc_request_type').val();
+			$('#sc_request_category').val();
+			$('#sc_funding_round').val();
+			$('#sc_total_requested').val();
+
+			$('#submission_confirmation').show();
+
+			return false;
+		},
+
+	});
 
 });
