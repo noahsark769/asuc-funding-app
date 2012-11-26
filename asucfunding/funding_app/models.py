@@ -21,6 +21,7 @@ class FundingRequest (models.Model):
     dateSubmitted = models.DateTimeField(auto_now=True)
     eventTitle = models.CharField(max_length=50)
     description = models.CharField(max_length=5000)
+    sameBudgetForRecurringEvents = models.BooleanField()
 
     def compute_requested_total(self):
         requestedTotal = 0
@@ -70,7 +71,6 @@ class ItemDescription(models.Model):
 
 class Event(models.Model):
     fundingRequest = models.ForeignKey(FundingRequest)
-    sameBudgetForRecurringEvents = models.BooleanField()
     startDate = models.DateField('%m/%d/%y')
     endDate = models.DateField('%m/%d/%y')
     location = models.CharField(max_length=100)
