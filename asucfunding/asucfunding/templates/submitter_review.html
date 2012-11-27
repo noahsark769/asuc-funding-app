@@ -443,42 +443,42 @@
 				<div class='form-container'>
 					<div class='form-field'>
 						<label>Event:</label>
-						<div class='review_value'>{{funding_request.single_event.eventTitle}}</div>
+						<div class='review_value'>{{funding_request.travel_event.eventTitle}}</div>
 					</div>
 
 					<div class='form-field'>
 						<label>Location:</label>
-						<div class='review_value'>{{funding_request.single_event.location}}</div>
+						<div class='review_value'>{{funding_request.travel_event.location}}</div>
 					</div>
 					
 					<div class='form-field'>
 						<label>Event Start Date:</label>
-						<div class='review_value'>{{funding_request.single_event.startDate}}</div>
+						<div class='review_value'>{{funding_request.travel_event.startDate}}</div>
 					</div>
 					
 					<div class='form-field'>
 						<label>Event End Date:</label>
-						<div class='review_value'>{{funding_request.single_event.endDate}}</div>
+						<div class='review_value'>{{funding_request.travel_event.endDate}}</div>
 					</div>
 
 					<div class='form-field'>
 						<label>Your Departure Date:</label>
-						<div class='review_value'>{{funding_request.single_event.departureDate}}</div>
+						<div class='review_value'>{{funding_request.travel_event.departureDate}}</div>
 					</div>
 					
 					<div class='form-field'>
 						<label>Your Return Date:</label>
-						<div class='review_value'>{{funding_request.single_event.returnDate}}</div>
+						<div class='review_value'>{{funding_request.travel_event.returnDate}}</div>
 					</div>
 
 					<div class='form-field'>
 						<label>Are you presenting?</label>
-						<div class='review_value'>{% if funding_request.single_event.presenting == True %}Yes{% else %}No{% endif %}</div>
+						<div class='review_value'>{% if funding_request.travel_event.presenting == True %}Yes{% else %}No{% endif %}</div>
 					</div>
 
 					<div class='form-field'>
 						<label>Title of your presentation:</label>
-						<div class='review_value'>{{funding_request.single_event.presentationTitle}}</div>
+						<div class='review_value'>{{funding_request.travel_event.presentationTitle}}</div>
 					</div>
 				</div>
 			</div>

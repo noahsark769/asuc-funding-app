@@ -1,4 +1,5 @@
 from django.db import models
+from model_utils.models import InheritanceCastModel
 
 class Admin (models.Model):
 	uid = models.IntegerField()
@@ -15,7 +16,7 @@ class Budget(models.Model):
 	def items(self):
 		return self.itemdescription_set.all()
 
-class FundingRequest (models.Model):
+class FundingRequest (InheritanceCastModel):
 	uid = models.IntegerField()
 	name = models.CharField(max_length=50)
 	email = models.CharField(max_length=50)
@@ -69,6 +70,9 @@ class FundingRequest (models.Model):
 	def single_event(self):
 		return self.event_set.all()[0]
 
+	def travel_event(self):
+		return self.event_set.all()[0].cast()
+
 	def budget_items(self):
 		return self.event_set.all()[0].budget.itemdescription_set.all()
 
@@ -113,7 +117,7 @@ class ItemDescription(models.Model):
 	def totalF(self):
 		return "%0.2f" % self.total
 
-class Event(models.Model):
+class Event(InheritanceCastModel):
 	fundingRequest = models.ForeignKey(FundingRequest)
 	startDate = models.DateField('%m/%d/%y')
 	endDate = models.DateField('%m/%d/%y')
@@ -125,7 +129,7 @@ class Event(models.Model):
 	budget = models.ForeignKey(Budget)
 	
 class TravelEvent(Event):
-	depatureDate = models.DateField('%m/%d/%y')
+	departureDate = models.DateField('%m/%d/%y')
 	returnDate = models.DateField('%m/%d/%y')
 	presenting = models.BooleanField()
 	presentationTitle = models.CharField(max_length=50)

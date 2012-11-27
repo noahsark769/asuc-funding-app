@@ -31,6 +31,7 @@ class Migration(SchemaMigration):
         # Adding model 'FundingRequest'
         db.create_table('funding_app_fundingrequest', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('real_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True)),
             ('uid', self.gf('django.db.models.fields.IntegerField')()),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('email', self.gf('django.db.models.fields.CharField')(max_length=50)),
@@ -97,6 +98,7 @@ class Migration(SchemaMigration):
         # Adding model 'Event'
         db.create_table('funding_app_event', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('real_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True)),
             ('fundingRequest', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['funding_app.FundingRequest'])),
             ('startDate', self.gf('django.db.models.fields.DateField')()),
             ('endDate', self.gf('django.db.models.fields.DateField')()),
@@ -112,7 +114,7 @@ class Migration(SchemaMigration):
         # Adding model 'TravelEvent'
         db.create_table('funding_app_travelevent', (
             ('event_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['funding_app.Event'], unique=True, primary_key=True)),
-            ('depatureDate', self.gf('django.db.models.fields.DateField')()),
+            ('departureDate', self.gf('django.db.models.fields.DateField')()),
             ('returnDate', self.gf('django.db.models.fields.DateField')()),
             ('presenting', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('presentationTitle', self.gf('django.db.models.fields.CharField')(max_length=50)),
@@ -232,6 +234,13 @@ class Migration(SchemaMigration):
 
 
     models = {
+        'contenttypes.contenttype': {
+            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
+            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
         'funding_app.admin': {
             'Meta': {'object_name': 'Admin'},
             'email': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
@@ -300,6 +309,7 @@ class Migration(SchemaMigration):
             'fundingRequest': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['funding_app.FundingRequest']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'location': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'real_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True'}),
             'startDate': ('django.db.models.fields.DateField', [], {}),
             'waiverRequested': ('django.db.models.fields.CharField', [], {'max_length': '10'})
         },
@@ -317,6 +327,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
+            'real_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True'}),
             'requestCategory': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'requestStatus': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'requestType': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
@@ -349,7 +360,7 @@ class Migration(SchemaMigration):
         },
         'funding_app.travelevent': {
             'Meta': {'object_name': 'TravelEvent', '_ormbases': ['funding_app.Event']},
-            'depatureDate': ('django.db.models.fields.DateField', [], {}),
+            'departureDate': ('django.db.models.fields.DateField', [], {}),
             'event_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['funding_app.Event']", 'unique': 'True', 'primary_key': 'True'}),
             'presentationTitle': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'presenting': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
