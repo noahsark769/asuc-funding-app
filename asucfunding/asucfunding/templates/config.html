@@ -1,5 +1,9 @@
 {% extends "admin.html" %}
 
+{% block scripts %}
+	<script type='text/javascript' src="{{ STATIC_URL }}js/asuc-funding.js"></script>
+{% endblock %}
+
 {% comment %}
 {
 		'admins': admins,
@@ -24,7 +28,7 @@
 					{% for admin in admins %}
 					<li id='admin_email_{{admin.id}}'>{{admin.email}}{% if admin.email != email %}<a class='config_remove' href=''>x</a></li>{% endif %}
 					{% endfor %}
-					<li class='config_add'><input type='text' placeholder = 'Enter email...' id='admin_email' /><button class='config_submit' id='admin_submit'>Add</button></li>
+					<li class='config_add'><input type='text' placeholder='Enter email...' name='admin_email' id='admin_email' /><button class='config_submit' id='admin_submit'>Add</button></li>
 				</ul>
 			</div>
 			<div class='config-list' id='event_locations'>
@@ -33,7 +37,7 @@
 					{% for location in locations %}
 					<li id='location_{{location.id}}'>{{location.location}}<a class='config_remove' href=''>x</a></li>
 					{% endfor %}
-					<li class='config_add'><input type='text' placeholder = 'Enter location...' id='location' /><button class='config_submit' id='location_submit'>Add</button></li>
+					<li class='config_add'><input type='text' placeholder='Enter location...' id='location' /><button class='config_submit' id='location_submit'>Add</button></li>
 				</ul>
 			</div>
 
@@ -45,7 +49,7 @@
 					{% for cat in ug_req_cats %}
 					<li id='ug_req_cat_{{cat.id}}'>{{cat.category}}<a class='config_remove' href=''>x</a></li>
 					{% endfor %}
-					<li class='config_add'><input type='text' placeholder = 'Enter category...' id='ug_req_cat' /><button class='config_submit' id='ug_req_cat_submit'>Add</button></li>
+					<li class='config_add'><input type='text' placeholder='Enter category...' id='ug_req_cat' /><button class='config_submit' id='ug_req_cat_submit'>Add</button></li>
 				</ul>
 			</div>
 			<div class='config-list' id='grad_request_categories'>
@@ -54,7 +58,7 @@
 					{% for cat in grad_req_cats %}
 					<li id='grad_req_cat_{{cat.id}}'>{{cat.category}}<a class='config_remove' href=''>x</a></li>
 					{% endfor %}
-					<li class='config_add'> <input type='text' placeholder = 'Enter category...' id='grad_req_cat' /><button class='config_submit' id='grad_req_cat_submit'>Add</button></li>
+					<li class='config_add'> <input type='text' placeholder='Enter category...' id='grad_req_cat' /><button class='config_submit' id='grad_req_cat_submit'>Add</button></li>
 				</ul>
 			</div>
 
@@ -66,7 +70,7 @@
 					{% for cat in ug_grant_cats %}
 					<li id='ug_grant_cat_{{cat.id}}'>{{cat.category}}<a class='config_remove' href=''>x</a></li>
 					{% endfor %}
-					<li class='config_add'><input type='text' placeholder = 'Enter category...' id='ug_grant_cat' /><button class='config_submit' id='ug_grant_cat_submit'>Add</button></li>
+					<li class='config_add'><input type='text' placeholder='Enter category...' id='ug_grant_cat' /><button class='config_submit' id='ug_grant_cat_submit'>Add</button></li>
 				</ul>
 			</div>
 			<div class='config-list' id='grad_grant_categories'>
@@ -75,7 +79,7 @@
 					{% for cat in grad_grant_cats %}
 					<li id='grad_grant_cat_{{cat.id}}'>{{cat.category}}<a class='config_remove' href=''>x</a></li>
 					{% endfor %}
-					<li class='config_add'><input type='text' placeholder = 'Enter category...' id='grad_grant_cat' /><button class='config_submit' id='grad_grant_cat_submit'>Add</button></li>
+					<li class='config_add'><input type='text' placeholder='Enter category...' id='grad_grant_cat' /><button class='config_submit' id='grad_grant_cat_submit'>Add</button></li>
 				</ul>
 			</div>
 
@@ -87,8 +91,8 @@
 					{% for round in funding_rounds %}
 					<li id='round_{{round.id}}'>{{round.deadline}}&nbsp;-&nbsp;{{round.name}}<a class='config_remove' href=''>x</a></li>
 					{% endfor %}
-					<li class='config_add'><input type='text' placeholder = 'Enter name...' class='oneoftwo' id='round_name' />
-						<input type='text' class='oneoftwo' placeholder = 'Enter deadline (mm/dd/yyyy)' id='round_date' /><button class='config_submit' id='round_submit'>Add</button></li>
+					<li class='config_add'><input type='text' placeholder='Enter name...' class='oneoftwo' id='round_name' />
+						<input type='text' class='oneoftwo' placeholder='Enter deadline (mm/dd/yyyy)' name='round_date' id='round_date' /><button class='config_submit' id='round_submit'>Add</button></li>
 				</ul>
 			</div>
 			<div class='config-list' id='delegates'>
@@ -97,8 +101,8 @@
 					{% for delegate in grad_delegates %}
 					<li id='delegate_{{delegate.id}}'>{{delegate.name}}&nbsp;-&nbsp;{{delegate.email}}<a class='config_remove' href=''>x</a></li>
 					{% endfor %}
-					<li class='config_add' id='delegate'><input type='text' class='oneoftwo' placeholder = 'Enter name...' id='delegate_name' />
-						<input type='text' class='oneoftwo' placeholder = 'Enter email...' id='delegate_email' /><button class='config_submit' id='delegate_submit'>Add</button></li>
+					<li class='config_add' id='delegate'><input type='text' class='oneoftwo' placeholder='Enter name...' id='delegate_name' />
+						<input type='text' class='oneoftwo' placeholder='Enter email...' name='delegate_email' id='delegate_email' /><button class='config_submit' id='delegate_submit'>Add</button></li>
 				</ul>
 			</div>
 		</div>

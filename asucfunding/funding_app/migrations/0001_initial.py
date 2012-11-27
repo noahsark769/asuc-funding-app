@@ -16,6 +16,18 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('funding_app', ['Admin'])
 
+        # Adding model 'Budget'
+        db.create_table('funding_app_budget', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('additionalInfo', self.gf('django.db.models.fields.CharField')(max_length=5000)),
+            ('amountAwarded', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
+            ('comment', self.gf('django.db.models.fields.CharField')(max_length=500)),
+            ('totalRequestedAmount', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
+            ('totalOtherFunding', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
+            ('grandTotal', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
+        ))
+        db.send_create_signal('funding_app', ['Budget'])
+
         # Adding model 'FundingRequest'
         db.create_table('funding_app_fundingrequest', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -30,10 +42,13 @@ class Migration(SchemaMigration):
             ('fundingRound', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('contingency', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('studentGroup', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('studentGroupPending', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('requestStatus', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('dateSubmitted', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('dateSubmitted', self.gf('django.db.models.fields.DateField')(auto_now=True, blank=True)),
             ('eventTitle', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('description', self.gf('django.db.models.fields.CharField')(max_length=5000)),
+            ('sameBudgetForRecurringEvents', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('budget', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['funding_app.Budget'], unique=True, null=True)),
         ))
         db.send_create_signal('funding_app', ['FundingRequest'])
 
@@ -41,7 +56,7 @@ class Migration(SchemaMigration):
         db.create_table('funding_app_graduaterequest', (
             ('fundingrequest_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['funding_app.FundingRequest'], unique=True, primary_key=True)),
             ('academicDepartmentalAffiliate', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('gaDelegate', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('gaDelegate', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('studentOrgTot', self.gf('django.db.models.fields.IntegerField')()),
             ('studentOrgGrad', self.gf('django.db.models.fields.IntegerField')()),
             ('studentOrgUG', self.gf('django.db.models.fields.IntegerField')()),
@@ -65,18 +80,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('funding_app', ['TravelRequest'])
 
-        # Adding model 'Budget'
-        db.create_table('funding_app_budget', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('additionalInfo', self.gf('django.db.models.fields.CharField')(max_length=5000)),
-            ('amountAwarded', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
-            ('comment', self.gf('django.db.models.fields.CharField')(max_length=500)),
-            ('totalRequestedAmount', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
-            ('totalOtherFunding', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
-            ('requestedTotal', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
-        ))
-        db.send_create_signal('funding_app', ['Budget'])
-
         # Adding model 'ItemDescription'
         db.create_table('funding_app_itemdescription', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -95,11 +98,10 @@ class Migration(SchemaMigration):
         db.create_table('funding_app_event', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('fundingRequest', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['funding_app.FundingRequest'])),
-            ('sameBudgetForRecurringEvents', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('startDate', self.gf('django.db.models.fields.DateField')()),
             ('endDate', self.gf('django.db.models.fields.DateField')()),
             ('location', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('waiverRequested', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('waiverRequested', self.gf('django.db.models.fields.CharField')(max_length=10)),
             ('attendenceNonStudent', self.gf('django.db.models.fields.IntegerField')()),
             ('attendenceUG', self.gf('django.db.models.fields.IntegerField')()),
             ('attendenceGrad', self.gf('django.db.models.fields.IntegerField')()),
@@ -180,6 +182,9 @@ class Migration(SchemaMigration):
         # Deleting model 'Admin'
         db.delete_table('funding_app_admin')
 
+        # Deleting model 'Budget'
+        db.delete_table('funding_app_budget')
+
         # Deleting model 'FundingRequest'
         db.delete_table('funding_app_fundingrequest')
 
@@ -191,9 +196,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'TravelRequest'
         db.delete_table('funding_app_travelrequest')
-
-        # Deleting model 'Budget'
-        db.delete_table('funding_app_budget')
 
         # Deleting model 'ItemDescription'
         db.delete_table('funding_app_itemdescription')
@@ -241,8 +243,8 @@ class Migration(SchemaMigration):
             'additionalInfo': ('django.db.models.fields.CharField', [], {'max_length': '5000'}),
             'amountAwarded': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
             'comment': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'grandTotal': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'requestedTotal': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
             'totalOtherFunding': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
             'totalRequestedAmount': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'})
         },
@@ -298,14 +300,14 @@ class Migration(SchemaMigration):
             'fundingRequest': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['funding_app.FundingRequest']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'location': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'sameBudgetForRecurringEvents': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'startDate': ('django.db.models.fields.DateField', [], {}),
-            'waiverRequested': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+            'waiverRequested': ('django.db.models.fields.CharField', [], {'max_length': '10'})
         },
         'funding_app.fundingrequest': {
             'Meta': {'object_name': 'FundingRequest'},
+            'budget': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['funding_app.Budget']", 'unique': 'True', 'null': 'True'}),
             'contingency': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'dateSubmitted': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'dateSubmitted': ('django.db.models.fields.DateField', [], {'auto_now': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '5000'}),
             'email': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'eventTitle': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
@@ -318,7 +320,9 @@ class Migration(SchemaMigration):
             'requestCategory': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'requestStatus': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'requestType': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'sameBudgetForRecurringEvents': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'studentGroup': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'studentGroupPending': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'uid': ('django.db.models.fields.IntegerField', [], {})
         },
         'funding_app.graduaterequest': {
@@ -326,7 +330,7 @@ class Migration(SchemaMigration):
             'academicDepartmentalAffiliate': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'attendedWaiver': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'fundingrequest_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['funding_app.FundingRequest']", 'unique': 'True', 'primary_key': 'True'}),
-            'gaDelegate': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'gaDelegate': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'studentOrgGrad': ('django.db.models.fields.IntegerField', [], {}),
             'studentOrgTot': ('django.db.models.fields.IntegerField', [], {}),
             'studentOrgUG': ('django.db.models.fields.IntegerField', [], {})

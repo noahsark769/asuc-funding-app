@@ -2,7 +2,7 @@
 
 {% block scripts %}
 <script type='text/javascript' src="{{ STATIC_URL }}js/asuc-funding-summary.js"></script>
-{% block %}
+{% endblock %}
 
 {% comment %}
 	This is a django document that expets to be rendered with the following options.
@@ -18,34 +18,51 @@
 	{% else %}
 	<table class='request-summary'>
 		<thead>
-			<tr>
-				<td>&nbsp;Request ID</td>
-				<td>&nbsp;Submitter Email</td>
-				<td>&nbsp;Date Submitted</td>
-				<td>&nbsp;Request Status</td>
-				<td>&nbsp;Student Group</td>
-				<td>&nbsp;Request Type</td>
-				<td>&nbsp;Request Category</td>
-				<td>&nbsp;Request For</td>
-				<td>&nbsp;Funding Round</td>
-				<td>&nbsp;Requested Total</td>
-				<td>&nbsp;Awarded Total</td>
+			<tr class='table-header-row'>
+<td id='id'>Request ID<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td class='has-options' id='email'>Submitter Email<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td class='has-options' id='submitted'>Date Submitted<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td class='has-options' id='status'>Request Status<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td class='has-options' id='group'>Student Group<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td class='has-options' id='type'>Request Type<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td class='has-options' id='category'>Request Category<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td class='has-options' id='for'>Request For<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td class='has-options' id='round'>Funding Round<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td id='requested'>Requested Total<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
+				<td id='awarded'>Awarded Total<p><a href='#' class='sort-down'><i class='icon-sort-down'></i></a> <a href='#' class='sort-up'><i class='icon-sort-up'></i></a> <a href='#' class='funnel'><i class='icon-filter'></i></a></p></td>
 			</tr>
-		<thead>
+			<tr id='request_summary_options_form'>
+				<td class='id'>
+					<p><a href='#' id='select_all'>Select all</a></p>
+					<p><a href='#' id='deselect_all'>Deselect all</a></p>
+					<p><a href='#' class='funnel' id='close_options'>Close options</a></p>
+				</td>
+				<td class='email'>Loading...</td>
+				<td class='submitted'>Loading...</td>
+				<td class='status'>Loading...</td>
+				<td class='group'>Loading...</td>
+				<td class='type'>Loading...</td>
+				<td class='category'>Loading...</td>
+				<td class='for'>Loading...</td>
+				<td class='round'>Loading...</td>
+				<td class='null'></td>
+				<td class='null'></td>
+			</tr>
+		</thead>
 		<tbody>
 			{% for request in funding_requests %}
-			<tr>
-				<td>&nbsp;{{request.id}}</td>
-				<td>&nbsp;{{request.email}}</td>
-				<td>&nbsp;{{request.date_submitted_formatted}}</td>
-				<td>&nbsp;{{request.requestStatus}}</td>
-				<td>&nbsp;{{request.studentGroup}}</td>
-				<td>&nbsp;{{request.requestType}}</td>
-				<td>&nbsp;{{request.requestCategory}}</td>
-				<td>&nbsp;{{request.eventType}}</td>
-				<td>&nbsp;{{request.fundingRound}}</td>
-				<td>&nbsp;${{request.compute_requested_total}}</td>
-				<td>&nbsp;${{request.compute_awarded_total}}</td>
+			<tr href='/review_request/{{request.id}}/'>
+				<td class='id'>{{request.formattedID}}</td>
+				<td class='email'>{{request.email}}</td>
+				<td class='submitted'>{{request.date_submitted_formatted}}</td>
+				<td class='status'>{{request.requestStatus}}</td>
+				<td class='group'>{{request.studentGroup}}</td>
+				<td class='type'>{{request.requestType}}</td>
+				<td class='category'>{{request.requestCategory}}</td>
+				<td class='for'>{{request.eventType}}</td>
+				<td class='round'>{{request.fundingRound}}</td>
+				<td class='requested requested-total'>${{request.compute_requested_total}}</td>
+				<td class='awarded awarded-total'>${{request.compute_awarded_total}}</td>
 			</tr>
 			{% endfor %}
 		</tbody>

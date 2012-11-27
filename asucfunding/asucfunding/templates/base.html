@@ -9,10 +9,11 @@
 <head>
 	<title>ASUC/GA Funding Request</title>
 
-	<link rel='stylesheet/less' type='text/css' href="{{ STATIC_URL }}css/styles.less">
 	<link rel='stylesheet' type='text/css' href="{{ STATIC_URL }}css/formalize.css">
+	<link rel='stylesheet/less' type='text/css' href="{{ STATIC_URL }}css/styles.less">
 	<link rel='stylesheet' type='text/css' href="{{ STATIC_URL }}css/jquery-ui-1.9.2.custom.min.css">
 	<link rel='stylesheet' type='text/css' href="{{ STATIC_URL }}css/jquery.qtip.min.css">
+	<link rel='stylesheet/less' type='text/css' href="{{ STATIC_URL }}font_awesome/less/font-awesome.less">
 	{% block stylesheets %}{% endblock %}
 
 	<script type='text/javascript' src="{{ STATIC_URL }}js/jquery-1.8.3.min.js"></script>
@@ -29,7 +30,7 @@
 </head>
 <body>
 	<div id='header'>
-		<div id='title'>asuc funding</div>
+		<div id='title'><a class='nostyle' href='/'>asuc funding</a></div>
 		<div id='user_info'>
 			Welcome, {{ name }}. <span id='date'></span> <a href='/logout/'>Calnet Logout</a>
 		</div>
