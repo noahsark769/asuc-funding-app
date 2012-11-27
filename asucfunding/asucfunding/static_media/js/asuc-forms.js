@@ -13,13 +13,13 @@ $(document).ready(function() {
 			case 'Graduate':
 				// request selector block options
 				$('#ug_request_categories').hide();
-				$('#grad_request_categories').show();
+				$('#grad_request_categories').fadeIn(300);
 				$('#ug_grant_categories').hide();
-				//$('#grad_grant_categories').show();
-				$('#event_type').show();
+				//$('#grad_grant_categories').fadeIn(300);
+				$('#event_type').fadeIn(300);
 
 				// header block options
-				$('#graduate_request_block').show();
+				$('#graduate_request_block').fadeIn(300);
 				$('#undergraduate_request_block').hide();
 				$('#travel_request_block').hide();
 
@@ -29,15 +29,15 @@ $(document).ready(function() {
 				break;
 			case 'Undergraduate':
 				// request selector block options
-				$('#ug_request_categories').show();
+				$('#ug_request_categories').fadeIn(300);
 				$('#grad_request_categories').hide();
-				//$('#ug_grant_categories').show();
+				//$('#ug_grant_categories').fadeIn(300);
 				$('#grad_grant_categories').hide();
-				$('#event_type').show();
+				$('#event_type').fadeIn(300);
 
 				// header block options
 				$('#graduate_request_block').hide();
-				$('#undergraduate_request_block').show();
+				$('#undergraduate_request_block').fadeIn(300);
 				$('#travel_request_block').hide();
 
 				// travel event/budget blocks
@@ -55,11 +55,11 @@ $(document).ready(function() {
 				// header block options
 				$('#graduate_request_block').hide();
 				$('#undergraduate_request_block').hide();
-				$('#travel_request_block').show();
+				$('#travel_request_block').fadeIn(300);
 
 				// travel event/budget blocks
-				$('#travel_event_block').show();
-				$('#travel_budget_block').show();
+				$('#travel_event_block').fadeIn(300);
+				$('#travel_budget_block').fadeIn(300);
 
 				// reset event_type and event/budget blocks
 				$('#event_type input:radio').prop('checked', false);
@@ -84,15 +84,15 @@ $(document).ready(function() {
 		switch ($(this).val()) {
 			case 'Single Event':
 				// show the appropriate header
-				$('#single_event_header_block').show();
+				$('#single_event_header_block').fadeIn(300);
 				$('#recurring_event_header_block').hide();
 
 				/* we want to have 1 event and 1 budget,
 				but their values are preserved, in the case
 				of changing from R to S*/
 				resetEventsAndBudgets(false);
-				$('#event_block_1').show();
-				$('#budget_block_1').show();
+				$('#event_block_1').fadeIn(300);
+				$('#budget_block_1').fadeIn(300);
 				resetBudget($('#budget_block_1'), 1);
 
 				// add/remove event buttons
@@ -104,7 +104,7 @@ $(document).ready(function() {
 			case 'Recurring Event':
 				// show the appropriate header
 				$('#single_event_header_block').hide();
-				$('#recurring_event_header_block').show();
+				$('#recurring_event_header_block').fadeIn(300);
 
 				// we want to reset the blocks, and prompt for same/diff. budget choice
 				resetEventsAndBudgets(false);
@@ -123,7 +123,7 @@ $(document).ready(function() {
 
 				// we want to completely reset everything, and show one budget.
 				resetEventsAndBudgets(true);
-				$('#budget_block_1').show();
+				$('#budget_block_1').fadeIn(300);
 				resetBudget($('#budget_block_1'), 1);
 
 				// add/remove event buttons
@@ -141,8 +141,8 @@ $(document).ready(function() {
 			case 'Y': // same
 				// here, we're starting from nothing, add 3 events, 1 budget
 				if ($('#event_block_1').is(':hidden')) {
-					$('#event_block_1').show();
-					$('#budget_block_1').show();
+					$('#event_block_1').fadeIn(300);
+					$('#budget_block_1').fadeIn(300);
 					resetBudget($('#budget_block_1'), 1);
 					addEvent('#event_block_1');
 					addEvent('#event_block_2');
@@ -152,12 +152,12 @@ $(document).ready(function() {
 					// remove other budgets, and place 1st budget after last event
 					resetBudgets(false);
 					$('#budget_block_1').insertAfter($('#event_block_' + $('.event_block').length));
-					$('#budget_block_1').show();
+					$('#budget_block_1').fadeIn(300);
 					resetBudget($('#budget_block_1'), 1);
 				}
 
 				// add/remove event buttons
-				$('#add_event_group').show();
+				$('#add_event_group').fadeIn(300);
 
 				// hide recurring event footer
 				$('#recurring_event_footer_block').hide();
@@ -165,8 +165,8 @@ $(document).ready(function() {
 			case 'N': // diff
 				// starting from nothing, alternate 4 events and budgets
 				if ($('#event_block_1').is(':hidden')) {
-					$('#event_block_1').show();
-					$('#budget_block_1').show();
+					$('#event_block_1').fadeIn(300);
+					$('#budget_block_1').fadeIn(300);
 					resetBudget($('#budget_block_1'), 1);
 					for (var i=1;i<=3;i++) {
 						addEvent('#budget_block_' + i);
@@ -177,7 +177,7 @@ $(document).ready(function() {
 					// reset budgets, give each event one budget.
 					resetBudgets(true);
 					$('#budget_block_1').insertAfter($('#event_block_1'));
-					$('#budget_block_1').show();
+					$('#budget_block_1').fadeIn(300);
 					resetBudget($('#budget_block_1'), 1);
 					$('.event_block').each(function() {
 						var id = $(this).prop('id');
@@ -188,10 +188,10 @@ $(document).ready(function() {
 				}
 
 				// add/remove event buttons
-				$('#add_event_group').show();
+				$('#add_event_group').fadeIn(300);
 
 				// show recurring event footer
-				$('#recurring_event_footer_block').show();
+				$('#recurring_event_footer_block').fadeIn(300);
 				break;
 		}
 	});
@@ -200,7 +200,7 @@ $(document).ready(function() {
 	$('input:checkbox[name=ug_req_cat]').click(function() {
 		if ($(this).val() == 'Grant') {
 			if ($(this).is(':checked'))
-				$('#ug_grant_categories').show();
+				$('#ug_grant_categories').fadeIn(300);
 			else
 				$('#ug_grant_categories').hide();
 		}
@@ -208,7 +208,7 @@ $(document).ready(function() {
 	$('input:checkbox[name=grad_req_cat]').click(function() {
 		if ($(this).val() == 'Grant') {
 			if ($(this).is(':checked'))
-				$('#grad_grant_categories').show();
+				$('#grad_grant_categories').fadeIn(300);
 			else
 				$('#grad_grant_categories').hide();
 		}
@@ -315,7 +315,7 @@ $(document).ready(function() {
 	// travel presenting handler
 	$('input:radio[name=travel_presenting]').click(function() {
 		if ($(this).val() == 'Y')
-			$('#travel_presentation_title').show();
+			$('#travel_presentation_title').fadeIn(300);
 		else
 			$('#travel_presentation_title').hide();
 	});
@@ -528,7 +528,6 @@ $(document).ready(function() {
 
 		// handle recurring event footer
 		if ($('#recurring_event_footer_block').is(':visible') && $('.calculate').valid()) {
-			console.log('a');
 			var totalAmtReq = 0;
 			var totalOthFund = 0;
 			$('.calculate').each(function() {
@@ -822,17 +821,24 @@ $(document).ready(function() {
 			window.$divs = $('#request_form > div:visible, #submit, #add_event_group'); // add #save
 			window.$divs.hide();
 			// show form.
-			$('#submission_confirmation').show();
+			$('#submission_confirmation').fadeIn(300);
 
 			return false;
 		},
-
+		success: function() {
+			$('#request_form > div').hide();
+			$('#thank_you').fadeIn(300);
+		}
+	});
+	
+	$('#go_home').click(function() {
+		$('#request_form > div').hide();
 	});
 	
 	// handle cancel
 	$('#return').click(function() {
 		$('#submission_confirmation').hide();
-		window.$divs.show();
+		window.$divs.fadeIn(300);
 
 		return false;
 	});
@@ -845,14 +851,15 @@ $(document).ready(function() {
 	{
 		// hide unnecessary blocks
 		$('#request_form > div').hide();
-		$('#request_form > div.button-group').show();
-		$('#request_selector_block').show();
+		$('#request_form > div.button-group').fadeIn(300);
+		$('#request_selector_block').fadeIn(300);
 		$('#ug_request_categories').hide();
 		$('#grad_request_categories').hide();
 		$('#ug_grant_categories').hide();
 		$('#grad_grant_categories').hide();
 		$('#event_type').hide();
 		$('#travel_presentation_title').hide();
+		$('#thank_you').hide();
 
 		// add/remove event buttons
 		$('#add_event_group').hide();

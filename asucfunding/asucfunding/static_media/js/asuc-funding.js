@@ -5,58 +5,6 @@ $(document).ready(function() {
 		return parseInt(/\d+/.exec(id));
 	}
 
-	$.validator.addMethod(
-		'dateUS',
-		function(value, element) {
-			var check = false;
-			var re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
-			if( re.test(value)){
-				var adata = value.split('/');
-				var mm = parseInt(adata[0],10);
-				var dd = parseInt(adata[1],10);
-				var yyyy = parseInt(adata[2],10);
-				var xdata = new Date(yyyy,mm-1,dd);
-				if ( ( xdata.getFullYear() == yyyy ) && ( xdata.getMonth () == mm - 1 ) && ( xdata.getDate() == dd ) )
-					check = true;
-				else
-					check = false;
-			} else
-				check = false;
-			return this.optional(element) || check;
-		},
-		'Please enter a date in the format mm/dd/yyyy'
-	);
-
-	$('#config_form').validate({
-		errorPlacement: function(error, $element) {
-			$element.qtip({
-				content: error,
-				position: {
-					corner: {
-						target: 'middleRight',
-						tooltip: 'middleLeft'
-					}
-				},
-				style: {
-					classes: 'qtip-red',
-					tip: 'leftTop'
-				}
-			});
-		},
-		onkeyup: false,
-		rules: {
-			admin_email: {
-				email: true
-			},
-			delegate_email: {
-				email: true
-			},
-			round_date: {
-				dateUS: true
-			}
-		}
-	});
-
 	/* we're using FORMS because of CSRF simplicity
 	we can now just use {% csrf_token %} in config.html, which avoids auth problems. */
 	$('button.config_submit').click(function(event) {

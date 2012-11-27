@@ -26,7 +26,8 @@ urlpatterns = patterns('',
     url(r'^submit_request/$', 'funding_app.views.submitter_submit_funding_request'),
     #url(r'^edit_request/(?P<request_id>\w{1,50})/$', 'funding_app.views.submitter_render_funding_request'),
     url(r'^review_request/(?P<request_id>\w{1,50})/$', 'funding_app.views.submitter_render_funding_request'),
-    url(r'^admin_review_request/$', 'funding_app.views.admin_render_funding_request'),
-    url(r'^admin_award_request/$', 'funding_app.views.admin_render_funding_request'),
+    url(r'^admin_review_request/(?P<request_id>\w{1,50})/$', 'funding_app.views.admin_render_funding_request'),
+    url(r'^admin_award_request/(?P<request_id>\w{1,50})/$', 'funding_app.views.admin_award_funding_request'),
+    url(r'^award_submit/(?P<request_id>\w{1,50})/$', 'funding_app.views.admin_award_submit'),
     url(r'^export_to_excel/$', 'funding_app.views.admin_export_to_excel')
 )

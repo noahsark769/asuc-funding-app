@@ -27,8 +27,8 @@ $(document).ready(function () {
 			grandAwardedTotal += value;
 		});
 
-		$('td#requested_grand_total').html(grandRequestedTotal);
-		$('td#awarded_grand_total').html(grandAwardedTotal);
+		$('td#requested_grand_total').html('$' + grandRequestedTotal);
+		$('td#awarded_grand_total').html('$' + grandAwardedTotal);
 	}
 
 	// populate the options panel
@@ -139,7 +139,7 @@ $(document).ready(function () {
 		// get all the rows, then clear out everything, then put everything back in in sorted order.
 		isUp = $(this).hasClass('sort-up');
 		$rows = $('tbody tr');
-		parentID = $(this).parent().prop('id');
+		parentID = $(this).parent().parent().prop('id');
 		sorted = $rows.sort(function (a, b) {
 			// a and b are tr html DOM elements.
 			$aChild = $(a).children('td.' + parentID);
@@ -158,7 +158,7 @@ $(document).ready(function () {
 	calculateRequestedTotals();
 
 	// make rows clickable
-	$('table tr').click(function(){
+	$('tbody tr').click(function(){
 		window.location = $(this).attr('href');
 		return false;
 	});

@@ -1,5 +1,9 @@
 {% extends "submitter.html" %}
 
+{% block scripts %}
+<script type='text/javascript' src="{{ STATIC_URL }}js/asuc-award.js"></script>
+{% endblock %}
+
 {% comment %}
 	This is a django document that expects to be rendered with the following options.
 
@@ -17,6 +21,11 @@
 				<div class='form-field'>
 					<label>Requested by:</label>
 					<div class='review_value'>{{name}}</div>
+				</div>
+
+				<div class='form-field'>
+					<label>Status:</label>
+					<div class='review_value'>{{funding_request.requestStatus}}</div>
 				</div>
 
 				<div class='form-field'>
@@ -144,12 +153,12 @@
 			<div id='travel_request_block'>
 				<h2>Travel Request Details</h2>
 
-				<fieldset>
+				<div class='form-container'>
 					<div class='form-field'>
-						<label>Individual:</label>
+						<label>Requesting As:</label>
 						<div class='review_value'>{{funding_request.requestingAs}}</div>
 					</div>
-				</fieldset>
+				</div>
 			</div>
 		{% endif %}
 
@@ -178,7 +187,7 @@
 					<div class='form-container'>
 						<div class='form-field'>
 							<label>Is the budget the same for each occurrence of the event?</label>
-							<div class='review_value'>{% if funding_request.sameBudgetForRecurringEvents == True %}Yes{% else %}No{% endif %}</div>
+							<div class='review_value'>{% if funding_request.sameBudgetForRecurringEvents %}Yes{% else %}No{% endif %}</div>
 						</div>
 
 						<div class='form-field'>
@@ -186,7 +195,7 @@
 							<div class='review_value'>{{funding_request.eventTitle}}</div>
 						</div>
 
-						<div class='form-field block-label'>
+						<div class='form-field'>
 							<label>Event description:</label>
 							<div class='review_value'>{{funding_request.description}}</div>
 						</div>
@@ -238,8 +247,8 @@
 								<td>{{item.description}}</td>
 								<td>${{item.itemCostF}}</td>
 								<td>{{item.quantity}}</td>
-								<td>${{item.requestedAmountF}}</td>
-								<td>${{item.otherFundingF}}</td>
+								<td class='req_amt' value='{{item.requestedAmountF}}'>${{item.requestedAmountF}}</td>
+								<td class='oth_fund' value='{{item.otherFundingF}}'>${{item.otherFundingF}}</td>
 								<td>${{item.totalF}}</td>
 							</tr>
 						{% endfor %}
@@ -271,8 +280,8 @@
 								<td>{{item.description}}</td>
 								<td>${{item.itemCostF}}</td>
 								<td>{{item.quantity}}</td>
-								<td>${{item.requestedAmountF}}</td>
-								<td>${{item.otherFundingF}}</td>
+								<td class='req_amt' value='{{item.requestedAmountF}}'>${{item.requestedAmountF}}</td>
+								<td class='oth_fund' value='{{item.otherFundingF}}'>${{item.otherFundingF}}</td>
 								<td>${{item.totalF}}</td>
 							</tr>
 						{% endfor %}
@@ -286,8 +295,8 @@
 					</div>
 				</div>
 			{% endif %}
-			{% if funding_request.eventType == 'Recurring Events' %}
-				{% if funding_request.sameBudgetForRecurringEvents == True %}
+			{% if funding_request.eventType == 'Recurring Event' %}
+				{% if funding_request.sameBudgetForRecurringEvents %}
 					{% for event in funding_request.events %}
 						<div class='event_block'>
 							<h2>Event Details</h2>
@@ -333,8 +342,8 @@
 									<td>{{item.description}}</td>
 									<td>${{item.itemCostF}}</td>
 									<td>{{item.quantity}}</td>
-									<td>${{item.requestedAmountF}}</td>
-									<td>${{item.otherFundingF}}</td>
+									<td class='req_amt' value='{{item.requestedAmountF}}'>${{item.requestedAmountF}}</td>
+									<td class='oth_fund' value='{{item.otherFundingF}}'>${{item.otherFundingF}}</td>
 									<td>${{item.totalF}}</td>
 								</tr>
 							{% endfor %}
@@ -393,8 +402,8 @@
 										<td>{{item.description}}</td>
 										<td>${{item.itemCostF}}</td>
 										<td>{{item.quantity}}</td>
-										<td>${{item.requestedAmountF}}</td>
-										<td>${{item.otherFundingF}}</td>
+										<td class='req_amt' value='{{item.requestedAmountF}}'>${{item.requestedAmountF}}</td>
+										<td class='oth_fund' value='{{item.otherFundingF}}'>${{item.otherFundingF}}</td>
 										<td>${{item.totalF}}</td>
 									</tr>
 								{% endfor %}
@@ -412,10 +421,18 @@
 				<div id='recurring_event_footer_block'>
 					<h2>Recurring Event Totals</h2>
 
-					<span>Grand Totals</span>
-					<span id='recurring_total_amount_requested'></span>
-					<span id='recurring_total_other_funding'></span>
-					<span id='recurring_grand_total'></span>
+						<div>
+							<div class='rec_c'></div>
+							<div class='rec_c'>Amount Requested</div>
+							<div class='rec_c'>Other Funding</div>
+							<div class='rec_c'>Grand Total</div>
+						</div>
+						<div>
+							<div class='rec_c'>Grand Totals</div>
+							<div class='rec_c' id='recurring_total_amount_requested'></div>
+							<div class='rec_c'id='recurring_total_other_funding'></div>
+							<div class='rec_c'id='recurring_grand_total'></div>
+						</div>
 				</div>
 			{% endif %}
 
@@ -485,11 +502,6 @@
 						</tr>
 					{% endfor %}
 				</table>
-
-				<div class='button-group'>
-					<button class='travel_add_budget_item'>Add Item Description</button>
-					<button class='travel_remove_budget_item'>Remove Last Item Description</button>
-				</div>
 			</div>
 		{% endif %}
 	</div>

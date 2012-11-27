@@ -50,7 +50,7 @@
 		</thead>
 		<tbody>
 			{% for request in funding_requests %}
-			<tr><a href='/admin_review_request/{{request.id}}/'>
+			<tr href='/admin_review_request/{{request.id}}/'>
 				<td class='id'>{{request.formattedID}}</td>
 				<td class='email'>{{request.email}}</td>
 				<td class='submitted'>{{request.date_submitted_formatted}}</td>
@@ -62,7 +62,7 @@
 				<td class='round'>{{request.fundingRound}}</td>
 				<td class='requested requested-total'>${{request.compute_requested_total}}</td>
 				<td class='awarded awarded-total'>${{request.compute_awarded_total}}</td>
-			</tr></a>
+			</tr>
 			{% endfor %}
 		</tbody>
 		<tfoot>

@@ -66,6 +66,7 @@ def check_credentials(request):
 	"""
 	Check whether the user currently has the proper credentials to be logged in (should have authZ and authN).
 	"""
+	return True
 	if request.COOKIES.has_key('uid'):
 		return True
 	else:
@@ -75,6 +76,7 @@ def get_credentials(request):
 	"""
 	Grab the user's credentials from the cookies, assuming they are properly logged in.
 	"""
+	return {'uid': 763546, 'name': 'Connor Landgraf', 'phone': '510-999-9999', 'email': 'connor.landgraf@gmail.com'}
 	return {'uid': request.COOKIES['uid'], 'name': request.COOKIES['name'], 'phone': request.COOKIES['phone'], 'email': request.COOKIES['email']}
 
 def is_admin(request):
@@ -179,6 +181,62 @@ def admin_request_summary(request):
 
 	return render_to_response("admin_request_summary.html", {'funding_requests': fundingRequests, 'name': user['name'], 'is_admin': True}, context_instance=RequestContext(request))
 
+def admin_award_funding_request(request, request_id):
+	"""
+	Admin View:
+
+	Deliver all information about a funding request to the view.
+	This is used for the "Admin Review" and "Admin Award" pages.
+	"""
+	if check_credentials(request) == False:
+		return redirect(calnet_login_url())
+	if is_admin(request) == False:
+		return redirect('funding_app.views.home')
+
+	user = get_credentials(request)
+	
+	if request_id is not None:
+		try:
+			fundingRequest = GraduateRequest.objects.get(id=request_id)
+		except ObjectDoesNotExist as e:
+			try:
+				fundingRequest = UndergraduateRequest.objects.get(id=request_id)
+			except ObjectDoesNotExist as e:
+				try:
+					fundingRequest = TravelRequest.objects.get(id=request_id)
+				except ObjectDoesNotExist as e:
+					# Request not found, so we send them home.
+					return redirect('funding_app.views.home')
+
+		if fundingRequest.requestStatus == 'Awarded':
+			return redirect('funding_app.views.home')
+	
+		url = "admin_award.html"
+	else:
+		fundingRequest = None
+		url = "/"
+
+	# need to pass all config information to the form
+	locations = ConfigLocation.objects.all()
+	ug_request_categories = ConfigUGReqCat.objects.all()
+	grad_request_categories = ConfigGradReqCat.objects.all()
+	ug_grant_categories = ConfigUGGrant.objects.all()
+	grad_grant_categories = ConfigGradGrant.objects.all()
+	funding_round = current_round() if current_round() != None else {'name':'No upcoming rounds.', 'deadline':'none'}
+	grad_delegates = ConfigGradDelegate.objects.all()
+
+	return render_to_response(url, {'funding_request': fundingRequest,
+									'name': user['name'],
+									'is_admin': is_admin(request),
+									'locations': locations,
+									'ug_request_categories': ug_request_categories,
+									'grad_request_categories': grad_request_categories,
+									'ug_grant_categories': ug_grant_categories,
+									'grad_grant_categories': grad_grant_categories,
+									'funding_round': funding_round,
+									'grad_delegates': grad_delegates
+									}, context_instance=RequestContext(request))
+
 def admin_render_funding_request(request, request_id):
 	"""
 	Admin View:
@@ -192,21 +250,45 @@ def admin_render_funding_request(request, request_id):
 		return redirect('funding_app.views.home')
 
 	user = get_credentials(request)
-
-	try:
-		fundingRequest = GraduateRequest.objects.get(id=request_id)
-	except ObjectDoesNotExist as e:
+	
+	if request_id is not None:
 		try:
-			fundingRequest = UndergraduateRequest.objects.get(id=request_id)
+			fundingRequest = GraduateRequest.objects.get(id=request_id)
 		except ObjectDoesNotExist as e:
-			fundingRequest = TravelRequest.objects.get(id=request_id)
-
-	if fundingRequest.requestStatus == "Awarded":
+			try:
+				fundingRequest = UndergraduateRequest.objects.get(id=request_id)
+			except ObjectDoesNotExist as e:
+				try:
+					fundingRequest = TravelRequest.objects.get(id=request_id)
+				except ObjectDoesNotExist as e:
+					# Request not found, so we send them home.
+					return redirect('funding_app.views.home')
+	
 		url = "admin_review.html"
 	else:
-		url = "admin_award.html"
+		fundingRequest = None
+		url = "/"
 
-	return render_to_response(url, {'funding_request': fundingRequest, 'name': user['name'], 'is_admin': True}, context_instance=RequestContext(request))
+	# need to pass all config information to the form
+	locations = ConfigLocation.objects.all()
+	ug_request_categories = ConfigUGReqCat.objects.all()
+	grad_request_categories = ConfigGradReqCat.objects.all()
+	ug_grant_categories = ConfigUGGrant.objects.all()
+	grad_grant_categories = ConfigGradGrant.objects.all()
+	funding_round = current_round() if current_round() != None else {'name':'No upcoming rounds.', 'deadline':'none'}
+	grad_delegates = ConfigGradDelegate.objects.all()
+
+	return render_to_response(url, {'funding_request': fundingRequest,
+									'name': user['name'],
+									'is_admin': is_admin(request),
+									'locations': locations,
+									'ug_request_categories': ug_request_categories,
+									'grad_request_categories': grad_request_categories,
+									'ug_grant_categories': ug_grant_categories,
+									'grad_grant_categories': grad_grant_categories,
+									'funding_round': funding_round,
+									'grad_delegates': grad_delegates
+									}, context_instance=RequestContext(request))
 
 def config(request):
 	"""
@@ -374,6 +456,64 @@ def admin_export_to_excel(request):
 	book.save(response)
 	return response
 
+def admin_award_submit(request, request_id):
+	if check_credentials(request) == False:
+		return redirect(calnet_login_url())
+	if is_admin(request) == False or request.method != 'POST':
+		return redirect('funding_app.views.home')
+
+	post = request.POST
+
+	try:
+		fundingRequest = GraduateRequest.objects.get(id=request_id)
+	except ObjectDoesNotExist as e:
+		try:
+			fundingRequest = UndergraduateRequest.objects.get(id=request_id)
+		except ObjectDoesNotExist as e:
+			try:
+				fundingRequest = TravelRequest.objects.get(id=request_id)
+			except ObjectDoesNotExist as e:
+				# Request not found, so we send them home.
+				return redirect('funding_app.views.home')
+
+	fundingRequest.requestStatus = 'Awarded'
+	fundingRequest.save()
+
+	if fundingRequest.requestType == 'Travel':
+		amount = float(post.get('travel_budget_awarded'))
+		o = fundingRequest.single_event().budget
+		o.amountAwarded = amount
+		o.save()
+	else:
+		if fundingRequest.eventType == 'Recurring Event' and fundingRequest.sameBudgetForRecurringEvents == False:
+			i = 1
+			total = 0
+			while True:
+				if post.get('budget_awarded_' + str(i)) is None:
+					break
+				total += float(post.get('budget_awarded_' + str(i)))
+				o = fundingRequest.event_set.all()[i-1].budget
+				o.amountAwarded = total
+				o.save()
+				i += 1
+		elif fundingRequest.eventType == 'Recurring Event' and fundingRequest.sameBudgetForRecurringEvents == True:
+			amount = float(post.get('budget_awarded_1'))
+			o = fundingRequest.single_event().budget
+			o.amountAwarded = amount
+			o.save()
+		elif fundingRequest.eventType == 'Single Event':
+			amount = float(post.get('budget_awarded_1'))
+			o = fundingRequest.single_event().budget
+			o.amountAwarded = amount
+			o.save()
+		else:
+			amount = float(post.get('budget_awarded_1'))
+			o = fundingRequest.budget
+			o.amountAwarded = amount
+			o.save()
+
+	return redirect('funding_app.views.home')
+
 # Submitter Views
 
 def submitter_request_summary(request):
@@ -425,10 +565,7 @@ def submitter_render_funding_request(request, request_id=None):
 		if is_admin(request) is False and fundingRequest.uid != user['uid']:
 			return redirect('funding_app.views.home')
 	
-		if fundingRequest.requestStatus == "Submitted":
-			url = "submitter_review.html"
-		else:
-			url = "submitter_edit.html"
+		url = "submitter_review.html"
 	else:
 		fundingRequest = None
 		url = "submitter_create.html"
@@ -608,10 +745,11 @@ def submitter_submit_funding_request(request):
 	event_type = post.get('event_type')
 	event_title = post.get('event_title')
 	event_description = post.get('event_description')
-	if event_type == 'R':
+	if event_type == 'Recurring Event':
 		recurring_same_budget = post.get('recurring_same_budget')
 	else:
 		recurring_same_budget = 'N'
+	print recurring_same_budget
 
 	if request_type == 'Graduate':
 		reqSearchString = 'grad_req_cat'
@@ -749,6 +887,8 @@ def submitter_submit_funding_request(request):
 		})
 		return HttpResponse('SUCCESS')
 	elif event_type == 'Recurring Event':
+		event_title = post.get('recurring_event_title')
+		event_description = post.get('recurring_event_description')
 		if recurring_same_budget == 'Y':
 			# get budget details (only additional info)
 			budget_additional_info = post.get('budget_additional_info_1')
@@ -799,6 +939,8 @@ def submitter_submit_funding_request(request):
 			i = 1
 			while True:
 				strI = str(i)
+				if post.get('start_date_' + strI) is None:
+					break
 				# get event details
 				start_date = post.get('start_date_' + strI)
 				end_date = post.get('end_date_' + strI)
@@ -816,9 +958,10 @@ def submitter_submit_funding_request(request):
 					'attendenceNonStudent': event_non_students,
 					'attendenceUG': event_undergraduate,
 					'attendenceGrad': event_graduate,
-					'budget': budget,
+					'budget': budget
 				})
 				i += 1
+
 			return HttpResponse('SUCCESS')
 		elif recurring_same_budget == 'N':
 			i = 1

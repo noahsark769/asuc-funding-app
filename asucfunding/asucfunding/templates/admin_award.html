@@ -1,5 +1,9 @@
 {% extends "admin.html" %}
 
+{% block scripts %}
+<script type='text/javascript' src="{{ STATIC_URL }}js/asuc-award.js"></script>
+{% endblock %}
+
 {% comment %}
 	This is a django document that expects to be rendered with the following options.
 
@@ -9,5 +13,551 @@
 {% endcomment %}
 
 {% block content %}
-<!-- This should contain all the information about the request that the admin is awarding. -->
+	<form id='award_form' action='/award_submit/{{funding_request.id}}/' method='POST'>{% csrf_token %}
+		<div id='request_selector_block'>
+			<h2>Request Information</h2>
+			
+			<div class='form-container'>
+				<div class='form-field'>
+					<label>Requested by:</label>
+					<div class='review_value'>{{name}}</div>
+				</div>
+
+				<div class='form-field'>
+					<label>Status:</label>
+					<div class='review_value'>{{funding_request.requestStatus}}</div>
+				</div>
+
+				<div class='form-field'>
+					<label>Email:</label>
+					<div class='review_value'>{{funding_request.email}}</div>
+				</div>
+				
+				<div class='form-field'>			
+					<label>Phone:</label>
+					<div class='review_value'>{{funding_request.phone}}</div>
+				</div>
+
+				<div class='form-field'>			
+					<label>Request Type:</label>
+					<div class='review_value'>{{funding_request.requestType}} Request</div>
+				</div>
+
+				{% if funding_request.requestType != 'Travel' %}
+					<div class='form-field'>
+						<label>Request Category/Categories:</label>
+						<div class='review_value'>
+							{% for cat in funding_request.split_req_category %}
+								{% if forloop.counter != 1 %}, {% endif %}{{cat}}
+							{% endfor %}
+						</div>
+					</div>
+				{% endif %}
+
+				{% if funding_request.requestType != 'Travel' and funding_request.grant_categories == True %}
+					<div class='form-field'>
+						<label>Grant Category/Categories:</label>
+						<div class='review_value'>
+							{% for cat in funding_request.split_grant_category %}
+								{% if forloop.counter != 1 %}, {% endif %}{{cat}}
+							{% endfor %}
+						</div>
+					</div>
+				{% endif %}
+
+				<div class='form-field'>
+					<label>Requesting For:</label>
+					<div class='review_value'>{{funding_request.eventType}}</div>
+				</div>
+				<div class='form-field'>
+					<label>Funding Round:</label>
+					<div class='review_value'>{{funding_request.fundingRound}} {% if funding_round.contingency == True %}(Contingency){% endif %}</div>
+				</div>
+				<div class='form-field'>
+					<label>Student Group:</label>
+					<div class='review_value'>{{funding_request.studentGroup}} {% if funding_request.pendingStudentGroup == True %}(Registration Pending){% endif %}</div>
+				</div>
+			</div>
+		</div>
+
+		{% if funding_request.requestType == 'Graduate' %}
+			<div id='graduate_request_block'>
+				<h2>Graduate Request Details</h2>
+				
+				<div class='form-container'>
+					<div class='form-field'>
+						<label>Academic Departmental Affiliate:</label>
+						<div class='review_value'>{{funding_request.academicDepartmentalAffiliate}}</div>
+					</div>
+
+					<div class='form-field'>
+						<label>GA Delegate Reference:</label>
+						<div class='review_value'>{{funding_request.gaDelegate}}</div>
+					</div>
+				</div>
+
+				<fieldset>
+					<legend>Student organization membership:</legend>
+					
+					<div class='form-field'>
+						<label>Total:</label>
+						<div class='review_value'>{{funding_request.studentOrgTot}}</div>
+					</div>
+					
+					<div class='form-field'>
+						<label>Grdauate:</label>
+						<div class='review_value'>{{funding_request.studentOrgGrad}}</div>
+					</div>
+					
+					<div class='form-field'>
+						<label>Undergraduate:</label>
+						<div class='review_value'>{{funding_request.studentOrgUG}}</div>
+					</div>
+				</fieldset>
+
+				<div class='form-container'>
+					<div class='form-field'>
+						<label>Attended a GA funding workshop or received a funding workshop waiver?</label>
+						<div class='review_value'>{% if funding_request.grad_waiver == True %}Yes{% else %}No{% endif %}</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+
+		{% if funding_request.requestType == 'Undergraduate' %}
+			<div id='undergraduate_request_block'>
+				<h2>Undergraduate Request Details</h2>
+
+				<fieldset>
+					<legend>Student organization membership:</legend>
+
+					<div class='form-field'>
+						<label for='ug_membership_total'>total:</label>
+						<div class='review_value'>{{funding_request.studentOrgTot}}</div>
+					</div>
+					
+					<div class='form-field'>
+						<label for='ug_membership_student'>student:</label>
+						<div class='review_value'>{{funding_request.studentOrgStud}}</div>
+					</div>
+
+					<div class='form-field'>
+						<label>Attended an ASUC agent training?</label>
+						<div class='review_value'>{% if funding_request.ug_waiver == True %}Yes{% else %}No{% endif %}</div>
+					</div>
+				</fieldset>
+			</div>
+		{% endif %}
+
+		{% if funding_request.requestType == 'Travel' %}
+			<div id='travel_request_block'>
+				<h2>Travel Request Details</h2>
+
+				<div class='form-container'>
+					<div class='form-field'>
+						<label>Requesting As:</label>
+						<div class='review_value'>{{funding_request.requestingAs}}</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+
+		{% if funding_request.requestType != 'Travel' %}
+			{% if funding_request.eventType == 'Single Event' %}
+				<div id='event_header_block'>
+					<h2>Event Title/Description</h2>
+
+					<div class='form-container'>
+						<div class='form-field'>
+							<label>Event title:</label>
+							<div class='review_value'>{{funding_request.eventTitle}}</div>
+						</div>
+						
+						<div class='form-field'>
+							<label>Event description:</label>
+							<div class='review_value'>{{funding_request.description}}</div>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			{% if funding_request.eventType == 'Recurring Event' %}
+				<div id='recurring_event_header_block'>
+					<h2>Recurring Event Title/Description</h2>
+
+					<div class='form-container'>
+						<div class='form-field'>
+							<label>Is the budget the same for each occurrence of the event?</label>
+							<div class='review_value'>{% if funding_request.sameBudgetForRecurringEvents %}Yes{% else %}No{% endif %}</div>
+						</div>
+
+						<div class='form-field'>
+							<label>Event title:</label>
+							<div class='review_value'>{{funding_request.eventTitle}}</div>
+						</div>
+
+						<div class='form-field'>
+							<label>Event description:</label>
+							<div class='review_value'>{{funding_request.description}}</div>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+
+			{% if funding_request.eventType == 'Single Event' %}
+				<div class='event_block'>
+					<h2>Event Details</h2>
+
+					<div class='form-container'>
+						<div class='form-field'>
+							<label>Start Date:</label>
+							<div class='review_value'>{{funding_request.single_event.startDate}}</div>
+						</div>
+						
+						<div class='form-field'>
+							<label>End Date:</label>
+							<div class='review_value'>{{funding_request.single_event.endDate}}</div>
+						</div>
+
+						<div class='form-field'>
+							<label>Location:</label>
+							<div class='review_value'>{{funding_request.single_event.location}}</div>
+						</div>
+
+						<div class='form-field'>
+							<label>Waiver Requested:</label>
+							<div class='review_value'>{{funding_request.single_event.waiverRequested}}</div>
+						</div>
+					</div>
+				</div>
+
+				<div class='budget_block'>
+					<h2>Budget Details</h2>
+
+					<table>
+						<tr id='budget_item_headers'>
+							<td>Item Description</td>
+							<td>Cost Per Item</td>
+							<td>Quantity</td>
+							<td>Amount Requested</td>
+							<td>Other Funding</td>
+							<td>Item Total</td>
+							<td>Comment</td>
+						</tr>
+						{% for item in funding_request.budget_items %}
+							<tr class='budget_item_description'>
+								<td>{{item.description}}</td>
+								<td>${{item.itemCostF}}</td>
+								<td>{{item.quantity}}</td>
+								<td class='req_amt' value='{{item.requestedAmountF}}'>${{item.requestedAmountF}}</td>
+								<td class='oth_fund' value='{{item.otherFundingF}}'>${{item.otherFundingF}}</td>
+								<td>${{item.totalF}}</td>
+								<td><input type='text' name='comment_{{forloop.counter}}' id='comment_{{forloop.counter}}'></td>
+							</tr>
+						{% endfor %}
+						<tr>
+							<td></td>
+							<td></td>
+							<td>Totals</td>
+							<td id='budget_total_amount_requested_1'></td>
+							<td id='budget_total_other_funding_1'></td>
+							<td id='budget_total_1'></td>
+							<td><input type='text' name='budget_awarded_1' id='budget_awarded_1'></td>
+						</tr>
+					</table>
+
+					<div class='form-container'>
+						<div class='form-field'>
+							<label for='budget_additional_info_1'>Additional Info:</label>
+							<div class='review_value'>{{funding_request.single_event.budget.additionalInfo}}</div>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			{% if funding_request.eventType == 'Operational Costs' %}
+				<div class='budget_block'>
+					<h2>Budget Details</h2>
+
+					<table>
+						<tr id='budget_item_headers'>
+							<td>Item Description</td>
+							<td>Cost Per Item</td>
+							<td>Quantity</td>
+							<td>Amount Requested</td>
+							<td>Other Funding</td>
+							<td>Item Total</td>
+							<td>Comment</td>
+						</tr>
+						{% for item in funding_request.own_budget_items %}
+							<tr class='budget_item_description'>
+								<td>{{item.description}}</td>
+								<td>${{item.itemCostF}}</td>
+								<td>{{item.quantity}}</td>
+								<td class='req_amt' value='{{item.requestedAmountF}}'>${{item.requestedAmountF}}</td>
+								<td class='oth_fund' value='{{item.otherFundingF}}'>${{item.otherFundingF}}</td>
+								<td>${{item.totalF}}</td>
+								<td><input type='text' name='comment_{{forloop.counter}}' id='comment_{{forloop.counter}}'></td>
+							</tr>
+						{% endfor %}
+						<tr>
+							<td></td>
+							<td></td>
+							<td>Totals</td>
+							<td id='budget_total_amount_requested_1'></td>
+							<td id='budget_total_other_funding_1'></td>
+							<td id='budget_total_1'></td>
+							<td><input type='text' name='budget_awarded_1' id='budget_awarded_1'></td>
+						</tr>
+					</table>
+
+					<div class='form-container'>
+						<div class='form-field'>
+							<label for='budget_additional_info_1'>Additional Info:</label>
+							<div class='review_value'>{{funding_request.budget.additionalInfo}}</div>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			{% if funding_request.eventType == 'Recurring Event' %}
+				{% if funding_request.sameBudgetForRecurringEvents %}
+					{% for event in funding_request.events %}
+						<div class='event_block'>
+							<h2>Event Details</h2>
+
+							<div class='form-container'>
+								<div class='form-field'>
+									<label>Start Date:</label>
+									<div class='review_value'>{{event.startDate}}</div>
+								</div>
+								
+								<div class='form-field'>
+									<label>End Date:</label>
+									<div class='review_value'>{{event.endDate}}</div>
+								</div>
+
+								<div class='form-field'>
+									<label>Location:</label>
+									<div class='review_value'>{{event.location}}</div>
+								</div>
+
+								<div class='form-field'>
+									<label>Waiver Requested:</label>
+									<div class='review_value'>{{event.waiverRequested}}</div>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+
+					<div class='budget_block'>
+						<h2>Budget Details</h2>
+
+						<table>
+							<tr id='budget_item_headers'>
+								<td>Item Description</td>
+								<td>Cost Per Item</td>
+								<td>Quantity</td>
+								<td>Amount Requested</td>
+								<td>Other Funding</td>
+								<td>Item Total</td>
+								<td>Comment</td>
+							</tr>
+							{% for item in funding_request.budget_items %}
+								<tr class='budget_item_description'>
+									<td>{{item.description}}</td>
+									<td>${{item.itemCostF}}</td>
+									<td>{{item.quantity}}</td>
+									<td class='req_amt' value='{{item.requestedAmountF}}'>${{item.requestedAmountF}}</td>
+									<td class='oth_fund' value='{{item.otherFundingF}}'>${{item.otherFundingF}}</td>
+									<td>${{item.totalF}}</td>
+									<td><input type='text' name='comment_{{forloop.counter}}' id='comment_{{forloop.counter}}'></td>
+								</tr>
+							{% endfor %}
+							<tr>
+								<td></td>
+								<td></td>
+								<td>Totals</td>
+								<td id='budget_total_amount_requested_1'></td>
+								<td id='budget_total_other_funding_1'></td>
+								<td id='budget_total_1'></td>
+								<td><input type='text' name='budget_awarded_1' id='budget_awarded_1'></td>
+							</tr>
+						</table>
+
+						<div class='form-container'>
+							<div class='form-field'>
+								<label for='budget_additional_info_1'>Additional Info:</label>
+								<div class='review_value'>{{funding_request.single_event.budget.additionalInfo}}</div>
+							</div>
+						</div>
+					</div>
+				
+				{% else %}
+					{% for event in funding_request.events %}
+						<div class='event_block'>
+							<h2>Event Details</h2>
+
+							<div class='form-container'>
+								<div class='form-field'>
+									<label>Start Date:</label>
+									<div class='review_value'>{{event.startDate}}</div>
+								</div>
+								
+								<div class='form-field'>
+									<label>End Date:</label>
+									<div class='review_value'>{{event.endDate}}</div>
+								</div>
+
+								<div class='form-field'>
+									<label>Location:</label>
+									<div class='review_value'>{{event.location}}</div>
+								</div>
+
+								<div class='form-field'>
+									<label>Waiver Requested:</label>
+									<div class='review_value'>{{event.waiverRequested}}</div>
+								</div>
+							</div>
+						</div>
+
+						<div class='recurring_budget_block'>
+							<h2>Budget Details</h2>
+
+							<table>
+								<tr id='budget_item_headers'>
+									<td>Item Description</td>
+									<td>Cost Per Item</td>
+									<td>Quantity</td>
+									<td>Amount Requested</td>
+									<td>Other Funding</td>
+									<td>Item Total</td>
+									<td>Comment</td>
+								</tr>
+								{% for item in event.budget.items %}
+									<tr class='budget_item_description'>
+										<td>{{item.description}}</td>
+										<td>${{item.itemCostF}}</td>
+										<td>{{item.quantity}}</td>
+										<td class='req_amt' value='{{item.requestedAmount}}'>${{item.requestedAmountF}}</td>
+										<td class='oth_fund' value='{{item.otherFunding}}'>${{item.otherFundingF}}</td>
+										<td>${{item.totalF}}</td>
+										<td><input type='text' name='comment_{{forloop.parent.counter}}_{{forloop.counter}}' id='comment_{{forloop.parent.counter}}_{{forloop.counter}}'></td>
+									</tr>
+								{% endfor %}
+								<tr>
+									<td></td>
+									<td></td>
+									<td>Totals</td>
+									<td id='budget_total_amount_requested_{{forloop.counter}}'></td>
+									<td id='budget_total_other_funding_{{forloop.counter}}'></td>
+									<td id='budget_total_{{forloop.counter}}'></td>
+									<td><input type='text' name='budget_awarded_{{forloop.counter}}' id='budget_awarded_{{forloop.counter}}'></td>
+								</tr>
+							</table>
+
+							<div class='form-container'>
+								<div class='form-field'>
+									<label for='budget_additional_info_1'>Additional Info:</label>
+									<div class='review_value'>{{event.budget.additionalInfo}}</div>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+					<div id='recurring_event_footer_block'>
+						<h2>Recurring Event Totals</h2>
+						<div>
+							<div class='rec_c'></div>
+							<div class='rec_c'>Amount Requested</div>
+							<div class='rec_c'>Other Funding</div>
+							<div class='rec_c'>Grand Total</div>
+						</div>
+						<div>
+							<div class='rec_c'>Grand Totals</div>
+							<div class='rec_c' id='recurring_total_amount_requested'></div>
+							<div class='rec_c'id='recurring_total_other_funding'></div>
+							<div class='rec_c'id='recurring_grand_total'></div>
+						</div>
+					</div>
+				{% endif %}
+			{% endif %}
+
+		{% else %}
+			<div id='travel_event_block'>
+				<h2>Travel Event Details</h2>
+
+				<div class='form-container'>
+					<div class='form-field'>
+						<label>Event:</label>
+						<div class='review_value'>{{funding_request.single_event.eventTitle}}</div>
+					</div>
+
+					<div class='form-field'>
+						<label>Location:</label>
+						<div class='review_value'>{{funding_request.single_event.location}}</div>
+					</div>
+					
+					<div class='form-field'>
+						<label>Event Start Date:</label>
+						<div class='review_value'>{{funding_request.single_event.startDate}}</div>
+					</div>
+					
+					<div class='form-field'>
+						<label>Event End Date:</label>
+						<div class='review_value'>{{funding_request.single_event.endDate}}</div>
+					</div>
+
+					<div class='form-field'>
+						<label>Your Departure Date:</label>
+						<div class='review_value'>{{funding_request.single_event.departureDate}}</div>
+					</div>
+					
+					<div class='form-field'>
+						<label>Your Return Date:</label>
+						<div class='review_value'>{{funding_request.single_event.returnDate}}</div>
+					</div>
+
+					<div class='form-field'>
+						<label>Are you presenting?</label>
+						<div class='review_value'>{% if funding_request.single_event.presenting == True %}Yes{% else %}No{% endif %}</div>
+					</div>
+
+					<div class='form-field'>
+						<label>Title of your presentation:</label>
+						<div class='review_value'>{{funding_request.single_event.presentationTitle}}</div>
+					</div>
+				</div>
+			</div>
+
+			<div id='travel_budget_block'>
+				<h2>Travel Budget Details</h2>
+
+				<table>
+					<tr id='travel_budget_item_headers'>
+						<td>Item Description</td>
+						<td>Cost Per Item</td>
+						<td>Quantity</td>
+						<td>Item Total</td>
+						<td>Comment</td>
+					</tr>
+					{% for item in funding_request.budget_items %}
+						<tr class='travel_budget_item_description'>
+							<td>{{item.description}}</td>
+							<td>${{item.itemCostF}}</td>
+							<td>{{item.quantity}}</td>
+							<td class='travel_item_total' value='{{item.total}}'>${{item.totalF}}</td>
+							<td><input type='text' name='travel_comment_{{forloop.counter}}' id='travel_comment_{{forloop.counter}}'></td>
+						</tr>
+					{% endfor %}
+					<tr>
+						<td></td>
+						<td></td>
+						<td>Totals</td>
+						<td id='travel_budget_total_1'></td>
+						<td><input type='text' name='travel_budget_awarded' id='travel_budget_awarded'></td>
+					</tr>
+				</table>
+			</div>
+		{% endif %}
+		<div>
+			<button id='submit'>Submit Request Award Form</button>
+		</div>
+	</form>
 {% endblock %}
