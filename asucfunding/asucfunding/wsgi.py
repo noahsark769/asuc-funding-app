@@ -1,28 +1,24 @@
-"""
-WSGI config for asucfunding project.
-
-This module contains the WSGI application used by Django's development server
-and any production WSGI deployments. It should expose a module-level variable
-named ``application``. Django's ``runserver`` and ``runfcgi`` commands discover
-this application via the ``WSGI_APPLICATION`` setting.
-
-Usually you will have the standard Django WSGI application here, but it also
-might make sense to replace the whole Django WSGI application with a custom one
-that later delegates to the Django one. For example, you could introduce WSGI
-middleware here, or combine a Django application with an application of another
-framework.
-
-"""
+# wsgi_xlab.py
+import site
 import os
+import sys
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "asucfunding.settings")
+SITE_DIR = '/opt/django-trunk/'
 
-# This application object is used by any WSGI server configured to use this
-# file. This includes Django's development server, if the WSGI_APPLICATION
-# setting points here.
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+site.addsitedir(SITE_DIR) 
 
-# Apply WSGI middleware here.
-# from helloworld.wsgi import HelloWorldApplication
-# application = HelloWorldApplication(application)
+sys.path.append(SITE_DIR)
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'xlab_server.settings'
+import django.core.handlers.wsgi
+application = django.core.handlers.wsgi.WSGIHandler()
+
+import django.core.handlers.wsgi
+class ForcePostHandler(django.core.handlers.wsgi.WSGIHandler):
+    """Workaround for: http://lists.unbit.it/pipermail/uwsgi/2011-February/001395.html
+    """
+    def get_response(self, request):
+        request.POST # force reading of POST data
+        return super(ForcePostHandler, self).get_response(request)
+
+application = ForcePostHandler()
