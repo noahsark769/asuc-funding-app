@@ -14,13 +14,9 @@
 {% block admin_menu %}
 			{% if is_admin %}
 				<ul id='admin_menu'>
-					<li><a class='nostyle' href='/export_to_excel/'>export</a>
-						<ul>
-							<li>Excel</li>
-							<li>PDF</li>
-						</ul>
-					</li><li>
-					<a class="nostyle" href="/config/">configuration</a></li>
+					<a class='nostyle' href='/'><li>home</li></a>
+					<a class='nostyle' href='/export_to_excel/'><li>export to excel</li></a>
+					<a class="nostyle" href="/config/"><li>configuration</li></a>
 				</ul>
 			{% endif %}
 {% endblock %}

@@ -51,8 +51,8 @@
 		</thead>
 		<tbody>
 			{% for request in funding_requests %}
-			<tr>
-				<td class='id'>{{request.id}}</td>
+			<tr href='/review_request/{{request.id}}/'>
+				<td class='id'>{{request.formattedID}}</td>
 				<td class='email'>{{request.email}}</td>
 				<td class='submitted'>{{request.date_submitted_formatted}}</td>
 				<td class='status'>{{request.requestStatus}}</td>

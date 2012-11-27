@@ -156,4 +156,10 @@ $(document).ready(function () {
 
 	//actual calculate initially
 	calculateRequestedTotals();
+
+	// make rows clickable
+	$('table tr').click(function(){
+		window.location = $(this).attr('href');
+		return false;
+	});
 });

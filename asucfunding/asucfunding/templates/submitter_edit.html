@@ -306,12 +306,12 @@
 				<legend>Requesting as:</legend>
 				
 				<div class='form-field'>
-				<input type='radio' name='travel_requesting_as' value='I' id='travel_requesting_as_I' {% if funding_request.requestingAs == "I"%}checked{% endif %}>
+				<input type='radio' name='travel_requesting_as' value='Individual' id='travel_requesting_as_I' {% if funding_request.requestingAs == "I"%}checked{% endif %}>
 				<label for='travel_requesting_as_I'>Individual</label>
 				</div>
 				
 				<div class='form-field'>
-				<input type='radio' name='travel_requesting_as' value='G' id='travel_requesting_as_G' {% if funding_request.requestingAs == "G"%}checked{% endif %}>
+				<input type='radio' name='travel_requesting_as' value='Group' id='travel_requesting_as_G' {% if funding_request.requestingAs == "G"%}checked{% endif %}>
 				<label for='travel_requesting_as_G'>Group</label>
 				</div>
 			</fieldset>
@@ -392,9 +392,9 @@
 			<fieldset>
 				<legend>Waiver Requested</legend>
 				<select name='event_waiver_{{forloop.counter}}'>
-					<option value='N' {% if event.waiverRequested == "N"%} selected {% endif %}>No</option>
-					<option value='F' {% if event.waiverRequested == "F"%} selected {% endif %}>Full</option>
-					<option value='P' {% if event.waiverRequested == "P"%} selected {% endif %}>Partial</option>
+					<option value='No' {% if event.waiverRequested == 'No'%} selected {% endif %}>No</option>
+					<option value='Full' {% if event.waiverRequested == 'Full'%} selected {% endif %}>Full</option>
+					<option value='Partial' {% if event.waiverRequested == 'Partial'%} selected {% endif %}>Partial</option>
 				</select>
 			</fieldset>
 		</div>
@@ -467,9 +467,9 @@
 			<fieldset>
 				<legend>Waiver Requested</legend>
 				<select name='event_waiver_{{forloop.counter}}'>
-					<option value='N' {% if event.waiverRequested == "N"%} selected {% endif %}>No</option>
-					<option value='F' {% if event.waiverRequested == "F"%} selected {% endif %}>Full</option>
-					<option value='P' {% if event.waiverRequested == "P"%} selected {% endif %}>Partial</option>
+					<option value='No' {% if event.waiverRequested == 'No'%} selected {% endif %}>No</option>
+					<option value='Full' {% if event.waiverRequested == 'Full'%} selected {% endif %}>Full</option>
+					<option value='Partial' {% if event.waiverRequested == 'Partial'%} selected {% endif %}>Partial</option>
 				</select>
 			</fieldset>
 		</div>
@@ -543,9 +543,9 @@
 				<legend>Waiver Requested</legend>
 				<select name='event_waiver_1'>
 					<option=''>Select an option...</option>
-					<option value='N'>No</option>
-					<option value='F'>Full</option>
-					<option value='P'>Partial</option>
+					<option value='No'>No</option>
+					<option value='Full'>Full</option>
+					<option value='Partial'>Partial</option>
 				</select>
 			</fieldset>
 		</div>

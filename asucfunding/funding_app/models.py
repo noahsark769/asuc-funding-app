@@ -12,6 +12,9 @@ class Budget(models.Model):
 	totalOtherFunding = models.DecimalField(max_digits=10,decimal_places=2)
 	grandTotal = models.DecimalField(max_digits=10,decimal_places=2)
 
+	def items(self):
+		return self.itemdescription_set.all()
+
 class FundingRequest (models.Model):
 	uid = models.IntegerField()
 	name = models.CharField(max_length=50)
@@ -51,20 +54,29 @@ class FundingRequest (models.Model):
 	def date_submitted_formatted(self):
 		return str(self.dateSubmitted.month) + '/' + str(self.dateSubmitted.day) + '/' + str(self.dateSubmitted.year)
 
+	def grant_categories(self):
+		return 'Grant' in self.requestCategory.split(',')
+
 	def split_grant_category(self):
-		return grantCategory.split(",")
+		return self.grantCategory.split(',')
 
 	def split_req_category(self):
-		return reqCategory.split(",")
+		return self.requestCategory.split(',')
 
 	def events(self):
 		return self.event_set.all()
 
-	def travel_event(self):
+	def single_event(self):
 		return self.event_set.all()[0]
 
 	def budget_items(self):
 		return self.event_set.all()[0].budget.itemdescription_set.all()
+
+	def own_budget_items(self):
+		return self.budget.itemdescription_set.all()
+
+	def formattedID(self):
+		return '%06d' % self.id;
 	
 class GraduateRequest(FundingRequest):
 	academicDepartmentalAffiliate = models.CharField(max_length=50)
@@ -91,6 +103,15 @@ class ItemDescription(models.Model):
 	requestedAmount = models.DecimalField(max_digits=10,decimal_places=2)
 	otherFunding = models.DecimalField(max_digits=10,decimal_places=2)
 	total = models.DecimalField(max_digits=10,decimal_places=2)
+
+	def itemCostF(self):
+		return "%0.2f" % self.itemCost
+	def requestedAmountF(self):
+		return "%0.2f" % self.requestedAmount
+	def otherFundingF(self):
+		return "%0.2f" % self.otherFunding
+	def totalF(self):
+		return "%0.2f" % self.total
 
 class Event(models.Model):
 	fundingRequest = models.ForeignKey(FundingRequest)

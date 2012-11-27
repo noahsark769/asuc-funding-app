@@ -421,9 +421,12 @@ def submitter_render_funding_request(request, request_id=None):
 				except ObjectDoesNotExist as e:
 					# Request not found, so we send them home.
 					return redirect('funding_app.views.home')
+
+		if is_admin(request) is False and fundingRequest.uid != user['uid']:
+			return redirect('funding_app.views.home')
 	
 		if fundingRequest.requestStatus == "Submitted":
-			url = "submitter_edit.html"
+			url = "submitter_review.html"
 		else:
 			url = "submitter_edit.html"
 	else:
