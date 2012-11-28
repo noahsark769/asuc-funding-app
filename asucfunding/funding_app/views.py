@@ -599,6 +599,9 @@ def submitter_submit_funding_request(request):
 	if check_credentials(request) == False:
 		return redirect(calnet_login_url())
 
+	if request.method != 'POST':
+		return redirect('funding_app.views.home')
+
 	user = get_credentials(request)
 
 	post = request.POST
