@@ -705,7 +705,7 @@ def submitter_submit_funding_request(request):
 			'attendenceUG': 1,
 			'attendenceGrad': 1,
 			'budget': travelBudget,
-			'depatureDate': datetime.datetime.strptime(travel_event_departure_date, '%m/%d/%Y'),
+			'departureDate': datetime.datetime.strptime(travel_event_departure_date, '%m/%d/%Y'),
 			'returnDate': datetime.datetime.strptime(travel_event_return_date, '%m/%d/%Y'),
 			'presenting': True if travel_presenting == 'Y' else False,
 			'presentationTitle': travel_presentation_title
